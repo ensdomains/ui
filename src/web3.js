@@ -2,7 +2,7 @@ let web3
 let web3Read
 let readOnly = false
 
-export default async function setupWeb3({ Web3, customProvider }) {
+export async function setupWeb3({ Web3, customProvider }) {
   if (web3) {
     return web3
   }
@@ -66,15 +66,18 @@ export default async function setupWeb3({ Web3, customProvider }) {
 
 export default async function getWeb3() {
   if (!web3) {
-    throw new Error ('Web3 has not been instantiated, please call setupWeb3() first')
+    throw new Error(
+      'Web3 has not been instantiated, please call setupWeb3() first'
+    )
   }
   return web3
 }
 
-
 export async function getWeb3Read() {
   if (!web3Read) {
-    throw new Error ('Web3 has not been instantiated, please call setupWeb3() first')
+    throw new Error(
+      'Web3 has not been instantiated, please call setupWeb3() first'
+    )
   }
   return web3Read
 }

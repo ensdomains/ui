@@ -168,8 +168,8 @@ async function getENSEvent(event, params) {
   return _ENS.getPastEvents(event, params)
 }
 
-export default getENS
 export {
+  getENS,
   getTestRegistrarContract,
   getReverseRegistrarContract,
   getENSContract,
