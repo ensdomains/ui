@@ -2,14 +2,14 @@ let web3
 let web3Read
 let readOnly = false
 
-export async function setupWeb3({ Web3, customProvider }) {
+export async function setupWeb3({ Web3, provider }) {
   if (web3) {
     return web3
   }
 
-  if (customProvider) {
+  if (provider) {
     //for testing
-    web3 = new Web3(customProvider)
+    web3 = new Web3(provider)
     web3Read = web3
     try {
       await web3.eth.net.getId()
