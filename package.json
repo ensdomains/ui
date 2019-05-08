@@ -1,12 +1,13 @@
 {
   "name": "@ensdomains/ui",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "UI components and reusable code",
   "main": "dist/index.js",
   "module": "src/index.js",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "dist/*"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
