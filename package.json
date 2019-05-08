@@ -1,6 +1,6 @@
 {
   "name": "@ensdomains/ui",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "UI components and reusable code",
   "main": "dist/index.js",
   "module": "src/index.js",
@@ -46,6 +46,7 @@
     "@ensdomains/ens": "^0.3.5",
     "@ensdomains/ethregistrar": "^1.2.2",
     "@ensdomains/resolver": "^0.1.6",
+    "cross-fetch": "^3.0.2",
     "eth-ens-namehash": "^2.0.8",
     "lodash": "^4.17.11",
     "web3": "1.0.0-beta.34"
