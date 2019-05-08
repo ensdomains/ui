@@ -7,7 +7,7 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import {
   legacyRegistrar as legacyRegistrarInterfaceId,
   permanentRegistrar as permanentRegistrarInterfaceId
-} from '../constants/interfaces'
+} from './constants/interfaces'
 let ethRegistrar
 let ethRegistrarRead
 let permanentRegistrar
