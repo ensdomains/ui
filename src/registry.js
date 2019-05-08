@@ -9,7 +9,7 @@ import getENS, {
   normalize
 } from './ens'
 import { decryptHashes } from './preimage'
-import { uniq, ensStartBlock, checkLabels, mergeLabels } from '../utils/utils'
+import { uniq, ensStartBlock, checkLabels, mergeLabels } from './utils/utils'
 import getWeb3, { getAccount } from './web3'
 
 export async function getOwner(name) {
@@ -164,7 +164,9 @@ export async function setContent(name, content) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  const gas = await Resolver.setContent(namehash, content).estimateGas({from:account})
+  const gas = await Resolver.setContent(namehash, content).estimateGas({
+    from: account
+  })
   return () =>
     Resolver.setContent(namehash, content).send({ from: account, gas })
 }
@@ -175,7 +177,7 @@ export async function setContenthash(name, content) {
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
   const tx = Resolver.setContenthash(namehash, content)
-  const gas = await tx.estimateGas({from:account})
+  const gas = await tx.estimateGas({ from: account })
   return () => tx.send({ from: account, gas: gas })
 }
 
