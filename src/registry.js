@@ -1,4 +1,5 @@
-import getENS, {
+import {
+  getENS,
   getNamehash,
   getENSEvent,
   getReverseRegistrarContract,
@@ -129,7 +130,7 @@ export async function setOwner(name, newOwner) {
   const { ENS } = await getENS()
   const namehash = getNamehash(name)
   const account = await getAccount()
-  return () => ENS.setOwner(namehash, newOwner).send({ from: account })
+  return ENS.setOwner(namehash, newOwner).send({ from: account })
 }
 
 export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
@@ -138,17 +139,20 @@ export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
   const account = await getAccount()
   const label = normalize(unnormalizedLabel)
   const parentNamehash = getNamehash(node)
-  return () =>
-    ENS.setSubnodeOwner(parentNamehash, web3.utils.sha3(label), newOwner).send({
-      from: account
-    })
+  return ENS.setSubnodeOwner(
+    parentNamehash,
+    web3.utils.sha3(label),
+    newOwner
+  ).send({
+    from: account
+  })
 }
 
 export async function setResolver(name, resolver) {
   const account = await getAccount()
   const namehash = getNamehash(name)
   const { ENS } = await getENS()
-  return () => ENS.setResolver(namehash, resolver).send({ from: account })
+  return ENS.setResolver(namehash, resolver).send({ from: account })
 }
 
 export async function setAddress(name, address) {
@@ -156,7 +160,7 @@ export async function setAddress(name, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  return () => Resolver.setAddr(namehash, address).send({ from: account })
+  return Resolver.setAddr(namehash, address).send({ from: account })
 }
 
 export async function setContent(name, content) {
@@ -167,8 +171,7 @@ export async function setContent(name, content) {
   const gas = await Resolver.setContent(namehash, content).estimateGas({
     from: account
   })
-  return () =>
-    Resolver.setContent(namehash, content).send({ from: account, gas })
+  return Resolver.setContent(namehash, content).send({ from: account, gas })
 }
 
 export async function setContenthash(name, content) {
@@ -178,7 +181,7 @@ export async function setContenthash(name, content) {
   const { Resolver } = await getResolverContract(resolverAddr)
   const tx = Resolver.setContenthash(namehash, content)
   const gas = await tx.estimateGas({ from: account })
-  return () => tx.send({ from: account, gas: gas })
+  return tx.send({ from: account, gas: gas })
 }
 
 export async function checkSubDomain(subDomain, domain) {
@@ -257,10 +260,16 @@ export async function getResolverDetails(node) {
   }
 }
 
-export async function claimAndSetReverseRecordName(name) {
+export async function claimAndSetReverseRecordName(name, gas) {
   const { reverseRegistrar } = await getReverseRegistrarContract()
   const account = await getAccount()
-  return () => reverseRegistrar.setName(name).send({ from: account })
+  if (gas) {
+    console.log('gas', gas)
+    return reverseRegistrar.setName(name).send({ from: account, gas })
+  } else {
+    console.log('no gas')
+    return reverseRegistrar.setName(name).send({ from: account })
+  }
 }
 
 export async function setReverseRecordName(name) {
@@ -269,7 +278,7 @@ export async function setReverseRecordName(name) {
   const resolverAddress = await getResolver(reverseNode)
   let { Resolver } = await getResolverContract(resolverAddress)
   let namehash = getNamehash(reverseNode)
-  return () => Resolver.setName(namehash, name).send({ from: account })
+  return Resolver.setName(namehash, name).send({ from: account })
 }
 
 export function getDomainDetails(name) {

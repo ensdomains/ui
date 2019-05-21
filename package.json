@@ -10,7 +10,7 @@
     "dist/*"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --watch --verbose",
     "build": "babel src -d dist --ignore *.test.js __tests__",
     "pub": "yarn build && yarn publish"
   },

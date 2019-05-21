@@ -5,7 +5,6 @@ const {
 } = require('../constants/interfaces').default
 const DAYS = 24 * 60 * 60
 const VALUE = 28 * DAYS + 1
-
 console.log(legacyRegistrarInterfaceId)
 
 const secret =
@@ -142,6 +141,8 @@ async function deployENS({ web3, accounts }) {
     'ens',
     'HashRegistrar'
   )
+
+  console.log('Deploying from account ', accounts[0])
 
   /* Deploy the main contracts  */
   const ens = await deploy(registryJSON)
@@ -453,6 +454,7 @@ async function deployENS({ web3, accounts }) {
 
   console.log('Register name')
   try {
+    await registerName(web3, accounts[0], controllerContract, 'testing')
     await registerName(web3, accounts[0], controllerContract, 'newname')
     await registerName(web3, accounts[0], controllerContract, 'resolver')
     await registerName(web3, accounts[0], controllerContract, 'oldresolver')
@@ -577,7 +579,8 @@ async function deployENS({ web3, accounts }) {
     reverseRegistrarAddress: reverseRegistrar._address,
     reverseRegistrarOwnerAddress: accounts[0],
     legacyAuctionRegistrarAddress: legacyAuctionRegistrar._address,
-    controllerAddress: controller._address
+    controllerAddress: controller._address,
+    baseRegistrarAddress: baseRegistrar._address
   }
 }
 export default deployENS
