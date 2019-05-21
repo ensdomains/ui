@@ -1,6 +1,6 @@
 {
   "name": "@ensdomains/ui",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "UI components and reusable code",
   "main": "dist/index.js",
   "module": "src/index.js",
@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "jest --watch --verbose",
-    "build": "babel src -d dist --ignore *.test.js __tests__",
+    "build": "babel src -d dist --ignore *.test.js",
     "pub": "yarn build && yarn publish"
   },
   "author": "",
