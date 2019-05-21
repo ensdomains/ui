@@ -11,7 +11,7 @@ import {
 } from './ens'
 import { decryptHashes } from './preimage'
 import { uniq, ensStartBlock, checkLabels, mergeLabels } from './utils/utils'
-import getWeb3, { getAccount } from './web3'
+import { getWeb3, getAccount } from './web3'
 
 export async function getOwner(name) {
   const { readENS: ENS } = await getENS()

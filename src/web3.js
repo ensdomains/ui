@@ -64,7 +64,7 @@ export async function setupWeb3({ Web3, provider }) {
   }
 }
 
-export default async function getWeb3() {
+export async function getWeb3() {
   if (!web3) {
     throw new Error(
       'Web3 has not been instantiated, please call setupWeb3() first'

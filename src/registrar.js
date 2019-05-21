@@ -1,13 +1,16 @@
-import getENS, { getNamehash, getResolverContract } from './ens'
-import getWeb3, { getWeb3Read, getAccount, getBlock } from './web3'
+import { getENS, getNamehash, getResolverContract } from './ens'
+import { getWeb3, getWeb3Read, getAccount, getBlock } from './web3'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
-import {
-  legacyRegistrar as legacyRegistrarInterfaceId,
-  permanentRegistrar as permanentRegistrarInterfaceId
-} from './constants/interfaces'
+import interfaces from './constants/interfaces'
+
+const {
+  legacyRegistrar: legacyRegistrarInterfaceId,
+  permanentRegistrar: permanentRegistrarInterfaceId
+} = interfaces
+
 let ethRegistrar
 let ethRegistrarRead
 let permanentRegistrar
