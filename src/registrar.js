@@ -1,5 +1,5 @@
 import { getENS, getNamehash, getResolverContract } from './ens'
-import { getWeb3, getWeb3Read, getAccount, getBlock } from './web3'
+import { getWeb3Read, getAccount, getBlock } from './web3'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
@@ -246,10 +246,11 @@ export const transferOwner = async ({ to, name }) => {
     const nameArray = name.split('.')
     const labelHash = web3.utils.sha3(nameArray[0])
     const account = await getAccount()
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.safeTransferFrom(account, to, labelHash).send({
-      from: account
-    })
+    const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
+    return () =>
+      Registrar.safeTransferFrom(account, to, labelHash).send({
+        from: account
+      })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -261,10 +262,11 @@ export const reclaim = async ({ name, address }) => {
     const nameArray = name.split('.')
     const labelHash = web3.utils.sha3(nameArray[0])
     const account = await getAccount()
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.reclaim(labelHash, address).send({
-      from: account
-    })
+    const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
+    return () =>
+      Registrar.reclaim(labelHash, address).send({
+        from: account
+      })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -309,7 +311,8 @@ export const commit = async (label, secret = '') => {
 
   const commitment = await makeCommitment(label, account, secret)
 
-  return permanentRegistrarController.commit(commitment).send({ from: account })
+  return () =>
+    permanentRegistrarController.commit(commitment).send({ from: account })
 }
 
 export const register = async (label, duration, secret) => {
@@ -319,9 +322,10 @@ export const register = async (label, duration, secret) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return permanentRegistrarController
-    .register(label, account, duration, secret)
-    .send({ from: account, gas: 1000000, value: price })
+  return () =>
+    permanentRegistrarController
+      .register(label, account, duration, secret)
+      .send({ from: account, gas: 1000000, value: price })
 }
 
 export const renew = async (label, duration) => {
@@ -331,9 +335,10 @@ export const renew = async (label, duration) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return permanentRegistrarController
-    .renew(label, duration)
-    .send({ from: account, gas: 1000000, value: price })
+  return () =>
+    permanentRegistrarController
+      .renew(label, duration)
+      .send({ from: account, gas: 1000000, value: price })
 }
 
 export const createSealedBid = async (name, bidAmount, secret) => {
@@ -342,14 +347,15 @@ export const createSealedBid = async (name, bidAmount, secret) => {
   const account = await getAccount()
   const namehash = web3.sha3(name)
 
-  return Registrar.methods
-    .shaBid(
-      namehash,
-      account,
-      web3.utils.toWei(bidAmount, 'ether'),
-      web3.utils.sha3(secret)
-    )
-    .send({ from: account })
+  return () =>
+    Registrar.methods
+      .shaBid(
+        namehash,
+        account,
+        web3.utils.toWei(bidAmount, 'ether'),
+        web3.utils.sha3(secret)
+      )
+      .send({ from: account })
 }
 
 export const newBid = async (sealedBid, decoyBidAmount) => {
@@ -357,10 +363,11 @@ export const newBid = async (sealedBid, decoyBidAmount) => {
   const web3 = await getWeb3()
   const account = await getAccount()
 
-  return Registrar.methodsnewBid(sealedBid).send({
-    from: account,
-    value: web3.utils.toWei(decoyBidAmount, 'ether')
-  })
+  return () =>
+    Registrar.methodsnewBid(sealedBid).send({
+      from: account,
+      value: web3.utils.toWei(decoyBidAmount, 'ether')
+    })
 }
 
 export const startAuctionsAndBid = async (
@@ -372,10 +379,11 @@ export const startAuctionsAndBid = async (
   const web3 = await getWeb3()
   const account = await getAccount()
 
-  return Registrar.startAuctionsAndBid(hashes, sealedBid()).send({
-    from: account,
-    value: web3.utils.toWei(decoyBidAmount, 'ether')
-  })
+  return () =>
+    Registrar.startAuctionsAndBid(hashes, sealedBid()).send({
+      from: account,
+      value: web3.utils.toWei(decoyBidAmount, 'ether')
+    })
 }
 
 export const transferRegistrars = async label => {
@@ -385,10 +393,11 @@ export const transferRegistrars = async label => {
   const hash = web3.utils.sha3(label)
   const tx = ethRegistrar.transferRegistrars(hash)
   const gas = await tx.estimateGas({ from: account })
-  return tx.send({
-    from: account,
-    gas: gas
-  })
+  return () =>
+    tx.send({
+      from: account,
+      gas: gas
+    })
 }
 
 export const releaseDeed = async label => {
@@ -398,8 +407,9 @@ export const releaseDeed = async label => {
   const hash = web3.utils.sha3(label)
   const tx = ethRegistrar.releaseDeed(hash)
   const gas = await tx.estimateGas({ from: account })
-  return tx.send({
-    from: account,
-    gas: gas
-  })
+  return () =>
+    tx.send({
+      from: account,
+      gas: gas
+    })
 }
