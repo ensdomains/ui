@@ -246,11 +246,10 @@ export const transferOwner = async ({ to, name }) => {
     const nameArray = name.split('.')
     const labelHash = web3.utils.sha3(nameArray[0])
     const account = await getAccount()
-    const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
-    return () =>
-      Registrar.safeTransferFrom(account, to, labelHash).send({
-        from: account
-      })
+    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
+    return Registrar.safeTransferFrom(account, to, labelHash).send({
+      from: account
+    })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -262,11 +261,10 @@ export const reclaim = async ({ name, address }) => {
     const nameArray = name.split('.')
     const labelHash = web3.utils.sha3(nameArray[0])
     const account = await getAccount()
-    const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
-    return () =>
-      Registrar.reclaim(labelHash, address).send({
-        from: account
-      })
+    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
+    return Registrar.reclaim(labelHash, address).send({
+      from: account
+    })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -311,8 +309,7 @@ export const commit = async (label, secret = '') => {
 
   const commitment = await makeCommitment(label, account, secret)
 
-  return () =>
-    permanentRegistrarController.commit(commitment).send({ from: account })
+  return permanentRegistrarController.commit(commitment).send({ from: account })
 }
 
 export const register = async (label, duration, secret) => {
@@ -322,10 +319,9 @@ export const register = async (label, duration, secret) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return () =>
-    permanentRegistrarController
-      .register(label, account, duration, secret)
-      .send({ from: account, gas: 1000000, value: price })
+  return permanentRegistrarController
+    .register(label, account, duration, secret)
+    .send({ from: account, gas: 1000000, value: price })
 }
 
 export const renew = async (label, duration) => {
@@ -335,10 +331,9 @@ export const renew = async (label, duration) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return () =>
-    permanentRegistrarController
-      .renew(label, duration)
-      .send({ from: account, gas: 1000000, value: price })
+  return permanentRegistrarController
+    .renew(label, duration)
+    .send({ from: account, gas: 1000000, value: price })
 }
 
 export const createSealedBid = async (name, bidAmount, secret) => {
@@ -390,11 +385,10 @@ export const transferRegistrars = async label => {
   const hash = web3.utils.sha3(label)
   const tx = ethRegistrar.transferRegistrars(hash)
   const gas = await tx.estimateGas({ from: account })
-  return () =>
-    tx.send({
-      from: account,
-      gas: gas
-    })
+  return tx.send({
+    from: account,
+    gas: gas
+  })
 }
 
 export const releaseDeed = async label => {
@@ -404,9 +398,8 @@ export const releaseDeed = async label => {
   const hash = web3.utils.sha3(label)
   const tx = ethRegistrar.releaseDeed(hash)
   const gas = await tx.estimateGas({ from: account })
-  return () =>
-    tx.send({
-      from: account,
-      gas: gas
-    })
+  return tx.send({
+    from: account,
+    gas: gas
+  })
 }

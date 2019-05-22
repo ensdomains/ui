@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import GanacheCLI from 'ganache-cli'
+import GanacheCLI from './node_modules/ganache-cli'
 import { setupWeb3, getAccounts } from '../web3'
 import deployENS from '../testing-utils/deployENS'
 import {
@@ -23,7 +23,7 @@ import {
 } from '../registry'
 import { getENS, getNamehash } from '../ens'
 import '../testing-utils/extendExpect'
-import Web3 from 'web3'
+import Web3 from './node_modules/web3'
 
 const ENVIRONMENTS = ['GANACHE_GUI', 'GANACHE_CLI', 'GANACHE_CLI_MANUAL']
 const ENV = ENVIRONMENTS[1]
