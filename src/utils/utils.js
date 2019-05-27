@@ -1,7 +1,7 @@
 import { getNetworkId } from '../web3'
 import uts46 from 'idna-uts46-hx'
 import { addressUtils } from '@0xproject/utils'
-import tlds from '../constants/tlds'
+import { tlds } from '../constants/tlds'
 //import { checkLabelHash } from '../updaters/preImageDB'
 
 export const uniq = (a, param) =>

@@ -4,7 +4,7 @@ import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/con
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
-import interfaces from './constants/interfaces'
+import { interfaces } from './constants/interfaces'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
