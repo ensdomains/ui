@@ -1,11 +1,12 @@
 const util = require('util')
+
+import { interfaces } from '../constants/interfaces'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
-} = require('../constants/interfaces').default
+} = interfaces
 const DAYS = 24 * 60 * 60
 const VALUE = 28 * DAYS + 1
-console.log(legacyRegistrarInterfaceId)
 
 const secret =
   '0x0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
