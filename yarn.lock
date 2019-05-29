@@ -745,6 +745,22 @@
     truffle "^5.0.5"
     web3-utils "^1.0.0-beta.48"
 
+"@ensdomains/mock@^1.0.2":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-1.0.7.tgz#cc57501316f2b6f0ebfe11439f5b224b25cec898"
+  integrity sha512-/H/tiIHvCcCA5HbZUjYbazCv/sHfeMrKizUWgafeWnIfBzEqQyXsK29HKdD9X3A6H1RtbRfRAfrGSji5ESr0ng==
+  dependencies:
+    "@0xproject/utils" "^2.0.2"
+    "@babel/runtime" "^7.4.4"
+    "@ensdomains/ens" "^0.3.5"
+    "@ensdomains/ens-022" "npm:@ensdomains/ens@0.2.2"
+    "@ensdomains/ethregistrar" "^1.2.2"
+    "@ensdomains/resolver" "^0.1.6"
+    cross-fetch "^3.0.2"
+    eth-ens-namehash "^2.0.8"
+    lodash "^4.17.11"
+    web3 "1.0.0-beta.34"
+
 "@ensdomains/resolver@^0.1.6":
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.6.tgz#15e070a58d5f2be6b46787661121dddae0cfe132"
@@ -3944,7 +3960,7 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-ganache-cli@^6.1.0:
+ganache-cli@^6.1.0, ganache-cli@^6.4.3:
   version "6.4.3"
   resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.4.3.tgz#2fb66c10f9df157b2cd9aeaf007a9fd47cd79cb1"
   integrity sha512-3G+CK4ojipDvxQHlpX8PjqaOMRWVcaLZZSW97Bv7fdcPTXQwkji2yY5CY6J12Atiub4M4aJc0va+q3HXeerbIA==
