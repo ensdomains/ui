@@ -4,7 +4,7 @@ import fs from 'fs'
 
 let web3
 
-export async function getAccounts(web3) {
+async function getAccounts(web3) {
   return web3.eth.getAccounts()
 }
 
