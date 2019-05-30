@@ -726,6 +726,19 @@
     testrpc "0.0.1"
     web3-utils "^1.0.0-beta.31"
 
+"@ensdomains/ens@^0.3.10":
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens/-/ens-0.3.10.tgz#1be657b01c45bd52946cd7178575224b365cec9d"
+  integrity sha512-HCbp9Ob7V3ii51z+bpFvplQa6X6pbmV3pab+a+g7SvekEOYk7BQrvRvbxtgkn7vi7WyshpTbScSxgGf6BjFS2Q==
+  dependencies:
+    bluebird "^3.5.2"
+    eth-ens-namehash "^1.0.2"
+    ethereumjs-testrpc "^6.0.3"
+    ganache-cli "^6.1.0"
+    solc "^0.4.20"
+    testrpc "0.0.1"
+    web3-utils "^1.0.0-beta.31"
+
 "@ensdomains/ens@^0.3.4":
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/@ensdomains/ens/-/ens-0.3.5.tgz#5898765c17d893e8c67a28ceca8fc43b4583d5a5"
@@ -766,13 +779,13 @@
     web3-utils "^1.0.0-beta.48"
 
 "@ensdomains/mock@^1.0.2":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-1.0.7.tgz#cc57501316f2b6f0ebfe11439f5b224b25cec898"
-  integrity sha512-/H/tiIHvCcCA5HbZUjYbazCv/sHfeMrKizUWgafeWnIfBzEqQyXsK29HKdD9X3A6H1RtbRfRAfrGSji5ESr0ng==
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-1.0.12.tgz#3626cbd12049d7f42094fc2e2c1fd4a822045e78"
+  integrity sha512-F0AHDBvFP6pFFm4qBofdmXTe39/z7gjae25FSVta56XTm8x0ACrP3kltDqd8cEPuTsJdfrGjRgTBwnFVuO4gOA==
   dependencies:
     "@0xproject/utils" "^2.0.2"
     "@babel/runtime" "^7.4.4"
-    "@ensdomains/ens" "^0.3.5"
+    "@ensdomains/ens" "^0.3.10"
     "@ensdomains/ens-022" "npm:@ensdomains/ens@0.2.2"
     "@ensdomains/ethregistrar" "^1.2.2"
     "@ensdomains/resolver" "^0.1.6"
