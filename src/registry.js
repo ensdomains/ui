@@ -26,10 +26,16 @@ export async function getResolver(name) {
   return ENS.resolver(namehash).call()
 }
 
-export async function getResolverWithNameHash(label, node, name) {
+export async function getResolverWithLabelHash(labelHash, nodeHash) {
   let { readENS: ENS } = await getENS()
-  let nodeHash = await getNamehashWithLabelHash(label, node)
-  return ENS.resolver(nodeHash).call()
+  const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
+  return ENS.resolver(namehash).call()
+}
+
+export async function getOwnerWithNameHash(labelHash, nodeHash) {
+  let { readENS: ENS } = await getENS()
+  const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
+  return ENS.owner(namehash).call()
 }
 
 export async function registerTestdomain(label) {
@@ -279,26 +285,64 @@ export async function setReverseRecordName(name) {
   return () => Resolver.setName(namehash, name).send({ from: account })
 }
 
-export function getDomainDetails(name) {
-  return Promise.all([getOwner(name), getResolver(name)])
-    .then(([owner, resolver]) => ({
-      name,
-      label: name.split('.')[0],
-      owner,
-      resolver,
-      subDomains: []
-    }))
-    .then(node => {
-      let hasResolver = parseInt(node.resolver, 16) !== 0
-      if (hasResolver) {
-        return getResolverDetails(node)
-      }
-      return Promise.resolve({
-        ...node,
-        addr: null,
-        content: null
+function isDecrypted(name) {
+  const label = name.split('.')[0]
+  return label.length === 66 && label.startsWith('0x') ? false : true
+}
+
+export async function getDomainDetails(name) {
+  const web3 = await getWeb3()
+  const nameArray = name.split('.')
+  const decrypted = isDecrypted(name)
+  const nodeHash = getNamehash(nameArray.slice(1).join('.'))
+
+  if (decrypted) {
+    return Promise.all([getOwner(name), getResolver(name)])
+      .then(([owner, resolver]) => ({
+        name,
+        label: nameArray[0],
+        labelHash: await web3.utils.sha3(nameArray[0]),
+        owner,
+        resolver,
+        subDomains: []
+      }))
+      .then(node => {
+        let hasResolver = parseInt(node.resolver, 16) !== 0
+        if (hasResolver) {
+          return getResolverDetails(node)
+        }
+        return Promise.resolve({
+          ...node,
+          addr: null,
+          content: null
+        })
       })
-    })
+  } else {
+    const labelHash = nameArray[0]
+    return Promise.all([
+      getOwnerWithLabelHash(labelHash, nodeHash),
+      getResolverWithLabelHash(labelHash, nodeHash)
+    ])
+      .then(([owner, resolver]) => ({
+        name,
+        label: labelHash.slice(10),
+        labelHash,
+        owner,
+        resolver,
+        subDomains: []
+      }))
+      .then(node => {
+        let hasResolver = parseInt(node.resolver, 16) !== 0
+        if (hasResolver) {
+          return getResolverDetails(node)
+        }
+        return Promise.resolve({
+          ...node,
+          addr: null,
+          content: null
+        })
+      })
+  }
 }
 
 export const getSubDomains = async name => {
