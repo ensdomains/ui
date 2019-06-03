@@ -10,7 +10,13 @@ import {
   normalize
 } from './ens'
 import { decryptHashes } from './preimage'
-import { uniq, ensStartBlock, checkLabels, mergeLabels } from './utils/utils'
+import {
+  uniq,
+  ensStartBlock,
+  checkLabels,
+  mergeLabels,
+  isDecrypted
+} from './utils/utils'
 import { getWeb3, getAccount } from './web3'
 
 export async function getOwner(name) {
@@ -32,7 +38,7 @@ export async function getResolverWithLabelHash(labelHash, nodeHash) {
   return ENS.resolver(namehash).call()
 }
 
-export async function getOwnerWithNameHash(labelHash, nodeHash) {
+export async function getOwnerWithLabelHash(labelHash, nodeHash) {
   let { readENS: ENS } = await getENS()
   const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
   return ENS.owner(namehash).call()
@@ -285,11 +291,6 @@ export async function setReverseRecordName(name) {
   return () => Resolver.setName(namehash, name).send({ from: account })
 }
 
-function isDecrypted(name) {
-  const label = name.split('.')[0]
-  return label.length === 66 && label.startsWith('0x') ? false : true
-}
-
 export async function getDomainDetails(name) {
   const web3 = await getWeb3()
   const nameArray = name.split('.')
@@ -298,7 +299,7 @@ export async function getDomainDetails(name) {
 
   if (decrypted) {
     return Promise.all([getOwner(name), getResolver(name)])
-      .then(([owner, resolver]) => ({
+      .then(async ([owner, resolver]) => ({
         name,
         label: nameArray[0],
         labelHash: await web3.utils.sha3(nameArray[0]),

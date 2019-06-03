@@ -151,3 +151,8 @@ export function isElementInViewport(el) {
 }
 
 export const emptyAddress = '0x0000000000000000000000000000000000000000'
+
+export function isDecrypted(name) {
+  const label = name.split('.')[0]
+  return label.length === 66 && label.startsWith('0x') ? false : true
+}
