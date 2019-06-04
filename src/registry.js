@@ -371,7 +371,7 @@ export const getSubDomains = async name => {
         labelHash: logs[index].label,
         decrypted: labels[index] !== null,
         node: name,
-        name: `${labels[index] || logs[index].label}.${name}`,
+        name: `${labels[index] || encodeLabelhash(logs[index].label)}.${name}`,
         owner
       }
     })

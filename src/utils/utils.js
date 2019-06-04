@@ -182,3 +182,7 @@ export function decodeLabelHash(hash) {
 
   return `0x${hash.slice(1, -1)}`
 }
+
+export function isEncodedLabelHash(hash) {
+  return hash.startsWith('[') && hash.endsWith(']') && hash.length === 66
+}

@@ -1,4 +1,9 @@
-import { validateName, encodeLabelHash, decodeLabelHash } from '../utils'
+import {
+  validateName,
+  encodeLabelHash,
+  decodeLabelHash,
+  isEncodedLabelHash
+} from '../utils'
 
 test('test valid names', () => {
   expect(validateName('vitalik')).toBe('vitalik')
@@ -53,4 +58,21 @@ test('test decode labelhash', () => {
   ).toThrowError(
     'Expected encoded labelhash to start and end with square brackets'
   )
+})
+
+test('test isEncodedLabelHash', () => {
+  expect(
+    isEncodedLabelHash(
+      '[a5ae37e4e1678eb9b22dd4be5ae84226b09a448a4790c7fec33ba86b6d9b3e65]'
+    )
+  ).toBe(true)
+
+  expect(
+    isEncodedLabelHash(
+      '0xa5ae37e4e1678eb9b22dd4be5ae84226b09a448a4790c7fec33ba86b6d9b3e65'
+    )
+  ).toBe(false)
+
+  expect(isEncodedLabelHash('123')).toBe(false)
+  expect(isEncodedLabelHash('[123]')).toBe(false)
 })
