@@ -15,7 +15,9 @@ import {
   ensStartBlock,
   checkLabels,
   mergeLabels,
-  isDecrypted
+  isDecrypted,
+  encodeLabelHash,
+  decodeLabelHash
 } from './utils/utils'
 import { getWeb3, getAccount } from './web3'
 

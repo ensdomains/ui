@@ -156,3 +156,29 @@ export function isDecrypted(name) {
   const label = name.split('.')[0]
   return label.length === 66 && label.startsWith('0x') ? false : true
 }
+
+export function encodeLabelHash(hash) {
+  if (!hash.startsWith('0x')) {
+    throw new Error('Expected label hash to start with 0x')
+  }
+
+  if (hash.length !== 66) {
+    throw new Error('Expected label hash to have a length of 66')
+  }
+
+  return `[${hash.slice(2)}]`
+}
+
+export function decodeLabelHash(hash) {
+  if (!(hash.startsWith('[') && hash.endsWith(']'))) {
+    throw Error(
+      'Expected encoded labelhash to start and end with square brackets'
+    )
+  }
+
+  if (hash.length !== 66) {
+    throw Error('Expected encoded labelhash to have a length of 66')
+  }
+
+  return `0x${hash.slice(1, -1)}`
+}
