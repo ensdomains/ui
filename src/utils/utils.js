@@ -185,6 +185,16 @@ export function isEncodedLabelHash(hash) {
   return hash.startsWith('[') && hash.endsWith(']') && hash.length === 66
 }
 
+export function isDecrypted(name) {
+  const nameArray = name.split('.')
+  const decrypted = nameArray.reduce((acc, label) => {
+    if (acc === false) return false
+    return isEncodedLabelHash(label) ? false : true
+  }, true)
+
+  return decrypted
+}
+
 export function namehash(inputName) {
   let node = ''
   for (let i = 0; i < 32; i++) {
