@@ -163,21 +163,25 @@ export const getPermanentEntry = async label => {
     nameExpires: null
   }
   try {
-    const namehash = labelhash(label)
+    const labelHash = labelhash(label)
     const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
     const {
-      permanentRegistrarController: RegistrarController
+      permanentRegistrarControllerRead: RegistrarController
     } = await getPermanentRegistrarController()
     // Returns true if name is available
-    obj.available = await RegistrarController.available(label).call()
+    if (isEncodedLabelHash(label)) {
+      obj.available = await Registrar.available(labelHash).call()
+    } else {
+      obj.avaialble = await RegistrarController.available(label).call()
+    }
     // This is used for old registrar to figure out when the name can be migrated.
     obj.migrationLockPeriod = parseInt(
       await Registrar.MIGRATION_LOCK_PERIOD().call()
     )
     obj.transferPeriodEnds = await Registrar.transferPeriodEnds().call()
     // Returns registrar address if owned by new registrar
-    obj.ownerOf = await Registrar.ownerOf(namehash).call()
-    const nameExpires = await Registrar.nameExpires(namehash).call()
+    obj.ownerOf = await Registrar.ownerOf(labelHash).call()
+    const nameExpires = await Registrar.nameExpires(labelHash).call()
     if (nameExpires > 0) {
       obj.nameExpires = new Date(nameExpires * 1000)
     }
