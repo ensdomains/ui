@@ -295,56 +295,26 @@ export async function setReverseRecordName(name) {
 export async function getDomainDetails(name) {
   const web3 = await getWeb3()
   const nameArray = name.split('.')
-  const decrypted = isDecrypted(name)
-  const nodeHash = getNamehash(nameArray.slice(1).join('.'))
-
-  if (decrypted) {
-    return Promise.all([getOwner(name), getResolver(name)])
-      .then(async ([owner, resolver]) => ({
-        name,
-        label: nameArray[0],
-        labelHash: await web3.utils.sha3(nameArray[0]),
-        owner,
-        resolver,
-        subDomains: []
-      }))
-      .then(node => {
-        let hasResolver = parseInt(node.resolver, 16) !== 0
-        if (hasResolver) {
-          return getResolverDetails(node)
-        }
-        return Promise.resolve({
-          ...node,
-          addr: null,
-          content: null
-        })
+  return Promise.all([getOwner(name), getResolver(name)])
+    .then(async ([owner, resolver]) => ({
+      name,
+      label: nameArray[0],
+      labelHash: await web3.utils.sha3(nameArray[0]),
+      owner,
+      resolver,
+      subDomains: []
+    }))
+    .then(node => {
+      let hasResolver = parseInt(node.resolver, 16) !== 0
+      if (hasResolver) {
+        return getResolverDetails(node)
+      }
+      return Promise.resolve({
+        ...node,
+        addr: null,
+        content: null
       })
-  } else {
-    const labelHash = nameArray[0]
-    return Promise.all([
-      getOwnerWithLabelHash(labelHash, nodeHash),
-      getResolverWithLabelHash(labelHash, nodeHash)
-    ])
-      .then(([owner, resolver]) => ({
-        name,
-        label: labelHash.slice(10),
-        labelHash,
-        owner,
-        resolver,
-        subDomains: []
-      }))
-      .then(node => {
-        let hasResolver = parseInt(node.resolver, 16) !== 0
-        if (hasResolver) {
-          return getResolverDetails(node)
-        }
-        return Promise.resolve({
-          ...node,
-          addr: null,
-          content: null
-        })
-      })
-  }
+    })
 }
 
 export const getSubDomains = async name => {
