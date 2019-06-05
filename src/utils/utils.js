@@ -1,7 +1,9 @@
 import { getNetworkId } from '../web3'
-import uts46 from 'idna-uts46-hx'
 import { addressUtils } from '@0xproject/utils'
 import { tlds } from '../constants/tlds'
+import { normalize } from 'eth-ens-namehash'
+const sha3 = require('js-sha3').keccak_256
+
 //import { checkLabelHash } from '../updaters/preImageDB'
 
 export const uniq = (a, param) =>
@@ -49,13 +51,14 @@ export const mergeLabels = (labels1, labels2) =>
   labels1.map((label, index) => (label ? label : labels2[index]))
 
 export function validateName(name) {
-  const hasEmptyLabels = name.split('.').filter(e => e.length < 1).length > 0
+  const nameArray = name.split('.')
+  const hasEmptyLabels = nameArray.filter(e => e.length < 1).length > 0
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
+  const normalizedArray = nameArray.map(label => {
+    return isEncodedLabelHash(label) ? label : normalize(label)
+  })
   try {
-    return uts46.toUnicode(name, {
-      useStd3ASCII: true,
-      transitional: false
-    })
+    return normalizedArray.join('.')
   } catch (e) {
     throw e
   }
@@ -152,11 +155,6 @@ export function isElementInViewport(el) {
 
 export const emptyAddress = '0x0000000000000000000000000000000000000000'
 
-export function isDecrypted(name) {
-  const label = name.split('.')[0]
-  return label.length === 66 && label.startsWith('0x') ? false : true
-}
-
 export function encodeLabelHash(hash) {
   if (!hash.startsWith('0x')) {
     throw new Error('Expected label hash to start with 0x')
@@ -180,9 +178,33 @@ export function decodeLabelHash(hash) {
     throw Error('Expected encoded labelhash to have a length of 66')
   }
 
-  return `0x${hash.slice(1, -1)}`
+  return `${hash.slice(1, -1)}`
 }
 
 export function isEncodedLabelHash(hash) {
   return hash.startsWith('[') && hash.endsWith(']') && hash.length === 66
+}
+
+export function namehash(inputName) {
+  let node = ''
+  for (let i = 0; i < 32; i++) {
+    node += '00'
+  }
+
+  if (name) {
+    const labels = inputName.split('.')
+
+    for (let i = labels.length - 1; i >= 0; i--) {
+      let labelSha
+      if (isEncodedLabelHash(labels[i])) {
+        labelSha = decodeLabelHash(labels[i])
+      } else {
+        let normalisedLabel = normalize(labels[i])
+        labelSha = sha3(normalisedLabel)
+      }
+      node = sha3(new Buffer(node + labelSha, 'hex'))
+    }
+  }
+
+  return '0x' + node
 }

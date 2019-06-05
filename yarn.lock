@@ -778,7 +778,7 @@
     truffle "^5.0.5"
     web3-utils "^1.0.0-beta.48"
 
-"@ensdomains/mock@^1.0.2":
+"@ensdomains/mock@^1.0.12":
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-1.0.12.tgz#3626cbd12049d7f42094fc2e2c1fd4a822045e78"
   integrity sha512-F0AHDBvFP6pFFm4qBofdmXTe39/z7gjae25FSVta56XTm8x0ACrP3kltDqd8cEPuTsJdfrGjRgTBwnFVuO4gOA==
@@ -5294,6 +5294,11 @@ js-sha3@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
   integrity sha512-Wpks3yBDm0UcL5qlVhwW9Jr9n9i4FfeWBFOOXP5puDS/SiudJGhw7DPyBqn3487qD4F0lsC0q3zxink37f7zeA==
+
+js-sha3@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
+  integrity sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==
 
 js-string-escape@^1.0.1:
   version "1.0.1"

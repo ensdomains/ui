@@ -2,7 +2,8 @@ import {
   validateName,
   encodeLabelHash,
   decodeLabelHash,
-  isEncodedLabelHash
+  isEncodedLabelHash,
+  namehash
 } from '../utils'
 
 test('test valid names', () => {
@@ -43,7 +44,7 @@ test('test decode labelhash', () => {
     decodeLabelHash(
       '[a5ae37e4e1678eb9b22dd4be5ae84226b09a448a4790c7fec33ba86b6d9b3e65]'
     )
-  ).toBe('0xa5ae37e4e1678eb9b22dd4be5ae84226b09a448a4790c7fec33ba86b6d9b3e65')
+  ).toBe('a5ae37e4e1678eb9b22dd4be5ae84226b09a448a4790c7fec33ba86b6d9b3e65')
 
   expect(() =>
     decodeLabelHash(
@@ -75,4 +76,16 @@ test('test isEncodedLabelHash', () => {
 
   expect(isEncodedLabelHash('123')).toBe(false)
   expect(isEncodedLabelHash('[123]')).toBe(false)
+})
+
+test('test namehash', () => {
+  expect(
+    namehash(
+      '[663072b30dcab381fd7418a1cbe2746c2dd42d79b3d0982109e624ff5d8d1d8d].eth'
+    )
+  ).toBe('0x89e11c9f4e589de37ebe0ea626ffdcefaca07d90bac8e1e89db3661f43da0346')
+
+  expect(namehash('arachnid.eth')).toBe(
+    '0x89e11c9f4e589de37ebe0ea626ffdcefaca07d90bac8e1e89db3661f43da0346'
+  )
 })
