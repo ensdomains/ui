@@ -5,6 +5,7 @@ import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
 import { interfaces } from './constants/interfaces'
+import { isEncodedLabelHash, decodeLabelHash, labelhash } from './utils/utils'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
@@ -126,10 +127,9 @@ export const getLegacyEntry = async name => {
   let obj
   try {
     const { ethRegistrarRead: Registrar } = await getLegacyAuctionRegistrar()
-    const web3 = await getWeb3()
-    const namehash = web3.utils.soliditySha3({ type: 'string', value: name })
+    const labelHash = labelhash(name)
     let deedOwner = '0x0'
-    const entry = await Registrar.entries(namehash).call()
+    const entry = await Registrar.entries(labelHash).call()
     if (parseInt(entry[1], 16) !== 0) {
       const deed = await getDeed(entry[1])
       deedOwner = await deed.owner().call()
@@ -157,20 +157,19 @@ export const getLegacyEntry = async name => {
   return obj
 }
 
-export const getPermanentEntry = async name => {
+export const getPermanentEntry = async label => {
   let obj = {
     available: null,
     nameExpires: null
   }
   try {
-    const web3 = await getWeb3()
-    const namehash = web3.utils.soliditySha3({ type: 'string', value: name })
+    const namehash = labelhash(label)
     const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
     const {
       permanentRegistrarController: RegistrarController
     } = await getPermanentRegistrarController()
     // Returns true if name is available
-    obj.available = await RegistrarController.available(name).call()
+    obj.available = await RegistrarController.available(label).call()
     // This is used for old registrar to figure out when the name can be migrated.
     obj.migrationLockPeriod = parseInt(
       await Registrar.MIGRATION_LOCK_PERIOD().call()
@@ -242,9 +241,8 @@ export const getEntry = async name => {
 
 export const transferOwner = async ({ to, name }) => {
   try {
-    const web3 = await getWeb3()
     const nameArray = name.split('.')
-    const labelHash = web3.utils.sha3(nameArray[0])
+    const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
     return () =>
@@ -260,7 +258,7 @@ export const reclaim = async ({ name, address }) => {
   try {
     const web3 = await getWeb3()
     const nameArray = name.split('.')
-    const labelHash = web3.utils.sha3(nameArray[0])
+    const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
     return () =>
@@ -341,35 +339,6 @@ export const renew = async (label, duration) => {
       .send({ from: account, gas: 1000000, value: price })
 }
 
-export const createSealedBid = async (name, bidAmount, secret) => {
-  const Registrar = await getLegacyAuctionRegistrar()
-  const web3 = await getWeb3()
-  const account = await getAccount()
-  const namehash = web3.sha3(name)
-
-  return () =>
-    Registrar.methods
-      .shaBid(
-        namehash,
-        account,
-        web3.utils.toWei(bidAmount, 'ether'),
-        web3.utils.sha3(secret)
-      )
-      .send({ from: account })
-}
-
-export const newBid = async (sealedBid, decoyBidAmount) => {
-  const Registrar = await getLegacyAuctionRegistrar()
-  const web3 = await getWeb3()
-  const account = await getAccount()
-
-  return () =>
-    Registrar.methodsnewBid(sealedBid).send({
-      from: account,
-      value: web3.utils.toWei(decoyBidAmount, 'ether')
-    })
-}
-
 export const startAuctionsAndBid = async (
   hashes,
   sealedBid,
@@ -389,8 +358,7 @@ export const startAuctionsAndBid = async (
 export const transferRegistrars = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
   const account = await getAccount()
-  const web3 = await getWeb3()
-  const hash = web3.utils.sha3(label)
+  const hash = labelhash(label)
   const tx = ethRegistrar.transferRegistrars(hash)
   const gas = await tx.estimateGas({ from: account })
   return () =>
@@ -404,7 +372,7 @@ export const releaseDeed = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
   const account = await getAccount()
   const web3 = await getWeb3()
-  const hash = web3.utils.sha3(label)
+  const hash = labelhash(label)
   const tx = ethRegistrar.releaseDeed(hash)
   const gas = await tx.estimateGas({ from: account })
   return () =>

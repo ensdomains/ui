@@ -4,7 +4,8 @@ import {
   decodeLabelHash,
   isEncodedLabelHash,
   isDecrypted,
-  namehash
+  namehash,
+  labelhash
 } from '../utils'
 
 test('test valid names', () => {
@@ -112,4 +113,16 @@ test('test namehash', () => {
   expect(namehash('arachnid.eth')).toBe(
     '0x89e11c9f4e589de37ebe0ea626ffdcefaca07d90bac8e1e89db3661f43da0346'
   )
+})
+
+test('test labelhash', () => {
+  expect(labelhash('eth')).toBe(
+    '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0'
+  )
+
+  expect(
+    labelhash(
+      '[4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0]'
+    )
+  ).toBe('0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0')
 })

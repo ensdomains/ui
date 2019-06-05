@@ -201,7 +201,7 @@ export function namehash(inputName) {
     node += '00'
   }
 
-  if (name) {
+  if (inputName) {
     const labels = inputName.split('.')
 
     for (let i = labels.length - 1; i >= 0; i--) {
@@ -217,4 +217,10 @@ export function namehash(inputName) {
   }
 
   return '0x' + node
+}
+
+export function labelhash(label) {
+  return isEncodedLabelHash(label)
+    ? '0x' + decodeLabelHash(label)
+    : '0x' + sha3(label)
 }
