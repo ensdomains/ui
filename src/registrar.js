@@ -172,7 +172,7 @@ export const getPermanentEntry = async label => {
     if (isEncodedLabelHash(label)) {
       obj.available = await Registrar.available(labelHash).call()
     } else {
-      obj.avaialble = await RegistrarController.available(label).call()
+      obj.available = await RegistrarController.available(label).call()
     }
     // This is used for old registrar to figure out when the name can be migrated.
     obj.migrationLockPeriod = parseInt(
