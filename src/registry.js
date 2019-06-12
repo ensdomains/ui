@@ -18,45 +18,44 @@ import {
   isDecrypted,
   encodeLabelHash
 } from './utils/utils'
-import { getWeb3, getAccount } from './web3'
+import { getWeb3, getAccount, getSigner } from './web3'
+import { utils } from 'ethers'
 
 export async function getOwner(name) {
   const { readENS: ENS } = await getENS()
   const namehash = getNamehash(name)
-  const owner = await ENS.owner(namehash).call()
+  const owner = await ENS.owner(namehash)
   return owner
 }
 
 export async function getResolver(name) {
   const namehash = getNamehash(name)
   const { readENS: ENS } = await getENS()
-  return ENS.resolver(namehash).call()
+  return ENS.resolver(namehash)
 }
 
 export async function getResolverWithLabelHash(labelHash, nodeHash) {
   let { readENS: ENS } = await getENS()
   const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
-  return ENS.resolver(namehash).call()
+  return ENS.resolver(namehash)
 }
 
 export async function getOwnerWithLabelHash(labelHash, nodeHash) {
   let { readENS: ENS } = await getENS()
   const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
-  return ENS.owner(namehash).call()
+  return ENS.owner(namehash)
 }
 
 export async function registerTestdomain(label) {
   const { registrar } = await getTestRegistrarContract()
-  const web3 = await getWeb3()
-  const namehash = await web3.utils.sha3(label)
+  const namehash = await utils.keccak256(label)
   const account = await getAccount()
   return () => registrar.register(namehash, account).send({ from: account })
 }
 
 export async function expiryTimes(label, owner) {
   const { registrar } = await getTestRegistrarContract()
-  const web3 = await getWeb3()
-  const namehash = await web3.utils.sha3(label)
+  const namehash = await utils.keccak256(label)
   const result = await registrar.expiryTimes(namehash).call()
   if (result > 0) {
     return new Date(result * 1000)
@@ -71,7 +70,7 @@ export async function getAddr(name) {
   const namehash = getNamehash(name)
   try {
     const { Resolver } = await getResolverReadContract(resolverAddr)
-    const addr = await Resolver.addr(namehash).call()
+    const addr = await Resolver.addr(namehash)
     return addr
   } catch (e) {
     console.warn(
@@ -89,9 +88,8 @@ export async function getContent(name) {
   try {
     const namehash = getNamehash(name)
     const { Resolver } = await getResolverReadContract(resolverAddr)
-    const web3 = await getWeb3()
-    const contentHashSignature = web3.utils
-      .sha3('contenthash(bytes32)')
+    const contentHashSignature = utils
+      .keccak256('contenthash(bytes32)')
       .slice(0, 10)
 
     const isContentHashSupported = await Resolver.supportsInterface(
@@ -130,7 +128,7 @@ export async function getName(address) {
 
   try {
     const { Resolver } = await getResolverReadContract(resolverAddr)
-    const name = await Resolver.name(reverseNamehash).call()
+    const name = await Resolver.name(reverseNamehash)
     return {
       name
     }
@@ -142,35 +140,28 @@ export async function getName(address) {
 export async function setOwner(name, newOwner) {
   const { ENS } = await getENS()
   const namehash = getNamehash(name)
-  const account = await getAccount()
-  return () => ENS.setOwner(namehash, newOwner).send({ from: account })
+  return ENS.setOwner(namehash, newOwner)
 }
 
 export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
-  const web3 = await getWeb3()
   const { ENS } = await getENS()
-  const account = await getAccount()
   const label = normalize(unnormalizedLabel)
+  const labelHash = utils.solidityKeccak256(['string'], [label])
   const parentNamehash = getNamehash(node)
-  return () =>
-    ENS.setSubnodeOwner(parentNamehash, web3.utils.sha3(label), newOwner).send({
-      from: account
-    })
+  return ENS.setSubnodeOwner(parentNamehash, labelHash, newOwner)
 }
 
 export async function setResolver(name, resolver) {
-  const account = await getAccount()
   const namehash = getNamehash(name)
   const { ENS } = await getENS()
-  return () => ENS.setResolver(namehash, resolver).send({ from: account })
+  return ENS.setResolver(namehash, resolver)
 }
 
 export async function setAddress(name, address) {
-  const account = await getAccount()
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  return () => Resolver.setAddr(namehash, address).send({ from: account })
+  return Resolver.setAddr(namehash, address)
 }
 
 export async function setContent(name, content) {
@@ -181,18 +172,15 @@ export async function setContent(name, content) {
   const gas = await Resolver.setContent(namehash, content).estimateGas({
     from: account
   })
-  return () =>
-    Resolver.setContent(namehash, content).send({ from: account, gas })
+  return Resolver.setContent(namehash, content).send({ from: account, gas })
 }
 
 export async function setContenthash(name, content) {
-  const account = await getAccount()
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
   const tx = Resolver.setContenthash(namehash, content)
-  const gas = await tx.estimateGas({ from: account })
-  return () => tx.send({ from: account, gas: gas })
+  return tx
 }
 
 export async function checkSubDomain(subDomain, domain) {
@@ -201,8 +189,7 @@ export async function checkSubDomain(subDomain, domain) {
 }
 
 export async function buildSubDomain(label, node, owner) {
-  const web3 = await getWeb3()
-  const labelHash = web3.utils.sha3(label)
+  const labelHash = utils.keccak256(label)
   const resolver = await getResolver(label + '.' + node)
   const subDomain = {
     resolver,
@@ -235,16 +222,17 @@ export async function deleteSubdomain(subdomain, domain) {
   const resolver = await getResolver(name)
   const account = await getAccount()
   if (parseInt(resolver, 16) !== 0) {
-    await setSubnodeOwner(subdomain, domain, account)
-    await setResolver(name, 0)
+    const tx = await setSubnodeOwner(subdomain, domain, account)
+    tx.wait()
+    const tx2 = await setResolver(name, 0)
+    tx2.wait()
   }
   try {
-    const receipt = await setSubnodeOwner(
+    return setSubnodeOwner(
       subdomain,
       domain,
       '0x0000000000000000000000000000000000000000'
     )
-    return receipt
   } catch (e) {
     console.log('error deleting subdomain', e)
   }
@@ -273,13 +261,10 @@ export async function getResolverDetails(node) {
 
 export async function claimAndSetReverseRecordName(name, gas) {
   const { reverseRegistrar } = await getReverseRegistrarContract()
-  const account = await getAccount()
   if (gas) {
-    console.log('gas', gas)
-    return () => reverseRegistrar.setName(name).send({ from: account, gas })
+    return reverseRegistrar.setName(name)
   } else {
-    console.log('no gas')
-    return () => reverseRegistrar.setName(name).send({ from: account })
+    return reverseRegistrar.setName(name)
   }
 }
 
@@ -293,13 +278,12 @@ export async function setReverseRecordName(name) {
 }
 
 export async function getDomainDetails(name) {
-  const web3 = await getWeb3()
   const nameArray = name.split('.')
   return Promise.all([getOwner(name), getResolver(name)])
     .then(async ([owner, resolver]) => ({
       name,
       label: nameArray[0],
-      labelHash: await web3.utils.sha3(nameArray[0]),
+      labelHash: await utils.keccak256(nameArray[0]),
       owner,
       resolver,
       subDomains: []

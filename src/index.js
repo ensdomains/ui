@@ -1,3 +1,11 @@
+import { setupWeb3 } from './web3'
+import { getENS } from './ens'
+
+export async function setupENS({ customProvider, ensAddress }) {
+  await setupWeb3({ customProvider })
+  await getENS(ensAddress)
+}
+
 export * from './ens'
 export * from './registrar'
 export * from './registry'

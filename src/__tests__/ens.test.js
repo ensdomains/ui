@@ -2,7 +2,9 @@
  * @jest-environment node
  */
 import GanacheCLI from 'ganache-cli'
-import { setupWeb3, getAccounts } from '../web3'
+import { setupWeb3 as setupWeb3Test, getAccounts } from './web3Util'
+import { setupWeb3, getWeb3 } from '../web3'
+import { setupENS } from '../'
 import { deployENS } from '@ensdomains/mock'
 import {
   getOwner,
@@ -36,15 +38,15 @@ describe('Blockchain tests', () => {
     switch (ENV) {
       case 'GANACHE_CLI':
         var provider = GanacheCLI.provider()
-        var web3 = await setupWeb3({ provider, Web3 })
+        var web3 = await setupWeb3Test({ provider, Web3 })
         break
       case 'GANACHE_GUI':
         var provider = new Web3.providers.HttpProvider('http://localhost:7545')
-        var web3 = await setupWeb3({ provider, Web3 })
+        var web3 = await setupWeb3Test({ provider, Web3 })
         break
       case 'GANACHE_CLI_MANUAL':
         var provider = new Web3.providers.HttpProvider('http://localhost:8545')
-        var web3 = await setupWeb3({ provider, Web3 })
+        var web3 = await setupWeb3Test({ provider, Web3 })
         break
       default:
         const options = ENVIRONMENTS.join(' or ')
@@ -66,7 +68,7 @@ describe('Blockchain tests', () => {
     baseRegistrar = baseRegistrarAddress
     reverseRegistrar = reverseRegistrarAddress
 
-    await getENS(ensAddress)
+    await setupENS({ customProvider: provider, ensAddress })
   }, 100000)
 
   describe('Test contract and Web3 setup', () => {
@@ -80,15 +82,15 @@ describe('Blockchain tests', () => {
       const accounts = await getAccounts()
 
       const eth = getNamehash('eth')
-      const ethOwner = await ENS.owner(eth).call()
+      const ethOwner = await ENS.owner(eth)
       expect(ethOwner).toBe(baseRegistrar)
 
       const reverse = getNamehash('reverse')
-      const reverseOwner = await ENS.owner(reverse).call()
+      const reverseOwner = await ENS.owner(reverse)
       expect(reverseOwner).toBe(accounts[0])
 
       const reverseNode = getNamehash('addr.reverse')
-      const reverseNodeOwner = await ENS.owner(reverseNode).call()
+      const reverseNodeOwner = await ENS.owner(reverseNode)
       expect(reverseNodeOwner).toBe(reverseRegistrar)
     })
   })
@@ -105,7 +107,7 @@ describe('Blockchain tests', () => {
       const accounts = await getAccounts()
       expect(owner).toBe('0x0000000000000000000000000000000000000000')
       const tx = await setSubnodeOwner('subnode', 'resolver.eth', accounts[0])
-      await tx()
+      await tx.wait()
       const newOwner = await getOwner('subnode.resolver.eth')
       expect(newOwner).toBe(accounts[0])
     })
@@ -119,11 +121,11 @@ describe('Blockchain tests', () => {
         'awesome.eth',
         accounts[0]
       )
-      await tx()
+      await tx.wait()
       const owner2 = await getOwner('givethisaway.awesome.eth')
       expect(owner2).toBe(accounts[0])
       const tx2 = await setOwner('givethisaway.awesome.eth', accounts[1])
-      await tx2()
+      await tx2.wait()
       const newOwner = await getOwner('givethisaway.awesome.eth')
       expect(newOwner).toBe(accounts[1])
     })
@@ -149,7 +151,7 @@ describe('Blockchain tests', () => {
       expect(resolver).not.toBe(mockResolver)
 
       const tx = await setResolver('awesome.eth', mockResolver)
-      await tx()
+      await tx.wait()
       const newResolver = await getResolver('awesome.eth')
       expect(newResolver).toBeHex()
       expect(newResolver).toBeEthAddress()
@@ -162,7 +164,7 @@ describe('Blockchain tests', () => {
       // expect the initial owner to be no one
       expect(oldOwner).toBe('0x0000000000000000000000000000000000000000')
       const tx = await createSubdomain('new', 'resolver.eth')
-      await tx()
+      await tx.wait()
       const newOwner = await getOwner('new.resolver.eth')
       // Verify owner is the user and therefore the subdomain exists
       expect(newOwner).toBe(accounts[0])
@@ -174,12 +176,12 @@ describe('Blockchain tests', () => {
       // expect the initial owner to be no one
       expect(oldOwner).toBe('0x0000000000000000000000000000000000000000')
       const tx = await createSubdomain('b', 'subdomain.eth')
-      await tx()
+      await tx.wait()
       const newOwner = await getOwner('b.subdomain.eth')
       // Verify owner is the user and therefore the subdomain exists
       expect(newOwner).toBe(accounts[0])
       const tx2 = await deleteSubdomain('b', 'subdomain.eth')
-      await tx2()
+      await tx2.wait()
       const deletedOwner = await getOwner('b.subdomain.eth')
       // Verify owner has been set to 0x00... to ensure deletion
       expect(deletedOwner).toBe('0x0000000000000000000000000000000000000000')
@@ -196,10 +198,10 @@ describe('Blockchain tests', () => {
 
     test('getAddr returns 0x000', async () => {
       const tx = await createSubdomain('addr', 'testing.eth')
-      await tx()
+      await tx.wait()
       const resolverAddr = await getAddr('resolver.eth')
       const tx2 = await setResolver('addr.testing.eth', resolverAddr)
-      await tx2()
+      await tx2.wait()
       const addr = await getAddr('addr.testing.eth')
       expect(addr).toBe('0x0000000000000000000000000000000000000000')
     })
@@ -208,12 +210,12 @@ describe('Blockchain tests', () => {
       //reverts if no addr is present
       const resolverAddr = await getAddr('resolver.eth')
       const tx = await setResolver('superawesome.eth', resolverAddr)
-      await tx()
+      await tx.wait()
       const tx2 = await setAddress(
         'superawesome.eth',
         '0x0000000000000000000000000000000000012345'
       )
-      await tx2()
+      await tx2.wait()
       const addr = await getAddr('superawesome.eth')
       expect(addr).toBe('0x0000000000000000000000000000000000012345')
     })
@@ -261,7 +263,7 @@ describe('Blockchain tests', () => {
       const { name } = await getName(accounts[0])
       expect(name).toBe('abittooawesome.eth')
       const tx = await claimAndSetReverseRecordName('resolver.eth', 2000000)
-      await tx()
+      await tx.wait()
       const { name: nameAfter } = await getName(accounts[0])
       expect(nameAfter).toBe('resolver.eth')
     })
