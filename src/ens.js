@@ -59,14 +59,6 @@ async function getResolverContract(addr) {
   }
 }
 
-async function getResolverReadContract(addr) {
-  const signer = await getSigner()
-  const Resolver = new Contract(addr, resolverContract, signer)
-  return {
-    Resolver
-  }
-}
-
 async function getENSContract() {
   const networkId = await getNetworkId()
   const signer = await getSigner()
@@ -140,16 +132,34 @@ const getENS = async ensAddress => {
   readENS = readENSContract
 
   return {
-    ENS: ENSContract.methods,
+    ENS: ENSContract,
     _ENS: ENSContract,
-    readENS: readENS.methods,
+    readENS: readENS,
     _readENS: readENS
   }
 }
 
-async function getENSEvent(event, params) {
-  const { _ENS } = await getENS()
-  return _ENS.getPastEvents(event, params)
+async function getENSEvent(event, { topics, fromBlock }) {
+  const provider = await getWeb3()
+  const { ENS } = await getENS()
+  const ensInterface = new utils.Interface(ensContract)
+  let Event = ENS.filters[event]()
+
+  const filter = {
+    fromBlock,
+    toBlock: 'latest',
+    address: Event.address,
+    topics: [...Event.topics, ...topics]
+  }
+
+  const logs = await provider.getLogs(filter)
+
+  const parsed = logs.map(log => {
+    const parsedLog = ensInterface.parseLog(log)
+    return parsedLog
+  })
+
+  return parsed
 }
 
 export {
@@ -161,7 +171,6 @@ export {
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,
-  getResolverReadContract,
   getFifsRegistrarContract,
   normalize
 }

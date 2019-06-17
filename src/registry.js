@@ -22,7 +22,7 @@ import { getWeb3, getAccount, getSigner } from './web3'
 import { utils } from 'ethers'
 
 export async function getOwner(name) {
-  const { readENS: ENS } = await getENS()
+  const { ENS } = await getENS()
   const namehash = getNamehash(name)
   const owner = await ENS.owner(namehash)
   return owner
@@ -30,18 +30,18 @@ export async function getOwner(name) {
 
 export async function getResolver(name) {
   const namehash = getNamehash(name)
-  const { readENS: ENS } = await getENS()
+  const { ENS } = await getENS()
   return ENS.resolver(namehash)
 }
 
 export async function getResolverWithLabelHash(labelHash, nodeHash) {
-  let { readENS: ENS } = await getENS()
+  let { ENS } = await getENS()
   const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
   return ENS.resolver(namehash)
 }
 
 export async function getOwnerWithLabelHash(labelHash, nodeHash) {
-  let { readENS: ENS } = await getENS()
+  let { ENS } = await getENS()
   const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
   return ENS.owner(namehash)
 }
@@ -69,7 +69,7 @@ export async function getAddr(name) {
   }
   const namehash = getNamehash(name)
   try {
-    const { Resolver } = await getResolverReadContract(resolverAddr)
+    const { Resolver } = await getResolverContract(resolverAddr)
     const addr = await Resolver.addr(namehash)
     return addr
   } catch (e) {
@@ -87,22 +87,22 @@ export async function getContent(name) {
   }
   try {
     const namehash = getNamehash(name)
-    const { Resolver } = await getResolverReadContract(resolverAddr)
+    const { Resolver } = await getResolver(resolverAddr)
     const contentHashSignature = utils
       .keccak256('contenthash(bytes32)')
       .slice(0, 10)
 
     const isContentHashSupported = await Resolver.supportsInterface(
       contentHashSignature
-    ).call()
+    )
 
     if (isContentHashSupported) {
       return {
-        value: await Resolver.contenthash(namehash).call(),
+        value: await Resolver.contenthash(namehash),
         contentType: 'contenthash'
       }
     } else {
-      const value = await Resolver.content(namehash).call()
+      const value = await Resolver.content(namehash)
       return {
         value,
         contentType: 'oldcontent'
@@ -127,7 +127,7 @@ export async function getName(address) {
   }
 
   try {
-    const { Resolver } = await getResolverReadContract(resolverAddr)
+    const { Resolver } = await getResolverContract(resolverAddr)
     const name = await Resolver.name(reverseNamehash)
     return {
       name
@@ -305,10 +305,10 @@ export const getSubDomains = async name => {
   const startBlock = await ensStartBlock()
   const namehash = getNamehash(name)
   const rawLogs = await getENSEvent('NewOwner', {
-    filter: { node: [namehash] },
+    topics: [namehash],
     fromBlock: startBlock
   })
-  const flattenedLogs = rawLogs.map(log => log.returnValues)
+  const flattenedLogs = rawLogs.map(log => log.values)
   flattenedLogs.reverse()
   const logs = uniq(flattenedLogs, 'label')
   const labelHashes = logs.map(log => log.label)

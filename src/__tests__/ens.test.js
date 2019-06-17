@@ -272,7 +272,6 @@ describe('Blockchain tests', () => {
   describe('Helper functions', () => {
     test('getDomainDetails gets rootdomain and resolver details', async () => {
       const domain = await getDomainDetails('resolver.eth')
-      const accounts = await getAccounts()
       expect(domain.owner).not.toBe(
         '0x0000000000000000000000000000000000000000'
       )

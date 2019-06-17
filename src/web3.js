@@ -13,12 +13,6 @@ export async function setupWeb3({ customProvider }) {
   if (customProvider) {
     //for testing
     provider = new ethers.providers.Web3Provider(customProvider)
-    console.log('GANACHE provider', provider)
-    try {
-      await web3.eth.net.getId()
-    } catch (e) {
-      console.log('error setting up ethers')
-    }
     return { provider, signer }
   }
 
