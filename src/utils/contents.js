@@ -11,9 +11,10 @@ export function decodeContenthash(encoded) {
   if (encoded) {
     try {
       decoded = contentHash.decode(encoded)
-      if (contentHash.getCodec(encoded) === 'ipfs-ns') {
+      const codec = contentHash.getCodec(encoded)
+      if (codec === 'ipfs-ns') {
         protocolType = 'ipfs'
-      } else if (contentHash.getCodec(encoded) === 'swarm-ns') {
+      } else if (codec === 'swarm-ns') {
         protocolType = 'bzz'
       } else {
         decoded = encoded

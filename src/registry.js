@@ -16,7 +16,7 @@ import {
   checkLabels,
   mergeLabels,
   isDecrypted,
-  encodeLabelHash
+  encodeLabelhash
 } from './utils/utils'
 
 import {
@@ -343,7 +343,7 @@ export const getSubDomains = async name => {
         labelhash: logs[index].label,
         decrypted: labels[index] !== null,
         node: name,
-        name: `${labels[index] || encodeLabelHash(logs[index].label)}.${name}`,
+        name: `${labels[index] || encodeLabelhash(logs[index].label)}.${name}`,
         owner
       }
     })

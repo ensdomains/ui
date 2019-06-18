@@ -2,7 +2,7 @@ import {
   encodeContenthash,
   decodeContenthash,
   isValidContenthash
-} from '../contents'
+} from './contents'
 
 describe('test contenthash utility functions', () => {
   test('encodeContentHash returns encoded hash', () => {

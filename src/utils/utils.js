@@ -1,5 +1,6 @@
 import { getNetworkId } from '../web3'
 import { addressUtils } from '@0xproject/utils'
+import { isEncodedLabelhash, decodeLabelhash } from './labelhash'
 import { tlds } from '../constants/tlds'
 import { normalize } from 'eth-ens-namehash'
 const sha3 = require('js-sha3').keccak_256
@@ -55,7 +56,7 @@ export function validateName(name) {
   const hasEmptyLabels = nameArray.filter(e => e.length < 1).length > 0
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
   const normalizedArray = nameArray.map(label => {
-    return isEncodedLabelHash(label) ? label : normalize(label)
+    return isEncodedLabelhash(label) ? label : normalize(label)
   })
   try {
     return normalizedArray.join('.')
@@ -108,92 +109,7 @@ export const parseSearchTerm = term => {
   }
 }
 
-export function modulate(value, rangeA, rangeB, limit) {
-  let fromHigh, fromLow, result, toHigh, toLow
-  if (limit == null) {
-    limit = false
-  }
-  fromLow = rangeA[0]
-  fromHigh = rangeA[1]
-  toLow = rangeB[0]
-  toHigh = rangeB[1]
-  result = toLow + ((value - fromLow) / (fromHigh - fromLow)) * (toHigh - toLow)
-  if (limit === true) {
-    if (toLow < toHigh) {
-      if (result < toLow) {
-        return toLow
-      }
-      if (result > toHigh) {
-        return toHigh
-      }
-    } else {
-      if (result > toLow) {
-        return toLow
-      }
-      if (result < toHigh) {
-        return toHigh
-      }
-    }
-  }
-  return result
-}
-
-export function isElementInViewport(el) {
-  var rect = el.getBoundingClientRect()
-
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight ||
-        document.documentElement.clientHeight) /*or $(window).height() */ &&
-    rect.right <=
-      (window.innerWidth ||
-        document.documentElement.clientWidth) /*or $(window).width() */
-  )
-}
-
 export const emptyAddress = '0x0000000000000000000000000000000000000000'
-
-export function encodeLabelHash(hash) {
-  if (!hash.startsWith('0x')) {
-    throw new Error('Expected label hash to start with 0x')
-  }
-
-  if (hash.length !== 66) {
-    throw new Error('Expected label hash to have a length of 66')
-  }
-
-  return `[${hash.slice(2)}]`
-}
-
-export function decodeLabelHash(hash) {
-  if (!(hash.startsWith('[') && hash.endsWith(']'))) {
-    throw Error(
-      'Expected encoded labelhash to start and end with square brackets'
-    )
-  }
-
-  if (hash.length !== 66) {
-    throw Error('Expected encoded labelhash to have a length of 66')
-  }
-
-  return `${hash.slice(1, -1)}`
-}
-
-export function isEncodedLabelHash(hash) {
-  return hash.startsWith('[') && hash.endsWith(']') && hash.length === 66
-}
-
-export function isDecrypted(name) {
-  const nameArray = name.split('.')
-  const decrypted = nameArray.reduce((acc, label) => {
-    if (acc === false) return false
-    return isEncodedLabelHash(label) ? false : true
-  }, true)
-
-  return decrypted
-}
 
 export function namehash(inputName) {
   let node = ''
@@ -206,8 +122,8 @@ export function namehash(inputName) {
 
     for (let i = labels.length - 1; i >= 0; i--) {
       let labelSha
-      if (isEncodedLabelHash(labels[i])) {
-        labelSha = decodeLabelHash(labels[i])
+      if (isEncodedLabelhash(labels[i])) {
+        labelSha = decodeLabelhash(labels[i])
       } else {
         let normalisedLabel = normalize(labels[i])
         labelSha = sha3(normalisedLabel)
@@ -219,8 +135,10 @@ export function namehash(inputName) {
   return '0x' + node
 }
 
-export function labelhash(label) {
-  return isEncodedLabelHash(label)
-    ? '0x' + decodeLabelHash(label)
-    : '0x' + sha3(label)
+export default {
+  getEtherScanAddr,
+  ensStartBlock,
+  checkLabels,
+  validateName,
+  parseSearchTerm
 }

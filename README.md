@@ -110,7 +110,7 @@ label: labels[index],
 labelHash: logs[index].label,
 decrypted: labels[index] !== null,
 node: name,
-name: `${labels[index] || encodeLabelHash(logs[index].label)}.${name}`,
+name: `${labels[index] || encodeLabelhash(logs[index].label)}.${name}`,
 owner
 }
 }

@@ -5,7 +5,7 @@ import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
 import { interfaces } from './constants/interfaces'
-import { isEncodedLabelHash, decodeLabelHash, labelhash } from './utils/utils'
+import { isEncodedLabelhash, decodeLabelhash, labelhash } from './utils/utils'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
@@ -169,7 +169,7 @@ export const getPermanentEntry = async label => {
       permanentRegistrarControllerRead: RegistrarController
     } = await getPermanentRegistrarController()
     // Returns true if name is available
-    if (isEncodedLabelHash(label)) {
+    if (isEncodedLabelhash(label)) {
       obj.available = await Registrar.available(labelHash).call()
     } else {
       obj.available = await RegistrarController.available(label).call()
