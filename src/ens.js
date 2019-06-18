@@ -36,6 +36,10 @@ async function getNamehashWithLabelHash(labelHash, nodeHash) {
   return node.toString()
 }
 
+function getLabelHash(label) {
+  return utils.solidityKeccak256(['string'], [label])
+}
+
 async function getReverseRegistrarContract() {
   const { ENS } = await getENS()
   const signer = await getSigner()
@@ -100,6 +104,7 @@ async function getTestRegistrarContract() {
 const getENS = async ensAddress => {
   const networkId = await getNetworkId()
 
+  //TODO: remove
   if (process.env.REACT_APP_ENS_ADDRESS && networkId > 1000) {
     //Assuming public main/test networks have a networkId of less than 1000
     ensAddress = process.env.REACT_APP_ENS_ADDRESS
@@ -168,6 +173,7 @@ export {
   getReverseRegistrarContract,
   getENSContract,
   getENSEvent,
+  getLabelHash,
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,

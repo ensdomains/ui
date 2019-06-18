@@ -1,11 +1,11 @@
 import {
   getENS,
   getNamehash,
+  getLabelHash,
   getENSEvent,
   getReverseRegistrarContract,
   getResolverContract,
   getTestRegistrarContract,
-  getResolverReadContract,
   getNamehashWithLabelHash,
   normalize
 } from './ens'
@@ -50,7 +50,7 @@ export async function registerTestdomain(label) {
   const { registrar } = await getTestRegistrarContract()
   const namehash = await utils.keccak256(label)
   const account = await getAccount()
-  return () => registrar.register(namehash, account).send({ from: account })
+  return registrar.register(namehash, account)
 }
 
 export async function expiryTimes(label, owner) {
@@ -87,7 +87,7 @@ export async function getContent(name) {
   }
   try {
     const namehash = getNamehash(name)
-    const { Resolver } = await getResolver(resolverAddr)
+    const { Resolver } = await getResolverContract(resolverAddr)
     const contentHashSignature = utils
       .keccak256('contenthash(bytes32)')
       .slice(0, 10)
@@ -146,7 +146,7 @@ export async function setOwner(name, newOwner) {
 export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
   const { ENS } = await getENS()
   const label = normalize(unnormalizedLabel)
-  const labelHash = utils.solidityKeccak256(['string'], [label])
+  const labelHash = getLabelHash(label)
   const parentNamehash = getNamehash(node)
   return ENS.setSubnodeOwner(parentNamehash, labelHash, newOwner)
 }
@@ -274,31 +274,36 @@ export async function setReverseRecordName(name) {
   const resolverAddress = await getResolver(reverseNode)
   let { Resolver } = await getResolverContract(resolverAddress)
   let namehash = getNamehash(reverseNode)
-  return () => Resolver.setName(namehash, name).send({ from: account })
+  return Resolver.setName(namehash, name)
 }
 
 export async function getDomainDetails(name) {
   const nameArray = name.split('.')
-  return Promise.all([getOwner(name), getResolver(name)])
-    .then(async ([owner, resolver]) => ({
-      name,
-      label: nameArray[0],
-      labelHash: await utils.keccak256(nameArray[0]),
-      owner,
-      resolver,
-      subDomains: []
-    }))
-    .then(node => {
-      let hasResolver = parseInt(node.resolver, 16) !== 0
-      if (hasResolver) {
-        return getResolverDetails(node)
-      }
-      return Promise.resolve({
-        ...node,
-        addr: null,
-        content: null
-      })
-    })
+  const labelHash = getLabelHash(nameArray[0])
+  const [owner, resolver] = await Promise.all([
+    getOwner(name),
+    getResolver(name)
+  ])
+  const node = {
+    name,
+    label: nameArray[0],
+    labelHash,
+    owner,
+    resolver,
+    subDomains: []
+  }
+
+  const hasResolver = parseInt(node.resolver, 16) !== 0
+
+  if (hasResolver) {
+    return getResolverDetails(node)
+  }
+
+  return {
+    ...node,
+    addr: null,
+    content: null
+  }
 }
 
 export const getSubDomains = async name => {
