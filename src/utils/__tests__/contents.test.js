@@ -35,14 +35,6 @@ describe('test contenthash utility functions', () => {
     expect(valid).toBe(true)
   })
 
-  test('isValidContent returns false for short contenthash', () => {
-    const valid = isValidContenthash(
-      '0xe40101fa011b20d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805'
-    )
-
-    expect(valid).toBe(false)
-  })
-
   test('isValidContent returns false for non hex', () => {
     const valid = isValidContenthash(
       '0xe40101fa011b20d1de9994b4d039f6548d191eb26786769f580809256b4685ef31680z'

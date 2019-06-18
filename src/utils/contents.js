@@ -8,12 +8,9 @@ export function decodeContenthash(encoded) {
   if (encoded.error) {
     return { protocolType: null, decoded: encoded.error }
   }
-  console.log(encoded)
   if (encoded) {
     try {
       decoded = contentHash.decode(encoded)
-      console.log(decoded)
-      console.log(contentHash.getCodec(encoded))
       if (contentHash.getCodec(encoded) === 'ipfs-ns') {
         protocolType = 'ipfs'
       } else if (contentHash.getCodec(encoded) === 'swarm-ns') {
@@ -44,7 +41,6 @@ export function encodeContenthash(text) {
     }
 
     try {
-      console.log(content)
       if (contentType === 'ipfs') {
         encoded = '0x' + contentHash.fromIpfs(content)
       } else if (contentType === 'bzz') {
