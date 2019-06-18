@@ -36,7 +36,7 @@ async function getNamehashWithLabelHash(labelHash, nodeHash) {
   return node.toString()
 }
 
-function getLabelHash(label) {
+function getLabelhash(label) {
   return utils.solidityKeccak256(['string'], [label])
 }
 
@@ -173,7 +173,7 @@ export {
   getReverseRegistrarContract,
   getENSContract,
   getENSEvent,
-  getLabelHash,
+  getLabelhash,
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,

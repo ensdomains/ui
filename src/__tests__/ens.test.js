@@ -18,6 +18,7 @@ import {
   setAddress,
   getContent,
   setContent,
+  setContenthash,
   createSubdomain,
   deleteSubdomain,
   getDomainDetails,
@@ -229,13 +230,6 @@ describe('Blockchain tests', () => {
       expect(content.value).toMatchSnapshot()
     })
 
-    // test('getContent returns 0x00... when no content has been set', async () => {
-    //   const content = await getContent('superawesome.eth')
-    //   expect(content).toBe(
-    //     '0x0000000000000000000000000000000000000000000000000000000000000000'
-    //   )
-    // })
-
     test('setContent sets 32 byte hash', async () => {
       await setContent(
         'oldresolver.eth',
@@ -246,6 +240,38 @@ describe('Blockchain tests', () => {
       expect(content.contentType).toBe('oldcontent')
       expect(content.value).toBeHex()
       expect(content.value).toMatchSnapshot()
+    })
+
+    // test('getContent returns a 32 byte hash', async () => {
+    //   const content = await getContent('oldresolver.eth')
+    //   expect(content.contentType).toBe('oldcontent')
+    //   expect(content.value).toBeHex()
+    //   expect(content.value).toMatchSnapshot()
+    // })
+
+    //ipfs://QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB
+    test('setContentHash sets up ipfs has', async () => {
+      const contentHash =
+        'ipfs://QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB'
+      await setContenthash('abittooawesome.eth', contentHash)
+
+      const content = await getContent('abittooawesome.eth')
+      expect(content.contentType).toBe('contenthash')
+      expect(content.value).toBe(
+        'ipfs://QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB'
+      )
+    })
+
+    test('setContentHash sets 32 byte hash', async () => {
+      const contentHash =
+        'bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
+      await setContenthash('abittooawesome.eth', contentHash)
+
+      const content = await getContent('abittooawesome.eth')
+      expect(content.contentType).toBe('contenthash')
+      expect(content.value).toBe(
+        'bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
+      )
     })
   })
 

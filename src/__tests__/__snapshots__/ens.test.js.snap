@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Blockchain tests Helper functions getDomainDetails gets rootdomain and resolver details 1`] = `"0xe301017012204edd2984eeaf3ddf50bac238ec95c5713fb40b5e428b508fdbe55d3b9f155ffe"`;
+exports[`Blockchain tests Helper functions getDomainDetails gets rootdomain and resolver details 1`] = `"ipfs://QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB"`;
 
 exports[`Blockchain tests Resolver getContent returns a 32 byte hash 1`] = `"0x736f6d65436f6e74656e74000000000000000000000000000000000000000000"`;
 

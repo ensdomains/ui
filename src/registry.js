@@ -1,7 +1,7 @@
 import {
   getENS,
   getNamehash,
-  getLabelHash,
+  getLabelhash,
   getENSEvent,
   getReverseRegistrarContract,
   getResolverContract,
@@ -18,6 +18,12 @@ import {
   isDecrypted,
   encodeLabelHash
 } from './utils/utils'
+
+import {
+  isValidContenthash,
+  encodeContenthash,
+  decodeContenthash
+} from './utils/contents'
 import { getWeb3, getAccount, getSigner } from './web3'
 import { utils } from 'ethers'
 
@@ -34,15 +40,15 @@ export async function getResolver(name) {
   return ENS.resolver(namehash)
 }
 
-export async function getResolverWithLabelHash(labelHash, nodeHash) {
+export async function getResolverWithLabelhash(labelhash, nodehash) {
   let { ENS } = await getENS()
-  const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
+  const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
   return ENS.resolver(namehash)
 }
 
-export async function getOwnerWithLabelHash(labelHash, nodeHash) {
+export async function getOwnerWithLabelHash(labelhash, nodeHash) {
   let { ENS } = await getENS()
-  const namehash = await getNamehashWithLabelHash(labelHash, nodeHash)
+  const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
   return ENS.owner(namehash)
 }
 
@@ -97,8 +103,14 @@ export async function getContent(name) {
     )
 
     if (isContentHashSupported) {
+      const { protocolType, decoded, error } = decodeContenthash(
+        await Resolver.contenthash(namehash)
+      )
+      if (error) {
+        console.log(error)
+      }
       return {
-        value: await Resolver.contenthash(namehash),
+        value: `${protocolType}://${decoded}`,
         contentType: 'contenthash'
       }
     } else {
@@ -146,9 +158,9 @@ export async function setOwner(name, newOwner) {
 export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
   const { ENS } = await getENS()
   const label = normalize(unnormalizedLabel)
-  const labelHash = getLabelHash(label)
+  const labelhash = getLabelhash(label)
   const parentNamehash = getNamehash(node)
-  return ENS.setSubnodeOwner(parentNamehash, labelHash, newOwner)
+  return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
 }
 
 export async function setResolver(name, resolver) {
@@ -172,10 +184,17 @@ export async function setContent(name, content) {
 }
 
 export async function setContenthash(name, content) {
-  const namehash = getNamehash(name)
-  const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
-  return Resolver.setContenthash(namehash, content)
+  //const isValid = isValidContenthash(content)
+  if (true) {
+    const encodedContenthash = encodeContenthash(content)
+    console.log(encodedContenthash)
+    const namehash = getNamehash(name)
+    const resolverAddr = await getResolver(name)
+    const { Resolver } = await getResolverContract(resolverAddr)
+    return Resolver.setContenthash(namehash, encodedContenthash)
+  }
+
+  throw 'Invalid contenthash'
 }
 
 export async function checkSubDomain(subDomain, domain) {
@@ -184,11 +203,11 @@ export async function checkSubDomain(subDomain, domain) {
 }
 
 export async function buildSubDomain(label, node, owner) {
-  const labelHash = getLabelHash(label)
+  const labelhash = getLabelhash(label)
   const resolver = await getResolver(label + '.' + node)
   const subDomain = {
     resolver,
-    labelHash,
+    labelhash,
     owner,
     label,
     node,
@@ -274,7 +293,7 @@ export async function setReverseRecordName(name) {
 
 export async function getDomainDetails(name) {
   const nameArray = name.split('.')
-  const labelHash = getLabelHash(nameArray[0])
+  const labelhash = getLabelhash(nameArray[0])
   const [owner, resolver] = await Promise.all([
     getOwner(name),
     getResolver(name)
@@ -282,7 +301,7 @@ export async function getDomainDetails(name) {
   const node = {
     name,
     label: nameArray[0],
-    labelHash,
+    labelhash,
     owner,
     resolver,
     subDomains: []
@@ -311,9 +330,9 @@ export const getSubDomains = async name => {
   const flattenedLogs = rawLogs.map(log => log.values)
   flattenedLogs.reverse()
   const logs = uniq(flattenedLogs, 'label')
-  const labelHashes = logs.map(log => log.label)
-  const remoteLabels = await decryptHashes(...labelHashes)
-  const localLabels = checkLabels(...labelHashes)
+  const labelhashes = logs.map(log => log.label)
+  const remoteLabels = await decryptHashes(...labelhashes)
+  const localLabels = checkLabels(...labelhashes)
   const labels = mergeLabels(localLabels, remoteLabels)
   const ownerPromises = labels.map(label => getOwner(`${label}.${name}`))
 
@@ -321,7 +340,7 @@ export const getSubDomains = async name => {
     owners.map((owner, index) => {
       return {
         label: labels[index],
-        labelHash: logs[index].label,
+        labelhash: logs[index].label,
         decrypted: labels[index] !== null,
         node: name,
         name: `${labels[index] || encodeLabelHash(logs[index].label)}.${name}`,
