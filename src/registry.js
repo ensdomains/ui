@@ -15,9 +15,10 @@ import {
   ensStartBlock,
   checkLabels,
   mergeLabels,
-  isDecrypted,
-  encodeLabelhash
+  isDecrypted
 } from './utils/utils'
+
+import { encodeLabelhash } from './utils/labelhash'
 
 import {
   isValidContenthash,
