@@ -89,7 +89,7 @@ export async function getContent(name) {
     const namehash = getNamehash(name)
     const { Resolver } = await getResolverContract(resolverAddr)
     const contentHashSignature = utils
-      .keccak256('contenthash(bytes32)')
+      .solidityKeccak256(['string'], ['contenthash(bytes32)'])
       .slice(0, 10)
 
     const isContentHashSupported = await Resolver.supportsInterface(
@@ -165,22 +165,17 @@ export async function setAddress(name, address) {
 }
 
 export async function setContent(name, content) {
-  const account = await getAccount()
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  const gas = await Resolver.setContent(namehash, content).estimateGas({
-    from: account
-  })
-  return Resolver.setContent(namehash, content).send({ from: account, gas })
+  return Resolver.setContent(namehash, content)
 }
 
 export async function setContenthash(name, content) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  const tx = Resolver.setContenthash(namehash, content)
-  return tx
+  return Resolver.setContenthash(namehash, content)
 }
 
 export async function checkSubDomain(subDomain, domain) {
@@ -189,7 +184,7 @@ export async function checkSubDomain(subDomain, domain) {
 }
 
 export async function buildSubDomain(label, node, owner) {
-  const labelHash = utils.keccak256(label)
+  const labelHash = getLabelHash(label)
   const resolver = await getResolver(label + '.' + node)
   const subDomain = {
     resolver,

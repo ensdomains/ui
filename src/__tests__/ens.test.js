@@ -2,8 +2,10 @@
  * @jest-environment node
  */
 import GanacheCLI from 'ganache-cli'
-import { setupWeb3 as setupWeb3Test, getAccounts } from './web3Util'
-import { setupWeb3, getWeb3 } from '../web3'
+import {
+  setupWeb3 as setupWeb3Test,
+  getAccounts
+} from '../testing-utils/web3Util'
 import { setupENS } from '../'
 import { deployENS } from '@ensdomains/mock'
 import {
@@ -220,12 +222,12 @@ describe('Blockchain tests', () => {
       expect(addr).toBe('0x0000000000000000000000000000000000012345')
     })
 
-    // test('getContent returns a 32 byte hash', async () => {
-    //   await createSubdomain('content', 'testing.eth')
-    //   const content = await getContent('content.testing.eth')
-    //   expect(content).toBeHex()
-    //   expect(content).toMatchSnapshot()
-    // })
+    test('getContent returns a 32 byte hash', async () => {
+      const content = await getContent('oldresolver.eth')
+      expect(content.contentType).toBe('oldcontent')
+      expect(content.value).toBeHex()
+      expect(content.value).toMatchSnapshot()
+    })
 
     // test('getContent returns 0x00... when no content has been set', async () => {
     //   const content = await getContent('superawesome.eth')
@@ -234,16 +236,17 @@ describe('Blockchain tests', () => {
     //   )
     // })
 
-    // test('setContent sets 32 byte hash', async () => {
-    //   await setContent(
-    //     'superawesome.eth',
-    //     '0x736f6d65436f6e74656e74000000000000000000000000000000000000000000'
-    //   )
+    test('setContent sets 32 byte hash', async () => {
+      await setContent(
+        'oldresolver.eth',
+        '0xd1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
+      )
 
-    //   const content = await getContent('superawesome.eth')
-    //   expect(content).toBeHex()
-    //   expect(content).toMatchSnapshot()
-    // })
+      const content = await getContent('oldresolver.eth')
+      expect(content.contentType).toBe('oldcontent')
+      expect(content.value).toBeHex()
+      expect(content.value).toMatchSnapshot()
+    })
   })
 
   describe('Reverse Registrar', () => {
