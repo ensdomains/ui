@@ -107,7 +107,7 @@ export async function getAccount() {
 
 export async function getAccounts() {
   try {
-    const accounts = [signer]
+    const accounts = [signer.getAddress()]
 
     if (accounts.length > 0) {
       return accounts
