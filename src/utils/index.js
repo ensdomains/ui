@@ -1,18 +1,32 @@
 import { getNetworkId } from '../web3'
 import { addressUtils } from '@0xproject/utils'
-import { isEncodedLabelhash, decodeLabelhash } from './labelhash'
+
+import {
+  isEncodedLabelhash,
+  isDecrypted,
+  decodeLabelhash,
+  encodeLabelhash,
+  labelhash
+} from './labelhash'
+import {
+  encodeContenthash,
+  decodeContenthash,
+  isValidContenthash
+} from './contents'
 import { tlds } from '../constants/tlds'
 import { normalize } from 'eth-ens-namehash'
-const sha3 = require('js-sha3').keccak_256
+import { namehash } from './namehash'
 
 //import { checkLabelHash } from '../updaters/preImageDB'
 
-export const uniq = (a, param) =>
+const uniq = (a, param) =>
   a.filter(
     (item, pos) => a.map(mapItem => mapItem[param]).indexOf(item[param]) === pos
   )
 
-export async function getEtherScanAddr() {
+const checkLabels = (...labelHashes) => labelHashes.map(hash => null)
+
+async function getEtherScanAddr() {
   const networkId = await getNetworkId()
   switch (networkId) {
     case 1:
@@ -29,7 +43,7 @@ export async function getEtherScanAddr() {
   }
 }
 
-export async function ensStartBlock() {
+async function ensStartBlock() {
   const networkId = await getNetworkId()
   switch (networkId) {
     case 1:
@@ -43,15 +57,13 @@ export async function ensStartBlock() {
   }
 }
 
-export const checkLabels = (...labelHashes) => labelHashes.map(hash => null)
-
 // export const checkLabels = (...labelHashes) =>
 //   labelHashes.map(labelHash => checkLabelHash(labelHash) || null)
 
-export const mergeLabels = (labels1, labels2) =>
+const mergeLabels = (labels1, labels2) =>
   labels1.map((label, index) => (label ? label : labels2[index]))
 
-export function validateName(name) {
+function validateName(name) {
   const nameArray = name.split('.')
   const hasEmptyLabels = nameArray.filter(e => e.length < 1).length > 0
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
@@ -65,7 +77,7 @@ export function validateName(name) {
   }
 }
 
-export function isLabelValid(name) {
+function isLabelValid(name) {
   try {
     validateName(name)
     if (name.indexOf('.') === -1) {
@@ -77,7 +89,7 @@ export function isLabelValid(name) {
   }
 }
 
-export const parseSearchTerm = term => {
+const parseSearchTerm = term => {
   let regex = /[^.]+$/
 
   try {
@@ -109,36 +121,29 @@ export const parseSearchTerm = term => {
   }
 }
 
-export const emptyAddress = '0x0000000000000000000000000000000000000000'
+const emptyAddress = '0x0000000000000000000000000000000000000000'
 
-export function namehash(inputName) {
-  let node = ''
-  for (let i = 0; i < 32; i++) {
-    node += '00'
-  }
-
-  if (inputName) {
-    const labels = inputName.split('.')
-
-    for (let i = labels.length - 1; i >= 0; i--) {
-      let labelSha
-      if (isEncodedLabelhash(labels[i])) {
-        labelSha = decodeLabelhash(labels[i])
-      } else {
-        let normalisedLabel = normalize(labels[i])
-        labelSha = sha3(normalisedLabel)
-      }
-      node = sha3(new Buffer(node + labelSha, 'hex'))
-    }
-  }
-
-  return '0x' + node
-}
-
-export default {
+export {
+  // general utils
+  uniq,
+  emptyAddress,
   getEtherScanAddr,
   ensStartBlock,
   checkLabels,
+  mergeLabels,
+  // name validation
   validateName,
-  parseSearchTerm
+  parseSearchTerm,
+  // labelhash utils
+  labelhash,
+  isEncodedLabelhash,
+  isDecrypted,
+  decodeLabelhash,
+  encodeLabelhash,
+  // namehash utils
+  namehash,
+  // contents utils
+  encodeContenthash,
+  decodeContenthash,
+  isValidContenthash
 }

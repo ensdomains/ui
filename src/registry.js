@@ -16,7 +16,7 @@ import {
   checkLabels,
   mergeLabels,
   isDecrypted
-} from './utils/utils'
+} from './utils'
 
 import { encodeLabelhash } from './utils/labelhash'
 
@@ -185,17 +185,11 @@ export async function setContent(name, content) {
 }
 
 export async function setContenthash(name, content) {
-  //const isValid = isValidContenthash(content)
-  if (true) {
-    const encodedContenthash = encodeContenthash(content)
-    console.log(encodedContenthash)
-    const namehash = getNamehash(name)
-    const resolverAddr = await getResolver(name)
-    const { Resolver } = await getResolverContract(resolverAddr)
-    return Resolver.setContenthash(namehash, encodedContenthash)
-  }
-
-  throw 'Invalid contenthash'
+  const encodedContenthash = encodeContenthash(content)
+  const namehash = getNamehash(name)
+  const resolverAddr = await getResolver(name)
+  const { Resolver } = await getResolverContract(resolverAddr)
+  return Resolver.setContenthash(namehash, encodedContenthash)
 }
 
 export async function checkSubDomain(subDomain, domain) {

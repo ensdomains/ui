@@ -27,8 +27,12 @@ export function decodeContenthash(encoded) {
 }
 
 export function isValidContenthash(encoded) {
-  const codec = contentHash.getCodec(encoded)
-  return utils.isHexString(encoded) && supportedCodecs.includes(codec)
+  try {
+    const codec = contentHash.getCodec(encoded)
+    return utils.isHexString(encoded) && supportedCodecs.includes(codec)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 export function encodeContenthash(text) {
@@ -54,6 +58,7 @@ export function encodeContenthash(text) {
       }
     } catch (err) {
       console.warn('Error encoding content hash', { text, encoded })
+      throw 'Error encoding content hash'
     }
   }
   return encoded
