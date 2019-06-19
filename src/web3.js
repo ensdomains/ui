@@ -17,7 +17,7 @@ export async function setupWeb3({ customProvider }) {
   }
 
   if (window && window.ethereum) {
-    provider = new providers.Web3Provider(window.ethereum)
+    provider = new ethers.providers.Web3Provider(window.ethereum)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
     const networkProvider = getNetworkProviderUrl(id)
@@ -26,7 +26,7 @@ export async function setupWeb3({ customProvider }) {
     // )
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
-    provider = new providers.Web3Provider(window.web3.currentProvider)
+    provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
     const networkProvider = getNetworkProviderUrl(id)
@@ -107,7 +107,7 @@ export async function getAccount() {
 
 export async function getAccounts() {
   try {
-    const accounts = [signer.getAddress()]
+    const accounts = [await signer.getAddress()]
 
     if (accounts.length > 0) {
       return accounts
@@ -129,7 +129,8 @@ export async function getAccounts() {
 
 export async function getNetworkId() {
   const provider = await getWeb3()
-  return provider.getNetwork()
+  const network = await provider.getNetwork()
+  return network.chainId
 }
 
 export async function getBlock() {

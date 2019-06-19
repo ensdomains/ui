@@ -1,5 +1,6 @@
 import { getENS, getNamehash, getResolverContract } from './ens'
-import { getWeb3, getWeb3Read, getAccount, getBlock } from './web3'
+import { getWeb3, getAccount, getBlock, getSigner } from './web3'
+import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
@@ -13,39 +14,31 @@ const {
 } = interfaces
 
 let ethRegistrar
-let ethRegistrarRead
 let permanentRegistrar
-let permanentRegistrarRead
 let permanentRegistrarController
-let permanentRegistrarControllerRead
 
 export const getLegacyAuctionRegistrar = async () => {
   if (ethRegistrar) {
     return {
-      ethRegistrar: ethRegistrar.methods,
-      ethRegistrarRead: ethRegistrarRead.methods
+      ethRegistrar
     }
   }
   try {
-    const web3 = await getWeb3()
-    const web3Read = await getWeb3Read()
     const { Resolver } = await getEthResolver()
+    const signer = await getSigner()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
-      await getNamehash('eth'),
+      getNamehash('eth'),
       legacyRegistrarInterfaceId
-    ).call()
+    )
 
-    ethRegistrar = new web3.eth.Contract(
+    ethRegistrar = new Contract(
+      legacyAuctionRegistrarAddress,
       legacyAuctionRegistrarContract,
-      legacyAuctionRegistrarAddress
+      signer
     )
-    ethRegistrarRead = new web3Read.eth.Contract(
-      legacyAuctionRegistrarContract,
-      legacyAuctionRegistrarAddress
-    )
+
     return {
-      ethRegistrar: ethRegistrar.methods,
-      ethRegistrarRead: ethRegistrarRead.methods
+      ethRegistrar
     }
   } catch (e) {}
 }
@@ -53,27 +46,21 @@ export const getLegacyAuctionRegistrar = async () => {
 export const getPermanentRegistrar = async () => {
   if (permanentRegistrar) {
     return {
-      permanentRegistrar: permanentRegistrar.methods,
-      permanentRegistrarRead: permanentRegistrarRead.methods
+      permanentRegistrar
     }
   }
 
   try {
-    const { readENS: ENS } = await getENS()
-    const web3 = await getWeb3()
-    const web3Read = await getWeb3Read()
-    const ethAddr = await ENS.owner(await getNamehash('eth')).call()
-    permanentRegistrar = new web3.eth.Contract(
+    const { ENS } = await getENS()
+    const signer = await getSigner()
+    const ethAddr = await ENS.owner(getNamehash('eth'))
+    permanentRegistrar = new Contract(
+      ethAddr,
       permanentRegistrarContract,
-      ethAddr
-    )
-    permanentRegistrarRead = new web3Read.eth.Contract(
-      permanentRegistrarContract,
-      ethAddr
+      signer
     )
     return {
-      permanentRegistrar: permanentRegistrar.methods,
-      permanentRegistrarRead: permanentRegistrarRead.methods
+      permanentRegistrar
     }
   } catch (e) {}
 }
@@ -81,58 +68,45 @@ export const getPermanentRegistrar = async () => {
 export const getPermanentRegistrarController = async () => {
   if (permanentRegistrarController) {
     return {
-      permanentRegistrarController: permanentRegistrarController.methods,
-      _permanentRegistrarController: permanentRegistrarController,
-      permanentRegistrarControllerRead:
-        permanentRegistrarControllerRead.methods,
-      _permanentRegistrarControllerRead: permanentRegistrarControllerRead
+      permanentRegistrarController
     }
   }
 
   try {
-    const web3 = await getWeb3()
-    const web3Read = await getWeb3Read()
     const { Resolver } = await getEthResolver()
+    const signer = await getSigner()
     let controllerAddress = await Resolver.interfaceImplementer(
-      await getNamehash('eth'),
+      getNamehash('eth'),
       permanentRegistrarInterfaceId
-    ).call()
-    permanentRegistrarController = new web3.eth.Contract(
-      permanentRegistrarControllerContract,
-      controllerAddress
     )
-
-    permanentRegistrarControllerRead = new web3Read.eth.Contract(
+    permanentRegistrarController = new Contract(
+      controllerAddress,
       permanentRegistrarControllerContract,
-      controllerAddress
+      signer
     )
     return {
-      permanentRegistrarController: permanentRegistrarController.methods,
-      _permanentRegistrarController: permanentRegistrarController,
-      permanentRegistrarControllerRead:
-        permanentRegistrarControllerRead.methods,
-      _permanentRegistrarControllerRead: permanentRegistrarControllerRead
+      permanentRegistrarController
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log('error getting permanent registrar controller', e)
+  }
 }
 
 const getEthResolver = async () => {
-  const { readENS: ENS } = await getENS()
-  const ethnamehash = await getNamehash('eth')
-  const resolverAddr = await ENS.resolver(ethnamehash).call()
-  return await getResolverContract(resolverAddr)
+  const { ENS } = await getENS()
+  const resolverAddr = await ENS.resolver(getNamehash('eth'))
+  return getResolverContract(resolverAddr)
 }
 
 export const getLegacyEntry = async name => {
   let obj
   try {
-    const { ethRegistrarRead: Registrar } = await getLegacyAuctionRegistrar()
-    const labelHash = labelhash(name)
+    const { ethRegistrar: Registrar } = await getLegacyAuctionRegistrar()
     let deedOwner = '0x0'
-    const entry = await Registrar.entries(labelHash).call()
+    const entry = await Registrar.entries(labelhash(name))
     if (parseInt(entry[1], 16) !== 0) {
       const deed = await getDeed(entry[1])
-      deedOwner = await deed.owner().call()
+      deedOwner = await deed.owner()
     }
     obj = {
       deedOwner,
@@ -164,24 +138,22 @@ export const getPermanentEntry = async label => {
   }
   try {
     const labelHash = labelhash(label)
-    const { permanentRegistrarRead: Registrar } = await getPermanentRegistrar()
+    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
     const {
-      permanentRegistrarControllerRead: RegistrarController
+      permanentRegistrarController: RegistrarController
     } = await getPermanentRegistrarController()
     // Returns true if name is available
     if (isEncodedLabelhash(label)) {
-      obj.available = await Registrar.available(labelHash).call()
+      obj.available = await Registrar.available(labelHash)
     } else {
-      obj.available = await RegistrarController.available(label).call()
+      obj.available = await RegistrarController.available(label)
     }
     // This is used for old registrar to figure out when the name can be migrated.
-    obj.migrationLockPeriod = parseInt(
-      await Registrar.MIGRATION_LOCK_PERIOD().call()
-    )
-    obj.transferPeriodEnds = await Registrar.transferPeriodEnds().call()
+    obj.migrationLockPeriod = parseInt(await Registrar.MIGRATION_LOCK_PERIOD())
+    obj.transferPeriodEnds = await Registrar.transferPeriodEnds()
     // Returns registrar address if owned by new registrar
-    obj.ownerOf = await Registrar.ownerOf(labelHash).call()
-    const nameExpires = await Registrar.nameExpires(labelHash).call()
+    obj.ownerOf = await Registrar.ownerOf(labelHash)
+    const nameExpires = await Registrar.nameExpires(labelHash)
     if (nameExpires > 0) {
       obj.nameExpires = new Date(nameExpires * 1000)
     }
@@ -194,9 +166,8 @@ export const getPermanentEntry = async label => {
 }
 
 export const getDeed = async address => {
-  const web3Read = await getWeb3Read()
-  const deed = new web3Read.eth.Contract(deedContract, address)
-  return deed.methods
+  const signer = await getSigner()
+  return new Contract(address, deedContract, signer)
 }
 
 export const getEntry = async name => {
@@ -249,10 +220,7 @@ export const transferOwner = async ({ to, name }) => {
     const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return () =>
-      Registrar.safeTransferFrom(account, to, labelHash).send({
-        from: account
-      })
+    return Registrar.safeTransferFrom(account, to, labelHash)
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -260,15 +228,10 @@ export const transferOwner = async ({ to, name }) => {
 
 export const reclaim = async ({ name, address }) => {
   try {
-    const web3 = await getWeb3()
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
-    const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return () =>
-      Registrar.reclaim(labelHash, address).send({
-        from: account
-      })
+    return Registrar.reclaim(labelHash, address)
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
@@ -276,31 +239,30 @@ export const reclaim = async ({ name, address }) => {
 
 export const getRentPrice = async (name, duration) => {
   const {
-    permanentRegistrarControllerRead
+    permanentRegistrarController
   } = await getPermanentRegistrarController()
 
-  const price = await permanentRegistrarControllerRead
-    .rentPrice(name, duration)
-    .call()
-
+  const price = await permanentRegistrarController.rentPrice(name, duration)
   return price
 }
 
 export const getMinimumCommitmentAge = async () => {
   const {
-    permanentRegistrarControllerRead
+    permanentRegistrarController
   } = await getPermanentRegistrarController()
-  return await permanentRegistrarControllerRead.minCommitmentAge().call()
+  return permanentRegistrarController.minCommitmentAge()
 }
 
 export const makeCommitment = async (name, owner, secret = '') => {
   const {
-    permanentRegistrarControllerRead
+    permanentRegistrarController
   } = await getPermanentRegistrarController()
 
-  const commitment = await permanentRegistrarControllerRead
-    .makeCommitment(name, owner, secret)
-    .call()
+  const commitment = await permanentRegistrarController.makeCommitment(
+    name,
+    owner,
+    secret
+  )
 
   return commitment
 }
@@ -313,8 +275,7 @@ export const commit = async (label, secret = '') => {
 
   const commitment = await makeCommitment(label, account, secret)
 
-  return () =>
-    permanentRegistrarController.commit(commitment).send({ from: account })
+  return permanentRegistrarController.commit(commitment)
 }
 
 export const register = async (label, duration, secret) => {
@@ -324,23 +285,22 @@ export const register = async (label, duration, secret) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return () =>
-    permanentRegistrarController
-      .register(label, account, duration, secret)
-      .send({ from: account, gas: 1000000, value: price })
+  return permanentRegistrarController.register(
+    label,
+    account,
+    duration,
+    secret,
+    { value: price }
+  )
 }
 
 export const renew = async (label, duration) => {
   const {
     permanentRegistrarController
   } = await getPermanentRegistrarController()
-  const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
-  return () =>
-    permanentRegistrarController
-      .renew(label, duration)
-      .send({ from: account, gas: 1000000, value: price })
+  return permanentRegistrarController.renew(label, duration, { value: price })
 }
 
 export const startAuctionsAndBid = async (
@@ -350,38 +310,20 @@ export const startAuctionsAndBid = async (
 ) => {
   const Registrar = await getLegacyAuctionRegistrar()
   const web3 = await getWeb3()
-  const account = await getAccount()
 
-  return () =>
-    Registrar.startAuctionsAndBid(hashes, sealedBid()).send({
-      from: account,
-      value: web3.utils.toWei(decoyBidAmount, 'ether')
-    })
+  return Registrar.startAuctionsAndBid(hashes, sealedBid(), {
+    value: web3.utils.toWei(decoyBidAmount, 'ether')
+  })
 }
 
 export const transferRegistrars = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
-  const account = await getAccount()
   const hash = labelhash(label)
-  const tx = ethRegistrar.transferRegistrars(hash)
-  const gas = await tx.estimateGas({ from: account })
-  return () =>
-    tx.send({
-      from: account,
-      gas: gas
-    })
+  return ethRegistrar.transferRegistrars(hash)
 }
 
 export const releaseDeed = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
-  const account = await getAccount()
-  const web3 = await getWeb3()
   const hash = labelhash(label)
-  const tx = ethRegistrar.releaseDeed(hash)
-  const gas = await tx.estimateGas({ from: account })
-  return () =>
-    tx.send({
-      from: account,
-      gas: gas
-    })
+  return ethRegistrar.releaseDeed(hash)
 }
