@@ -1,42 +1,49 @@
-import { ethers } from 'ethers'
-import { getAddress } from 'ethers/utils'
-
-let provider
-let signer
+let web3
+let web3Read
 let readOnly = false
 
-export async function setupWeb3({ customProvider }) {
-  if (provider) {
-    return { provider, signer }
+export async function setupWeb3({ Web3, provider }) {
+  if (web3) {
+    return web3
   }
 
-  if (customProvider) {
+  if (provider) {
     //for testing
-    provider = new ethers.providers.Web3Provider(customProvider)
-    return { provider, signer }
+    web3 = new Web3(provider)
+    web3Read = web3
+    try {
+      await web3.eth.net.getId()
+    } catch (e) {
+      console.log('error setting up web3')
+    }
+    return web3
   }
 
   if (window && window.ethereum) {
-    provider = new providers.Web3Provider(window.ethereum)
-    const id = (await provider.getNetwork()).chainId
-    signer = provider.getSigner()
+    web3 = new Web3(window.ethereum)
+    const id = `${await web3.eth.net.getId()}`
     const networkProvider = getNetworkProviderUrl(id)
-    // web3Read = new Web3(
-    //   networkProvider === 'private' ? window.ethereum : networkProvider
-    // )
-    return { provider, signer }
+    web3Read = new Web3(
+      networkProvider === 'private' ? window.ethereum : networkProvider
+    )
+    return web3
   } else if (window.web3 && window.web3.currentProvider) {
-    provider = new providers.Web3Provider(window.web3.currentProvider)
-    const id = (await provider.getNetwork()).chainId
-    signer = provider.getSigner()
+    web3 = new Web3(window.web3.currentProvider)
+    const id = `${await web3.eth.net.getId()}`
     const networkProvider = getNetworkProviderUrl(id)
-    return { provider, signer }
+    web3Read = new Web3(
+      networkProvider === 'private'
+        ? window.web3.currentProvider
+        : networkProvider
+    )
+    return web3
   } else {
     try {
       const url = 'http://localhost:8545'
       await fetch(url)
       console.log('local node active')
-      provider = new ethers.providers.JsonRpcProvider(url)
+      web3 = new Web3(new Web3.providers.HttpProvider(url))
+      web3Read = web3
     } catch (error) {
       if (
         error.readyState === 4 &&
@@ -49,31 +56,30 @@ export async function setupWeb3({ customProvider }) {
           'No web3 instance injected. Falling back to cloud provider.'
         )
         readOnly = true
-        provider = new ethers.providers.JsonRpcProvider(
-          getNetworkProviderUrl('1')
-        )
-        return { provider, signer }
+        web3 = new Web3(getNetworkProviderUrl('1'))
+        web3Read = web3
+        return web3
       }
     }
   }
 }
 
 export async function getWeb3() {
-  if (!provider) {
+  if (!web3) {
     throw new Error(
-      'Ethers has not been instantiated, please call setupWeb3() first'
+      'Web3 has not been instantiated, please call setupWeb3() first'
     )
   }
-  return provider
+  return web3
 }
 
 export async function getWeb3Read() {
-  if (!provider) {
+  if (!web3Read) {
     throw new Error(
-      'Ethers has not been instantiated, please call setupWeb3() first'
+      'Web3 has not been instantiated, please call setupWeb3() first'
     )
   }
-  return provider
+  return web3Read
 }
 
 export function isReadOnly() {
@@ -95,19 +101,15 @@ function getNetworkProviderUrl(id) {
   }
 }
 
-export async function getSigner() {
-  const provider = await getWeb3()
-  return provider.getSigner()
-}
-
 export async function getAccount() {
-  const signer = await getSigner()
-  return signer.getAddress()
+  const accounts = await getAccounts()
+  return accounts[0]
 }
 
 export async function getAccounts() {
   try {
-    const accounts = [signer.getAddress()]
+    const web3 = await getWeb3()
+    const accounts = await web3.eth.getAccounts()
 
     if (accounts.length > 0) {
       return accounts
@@ -128,16 +130,15 @@ export async function getAccounts() {
 }
 
 export async function getNetworkId() {
-  const provider = await getWeb3()
-  return provider.getNetwork()
+  const web3 = await getWeb3()
+  return web3.eth.net.getId()
 }
 
 export async function getBlock() {
-  const provider = await getWeb3()
-  const block = await provider.getBlockNumber()
-  const blockDetails = await provider.getBlock(block)
+  const web3 = await getWeb3()
+  let block = await web3.eth.getBlock('latest')
   return {
-    number: blockDetails.number,
-    timestamp: blockDetails.timestamp
+    number: block.number,
+    timestamp: block.timestamp
   }
 }

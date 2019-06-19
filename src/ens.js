@@ -1,7 +1,8 @@
 import _ from 'lodash'
-import { getWeb3, getWeb3Read, getNetworkId } from './web3'
+import { Contract, utils } from 'ethers'
+import { getWeb3, getNetworkId, getSigner } from './web3'
 import { normalize } from 'eth-ens-namehash'
-import { namehash } from './utils/utils'
+import { namehash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
 import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
@@ -31,100 +32,79 @@ function getNamehash(unsanitizedName) {
 }
 
 async function getNamehashWithLabelHash(labelHash, nodeHash) {
-  const web3 = await getWeb3()
-  let node = web3.utils.sha3(nodeHash + labelHash.slice(2), { encoding: 'hex' })
+  let node = utils.keccak256(nodeHash + labelHash.slice(2))
   return node.toString()
+}
+
+function getLabelhash(label) {
+  return utils.solidityKeccak256(['string'], [label])
 }
 
 async function getReverseRegistrarContract() {
   const { ENS } = await getENS()
-  const web3 = await getWeb3()
+  const signer = await getSigner()
   const namehash = getNamehash('addr.reverse')
-  const reverseRegistrarAddr = await ENS.owner(namehash).call()
-  const reverseRegistrar = new web3.eth.Contract(
+  const reverseRegistrarAddr = await ENS.owner(namehash)
+  const reverseRegistrar = new Contract(
+    reverseRegistrarAddr,
     reverseRegistrarContract,
-    reverseRegistrarAddr
+    signer
   )
   return {
-    reverseRegistrar: reverseRegistrar.methods,
-    _reverseRegistrar: reverseRegistrar
+    reverseRegistrar
   }
 }
 
 async function getResolverContract(addr) {
-  const web3 = await getWeb3()
-  const web3Read = await getWeb3Read()
-
-  const Resolver = new web3.eth.Contract(resolverContract, addr)
-  const ResolverRead = new web3Read.eth.Contract(resolverContract, addr)
+  const signer = await getSigner()
+  const Resolver = new Contract(addr, resolverContract, signer)
   return {
-    ResolverRead: ResolverRead.methods,
-    _ResolverRead: ResolverRead,
-    Resolver: Resolver.methods,
-    _Resolver: Resolver
-  }
-}
-
-async function getResolverReadContract(addr) {
-  const web3 = await getWeb3Read()
-  const Resolver = new web3.eth.Contract(resolverContract, addr)
-  return {
-    Resolver: Resolver.methods,
-    _Resolver: Resolver
+    Resolver
   }
 }
 
 async function getENSContract() {
-  const web3 = await getWeb3()
-  const web3Read = await getWeb3Read()
   const networkId = await getNetworkId()
+  const signer = await getSigner()
 
-  const readENS = new web3Read.eth.Contract(
-    ensContract,
-    contracts[networkId].registry
-  )
-  const writeENS = new web3.eth.Contract(
-    ensContract,
-    contracts[networkId].registry
-  )
+  const ENS = new Contract(contracts[networkId].registry, ensContract, signer)
   return {
-    readENS: readENS,
-    ENS: writeENS
+    readENS: ENS,
+    ENS: ENS
   }
 }
 
 async function getFifsRegistrarContract() {
   const { ENS, web3 } = await getENS()
 
-  const fifsRegistrarAddr = await ENS.owner('test').call()
+  const fifsRegistrarAddr = await ENS.owner('test')
 
   return {
-    registrar: new web3.eth.Contract(fifsRegistrarContract, fifsRegistrarAddr),
+    registrar: new Contract(fifsRegistrarContract, fifsRegistrarAddr),
     web3
   }
 }
 
 async function getTestRegistrarContract() {
-  const { ENS, _ENS } = await getENS()
-  const web3 = await getWeb3()
+  const { ENS } = await getENS()
+  const provider = await getWeb3()
   const namehash = getNamehash('test')
-  const testRegistrarAddr = await ENS.owner(namehash).call()
+  const testRegistrarAddr = await ENS.owner(namehash)
   const registrar = new web3.eth.Contract(
-    testRegistrarContract,
     testRegistrarAddr,
-    _ENS._address,
-    namehash
+    testRegistrarContract,
+    provider
   )
 
   return {
-    registrar: registrar.methods,
-    web3
+    registrar
   }
 }
 
 const getENS = async ensAddress => {
   const networkId = await getNetworkId()
 
+  //TODO: remove
   if (process.env.REACT_APP_ENS_ADDRESS && networkId > 1000) {
     //Assuming public main/test networks have a networkId of less than 1000
     ensAddress = process.env.REACT_APP_ENS_ADDRESS
@@ -145,9 +125,9 @@ const getENS = async ensAddress => {
     contracts[networkId].registry = ensAddress
   } else {
     return {
-      ENS: ENS.methods,
+      ENS: ENS,
       _ENS: ENS,
-      readENS: readENS.methods,
+      readENS: readENS,
       _readENS: readENS
     }
   }
@@ -157,16 +137,34 @@ const getENS = async ensAddress => {
   readENS = readENSContract
 
   return {
-    ENS: ENSContract.methods,
+    ENS: ENSContract,
     _ENS: ENSContract,
-    readENS: readENS.methods,
+    readENS: readENS,
     _readENS: readENS
   }
 }
 
-async function getENSEvent(event, params) {
-  const { _ENS } = await getENS()
-  return _ENS.getPastEvents(event, params)
+async function getENSEvent(event, { topics, fromBlock }) {
+  const provider = await getWeb3()
+  const { ENS } = await getENS()
+  const ensInterface = new utils.Interface(ensContract)
+  let Event = ENS.filters[event]()
+
+  const filter = {
+    fromBlock,
+    toBlock: 'latest',
+    address: Event.address,
+    topics: [...Event.topics, ...topics]
+  }
+
+  const logs = await provider.getLogs(filter)
+
+  const parsed = logs.map(log => {
+    const parsedLog = ensInterface.parseLog(log)
+    return parsedLog
+  })
+
+  return parsed
 }
 
 export {
@@ -175,10 +173,10 @@ export {
   getReverseRegistrarContract,
   getENSContract,
   getENSEvent,
+  getLabelhash,
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,
-  getResolverReadContract,
   getFifsRegistrarContract,
   normalize
 }
