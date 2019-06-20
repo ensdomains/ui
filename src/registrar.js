@@ -1,5 +1,5 @@
 import { getENS, getNamehash, getResolverContract } from './ens'
-import { getWeb3, getAccount, getBlock, getSigner } from './web3'
+import { getWeb3, getAccount, getBlock, getSigner, getNetworkId } from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -214,24 +214,52 @@ export const getEntry = async name => {
   }
 }
 
-export const transferOwner = async ({ to, name }) => {
+export const transferOwner = async (name, to, overrides) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.safeTransferFrom(account, to, labelHash)
+
+    const networkId = await getNetworkId()
+    if (parseInt(networkId) > 1000) {
+      /* if private network */
+      const gas = await Registrar.estimate.safeTransferFrom(
+        account,
+        to,
+        labelHash
+      )
+
+      overrides = {
+        ...overrides,
+        gasLimit: gas.toNumber() * 2
+      }
+    }
+    return Registrar.safeTransferFrom(account, to, labelHash, overrides)
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
 }
 
-export const reclaim = async ({ name, address }) => {
+export const reclaim = async (name, address, overrides) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.reclaim(labelHash, address)
+    const networkId = await getNetworkId()
+    if (parseInt(networkId) > 1000) {
+      /* if private network */
+      const gas = await Registrar.estimate.reclaim(labelHash, address)
+
+      overrides = {
+        ...overrides,
+        gasLimit: gas.toNumber() * 2
+      }
+    }
+
+    return Registrar.reclaim(labelHash, address, {
+      ...overrides
+    })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
