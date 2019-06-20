@@ -15,6 +15,7 @@ import {
   ensStartBlock,
   checkLabels,
   mergeLabels,
+  emptyAddress,
   isDecrypted
 } from './utils'
 
@@ -109,6 +110,10 @@ export async function getContent(name) {
       )
       if (error) {
         console.log(error)
+        return {
+          value: emptyAddress,
+          contentType: 'contenthash'
+        }
       }
       return {
         value: `${protocolType}://${decoded}`,
