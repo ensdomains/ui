@@ -401,3 +401,26 @@ export const releaseDeed = async label => {
   const hash = labelhash(label)
   return ethRegistrar.releaseDeed(hash)
 }
+
+export const submitProof = async () => {
+  const { claim, result } = await getDNSEntry()
+  const account = await getAccount()
+  const data = await claim.oracle.getAllProofs(result, {})
+  const allProven = await claim.oracle.allProven(result)
+  let tx
+  if (allProven) {
+    tx = claim.registrar.methods.claim(claim.encodedName, data[1])
+  } else {
+    tx = claim.registrar.methods.proveAndClaim(
+      claim.encodedName,
+      data[0],
+      data[1]
+    )
+  }
+  const gas = await tx.estimateGas({ from: account })
+  return () =>
+    tx.send({
+      from: account,
+      gas: gas
+    })
+}
