@@ -1,4 +1,9 @@
-import { getENS, getNamehash, getResolverContract } from './ens'
+import { 
+  getENS,
+  getNamehash,
+  getResolverContract,
+  getDnsRegistrarContract
+} from './ens'
 import { getWeb3, getAccount, getBlock, getSigner } from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
@@ -164,6 +169,75 @@ export const getPermanentEntry = async label => {
     return obj
   }
 }
+
+export const isDNSRegistrar = async name => {
+  const { registrar } = await getDnsRegistrarContract(name)
+  let isDNSSECSupported = false
+  try {
+    isDNSSECSupported = await registrar.methods
+      .supportsInterface(DNSSEC_CLAIM_ID)
+      .call()
+    } catch (e) {
+  }
+  return isDNSSECSupported
+}
+
+export const getDNSEntry = async (name, tldOwner, owner) => {
+  if (dnsRegistrar) {
+    return dnsRegistrar
+  } else {
+    dnsRegistrar = {}
+  }
+  const web3Read = await getWeb3Read()
+  const provider = web3Read.currentProvider
+  const registrarjs = new DNSRegistrarJS(provider, tldOwner)
+  try {
+    const claim = await registrarjs.claim(name)
+    const result = claim.getResult()
+    dnsRegistrar.claim = claim
+    dnsRegistrar.result = result
+    if (result.found) {
+      dnsRegistrar.dnsOwner = claim.getOwner()
+      const proofs = result.proofs
+      const proof = proofs[proofs.length - 1]
+      const proven = await claim.oracle.knownProof(proof)
+      const dnsOwnerLower =
+        dnsRegistrar &&
+        dnsRegistrar.dnsOwner &&
+        dnsRegistrar.dnsOwner.toLowerCase()
+      const ownerLower = owner && owner.toLowerCase()
+      const sameOwner = dnsOwnerLower === ownerLower
+      if (proven.matched && sameOwner) {
+        dnsRegistrar.state = 5
+      } else if (owner === emptyAddress) {
+        dnsRegistrar.state = 4
+      } else if (!sameOwner) {
+        dnsRegistrar.state = 6
+      } else {
+        if (owner) {
+          dnsRegistrar.state = 7
+        } else {
+          dnsRegistrar.state = 3
+        }
+      }
+    } else {
+      if (result.nsec) {
+        if (owner) {
+          dnsRegistrar.state = 7
+        } else {
+          dnsRegistrar.state = 2
+        }
+      } else {
+        dnsRegistrar.state = 1
+      }
+    }
+  } catch (e) {
+    console.log(e)
+    dnsRegistrar.state = 0
+  }
+  return dnsRegistrar
+}
+
 
 export const getDeed = async address => {
   const signer = await getSigner()
