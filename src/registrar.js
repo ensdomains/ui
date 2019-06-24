@@ -4,7 +4,14 @@ import {
   getResolverContract,
   getDnsRegistrarContract
 } from './ens'
-import { getWeb3, getAccount, getBlock, getSigner } from './web3'
+
+import { 
+  getWeb3,
+  getWeb3Read,
+  getAccount,
+  getBlock,
+  getSigner
+} from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -12,13 +19,16 @@ import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/buil
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
-
+import DNSRegistrarJS from '@ensdomains/dnsregistrar'
+import { EMPTY_ADDRESS } from './utils/records'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
-  permanentRegistrar: permanentRegistrarInterfaceId
+  permanentRegistrar: permanentRegistrarInterfaceId,
+  dnsRegistrar: dnsRegistrarInterfaceId
 } = interfaces
 
 let ethRegistrar
+let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
 
@@ -174,10 +184,10 @@ export const isDNSRegistrar = async name => {
   const { registrar } = await getDnsRegistrarContract(name)
   let isDNSSECSupported = false
   try {
-    isDNSSECSupported = await registrar.methods
-      .supportsInterface(DNSSEC_CLAIM_ID)
-      .call()
-    } catch (e) {
+    isDNSSECSupported = await registrar
+      .supportsInterface(dnsRegistrarInterfaceId)
+  } catch (e) {
+    console.log({e})
   }
   return isDNSSECSupported
 }
@@ -188,8 +198,8 @@ export const getDNSEntry = async (name, tldOwner, owner) => {
   } else {
     dnsRegistrar = {}
   }
-  const web3Read = await getWeb3Read()
-  const provider = web3Read.currentProvider
+  const web3 = await getWeb3Read()
+  const provider = web3._web3Provider
   const registrarjs = new DNSRegistrarJS(provider, tldOwner)
   try {
     const claim = await registrarjs.claim(name)
@@ -209,7 +219,7 @@ export const getDNSEntry = async (name, tldOwner, owner) => {
       const sameOwner = dnsOwnerLower === ownerLower
       if (proven.matched && sameOwner) {
         dnsRegistrar.state = 5
-      } else if (owner === emptyAddress) {
+      } else if (owner === EMPTY_ADDRESS) {
         dnsRegistrar.state = 4
       } else if (!sameOwner) {
         dnsRegistrar.state = 6
