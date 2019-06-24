@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { getAddress } from 'ethers/utils'
+import { emptyAddress } from './utils/index'
 
 let provider
 let signer
@@ -18,18 +18,12 @@ export async function setupWeb3({ customProvider }) {
 
   if (window && window.ethereum) {
     provider = new ethers.providers.Web3Provider(window.ethereum)
-    const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
-    const networkProvider = getNetworkProviderUrl(id)
-    // web3Read = new Web3(
-    //   networkProvider === 'private' ? window.ethereum : networkProvider
-    // )
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
     provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
-    const networkProvider = getNetworkProviderUrl(id)
     return { provider, signer }
   } else {
     try {
@@ -95,14 +89,23 @@ function getNetworkProviderUrl(id) {
   }
 }
 
-export async function getSigner() {
+export async function getSignerOrProvider() {
   const provider = await getWeb3()
-  return provider.getSigner()
+  try {
+    const signer = provider.getSigner()
+    return signer
+  } catch (e) {
+    return provider
+  }
 }
 
 export async function getAccount() {
-  const signer = await getSigner()
-  return signer.getAddress()
+  try {
+    const signer = await getSigner()
+    return signer.getAddress()
+  } catch (e) {
+    return '0x'
+  }
 }
 
 export async function getAccounts() {

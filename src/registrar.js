@@ -1,5 +1,11 @@
 import { getENS, getNamehash, getResolverContract } from './ens'
-import { getWeb3, getAccount, getBlock, getSigner, getNetworkId } from './web3'
+import {
+  getWeb3,
+  getAccount,
+  getBlock,
+  getSignerOrProvider,
+  getNetworkId
+} from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -25,7 +31,7 @@ export const getLegacyAuctionRegistrar = async () => {
   }
   try {
     const { Resolver } = await getEthResolver()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       legacyRegistrarInterfaceId
@@ -52,7 +58,7 @@ export const getPermanentRegistrar = async () => {
 
   try {
     const { ENS } = await getENS()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     const ethAddr = await ENS.owner(getNamehash('eth'))
     permanentRegistrar = new Contract(
       ethAddr,
@@ -74,7 +80,7 @@ export const getPermanentRegistrarController = async () => {
 
   try {
     const { Resolver } = await getEthResolver()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     let controllerAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       permanentRegistrarInterfaceId
@@ -166,7 +172,7 @@ export const getPermanentEntry = async label => {
 }
 
 export const getDeed = async address => {
-  const signer = await getSigner()
+  const signer = await getSignerOrProvider()
   return new Contract(address, deedContract, signer)
 }
 
