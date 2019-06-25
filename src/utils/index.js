@@ -134,6 +134,7 @@ export {
   // name validation
   validateName,
   parseSearchTerm,
+  isLabelValid,
   // labelhash utils
   labelhash,
   isEncodedLabelhash,

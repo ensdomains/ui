@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { Contract, utils } from 'ethers'
-import { getWeb3, getNetworkId, getSigner } from './web3'
+import { getWeb3, getNetworkId, getSignerOrProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
@@ -43,7 +43,7 @@ function getLabelhash(label) {
 
 async function getReverseRegistrarContract() {
   const { ENS } = await getENS()
-  const signer = await getSigner()
+  const signer = await getSignerOrProvider()
   const namehash = getNamehash('addr.reverse')
   const reverseRegistrarAddr = await ENS.owner(namehash)
   const reverseRegistrar = new Contract(
@@ -57,7 +57,7 @@ async function getReverseRegistrarContract() {
 }
 
 async function getResolverContract(addr) {
-  const signer = await getSigner()
+  const signer = await getSignerOrProvider()
   const Resolver = new Contract(addr, resolverContract, signer)
   return {
     Resolver
@@ -66,7 +66,7 @@ async function getResolverContract(addr) {
 
 async function getENSContract() {
   const networkId = await getNetworkId()
-  const signer = await getSigner()
+  const signer = await getSignerOrProvider()
 
   const ENS = new Contract(contracts[networkId].registry, ensContract, signer)
   return {

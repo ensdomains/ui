@@ -15,6 +15,7 @@ import {
   ensStartBlock,
   checkLabels,
   mergeLabels,
+  emptyAddress,
   isDecrypted
 } from './utils'
 
@@ -25,7 +26,7 @@ import {
   encodeContenthash,
   decodeContenthash
 } from './utils/contents'
-import { getWeb3, getAccount, getSigner } from './web3'
+import { getWeb3, getAccount, getSigner, getNetworkId } from './web3'
 import { utils } from 'ethers'
 
 export async function getOwner(name) {
@@ -108,7 +109,10 @@ export async function getContent(name) {
         await Resolver.contenthash(namehash)
       )
       if (error) {
-        console.log(error)
+        return {
+          value: emptyAddress,
+          contentType: 'contenthash'
+        }
       }
       return {
         value: `${protocolType}://${decoded}`,
@@ -268,13 +272,19 @@ export async function getResolverDetails(node) {
   }
 }
 
-export async function claimAndSetReverseRecordName(name, gas) {
+export async function claimAndSetReverseRecordName(name, overrides = {}) {
   const { reverseRegistrar } = await getReverseRegistrarContract()
-  if (gas) {
-    return reverseRegistrar.setName(name)
-  } else {
-    return reverseRegistrar.setName(name)
+  const networkId = await getNetworkId()
+
+  if (parseInt(networkId) > 1000) {
+    const gasLimit = await reverseRegistrar.estimate.setName(name)
+    overrides = {
+      gasLimit: gasLimit.toNumber() * 2,
+      ...overrides
+    }
   }
+
+  return reverseRegistrar.setName(name, overrides)
 }
 
 export async function setReverseRecordName(name) {

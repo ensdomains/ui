@@ -10,7 +10,8 @@ import {
   getWeb3Read,
   getAccount,
   getBlock,
-  getSigner
+  getSignerOrProvider,
+  getNetworkId
 } from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
@@ -40,7 +41,7 @@ export const getLegacyAuctionRegistrar = async () => {
   }
   try {
     const { Resolver } = await getEthResolver()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       legacyRegistrarInterfaceId
@@ -67,7 +68,7 @@ export const getPermanentRegistrar = async () => {
 
   try {
     const { ENS } = await getENS()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     const ethAddr = await ENS.owner(getNamehash('eth'))
     permanentRegistrar = new Contract(
       ethAddr,
@@ -89,7 +90,7 @@ export const getPermanentRegistrarController = async () => {
 
   try {
     const { Resolver } = await getEthResolver()
-    const signer = await getSigner()
+    const signer = await getSignerOrProvider()
     let controllerAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       permanentRegistrarInterfaceId
@@ -250,7 +251,7 @@ export const getDNSEntry = async (name, tldOwner, owner) => {
 
 
 export const getDeed = async address => {
-  const signer = await getSigner()
+  const signer = await getSignerOrProvider()
   return new Contract(address, deedContract, signer)
 }
 
@@ -298,24 +299,52 @@ export const getEntry = async name => {
   }
 }
 
-export const transferOwner = async ({ to, name }) => {
+export const transferOwner = async (name, to, overrides = {}) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.safeTransferFrom(account, to, labelHash)
+
+    const networkId = await getNetworkId()
+    if (parseInt(networkId) > 1000) {
+      /* if private network */
+      const gas = await Registrar.estimate.safeTransferFrom(
+        account,
+        to,
+        labelHash
+      )
+
+      overrides = {
+        ...overrides,
+        gasLimit: gas.toNumber() * 2
+      }
+    }
+    return Registrar.safeTransferFrom(account, to, labelHash, overrides)
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
 }
 
-export const reclaim = async ({ name, address }) => {
+export const reclaim = async (name, address, overrides = {}) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
     const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    return Registrar.reclaim(labelHash, address)
+    const networkId = await getNetworkId()
+    if (parseInt(networkId) > 1000) {
+      /* if private network */
+      const gas = await Registrar.estimate.reclaim(labelHash, address)
+
+      overrides = {
+        ...overrides,
+        gasLimit: gas.toNumber() * 2
+      }
+    }
+
+    return Registrar.reclaim(labelHash, address, {
+      ...overrides
+    })
   } catch (e) {
     console.log('error getting permanentRegistrar contract', e)
   }
