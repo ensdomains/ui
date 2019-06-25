@@ -43,9 +43,7 @@ export async function setupWeb3({ customProvider }) {
           'No web3 instance injected. Falling back to cloud provider.'
         )
         readOnly = true
-        provider = new ethers.providers.JsonRpcProvider(
-          getNetworkProviderUrl('1')
-        )
+        provider = new ethers.getDefaultProvider('homestead')
         return { provider, signer }
       }
     }
@@ -101,10 +99,11 @@ export async function getSignerOrProvider() {
 
 export async function getAccount() {
   try {
-    const signer = await getSigner()
+    const provider = await getWeb3()
+    const signer = await provider.getSigner()
     return signer.getAddress()
   } catch (e) {
-    return '0x'
+    throw e
   }
 }
 
