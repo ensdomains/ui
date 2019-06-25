@@ -147,15 +147,72 @@ const content = await getContent('vitalik.eth')
 // ipfs://Qsxz...
 ```
 
-function getName(address) {
+### `async function getName(address): Name`
 
-}
+This function gets the reverse record of an address.
 
-function setOwner(name, newOwner) {
-}
+#### Arguments
 
-function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
-}
+address (string): An Ethereum address
+
+#### Returns
+
+name (string): An ENS name
+
+#### Example
+
+```js
+import { getName } from '@ensdomains/ui'
+const name = await getName('0x123abc...')
+// vitalik.eth
+```
+
+### `async function setOwner(name, newOwner): EthersTransactionResponse`
+
+#### Arguments
+
+name (string): An ENS name
+newOwner (string): An Ethereum address or contract
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setOwner } from '@ensdomains/ui'
+
+const tx = await setOwner('vitalik.eth', '0x123abc...')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function setOwner(name, newOwner): EthersTransactionResponse`
+
+#### Arguments
+
+label (string): ENS Label e.g: sub (sub.vitalik.eth)
+name (string): An ENS name
+newOwner (string): An Ethereum address or contract
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setSubnodeOwner } from '@ensdomains/ui'
+
+const tx = await setSubnodeOwner('sub', 'vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
 
 function setResolver(name, resolver) {
 }
