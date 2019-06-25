@@ -2,37 +2,53 @@
 
 Most functions in this library are async functions and therefore return promises which can be awaited or chained with `.then`.
 
-##`async function getOwner(name)`
+## Setup
 
-### Arguments
+Setup for the library is done by calling the `setupENS` function. It can be optionally provided with a customProvider and an ENS address. Generally you won't need this unless you are running ganache.
+
+```js
+import { setupENS } from '@ensdomains/ui'
+
+window.addEventListener('load', async () => {
+  await setupENS() // will instantiate with window.web3/window.ethereum if found, read-only if not.
+  // Once setup has finished you can now call functions off the library
+})
+```
+
+## API
+
+###`async function getOwner(name)`
+
+#### Arguments
 
 name (string): An ENS name (e.g: vitalik.eth)
 
-### Returns
+#### Returns
 
 owner (address): Ethereum address of the owner on the registry
 
-###Example
+#### Example
 
 ```js
-const owner = await getOwner()
+const name = 'vitalik.eth'
+const owner = await getOwner('vitalik.eth')
 // 0x123...
 ```
 
-##`async function getResolver(name)`
+###`async function getResolver(name)`
 
-### Arguments
+#### Arguments
 
 name (string): An ENS name (e.g: vitalik.eth)
 
-### Returns
+#### Returns
 
 owner (address): Ethereum address of the resolver contract
 
-###Example
+####Example
 
 ```js
-const owner = await getResolver()
+const owner = await getResolver('vitalik.eth')
 // 0x123...
 ```
 
