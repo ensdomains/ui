@@ -17,7 +17,7 @@ window.addEventListener('load', async () => {
 
 ## API
 
-###`async function getOwner(name)`
+### `async function getOwner(name)`
 
 #### Arguments
 
@@ -35,7 +35,7 @@ const owner = await getOwner('vitalik.eth')
 // 0x123...
 ```
 
-###`async function getResolver(name)`
+### `async function getResolver(name)`
 
 #### Arguments
 
@@ -45,7 +45,7 @@ name (string): An ENS name (e.g: vitalik.eth)
 
 owner (address): Ethereum address of the resolver contract
 
-####Example
+#### Example
 
 ```js
 const owner = await getResolver('vitalik.eth')
