@@ -17,7 +17,26 @@ window.addEventListener('load', async () => {
 
 ## API
 
-### `async function getOwner(name)`
+### `async function setupENS(name): void`
+
+#### Arguments
+
+options (object): {
+customProvider (object): Provider object from web3
+ensAddress (string): Address of the ENS registry
+}
+
+#### Example
+
+```js
+import { setupENS } from '@ensdomains/ui'
+
+window.addEventListener('load', async () => {
+  await setupENS()
+})
+```
+
+### `async function getOwner(name): Address`
 
 #### Arguments
 
@@ -30,12 +49,13 @@ owner (address): Ethereum address of the owner on the registry
 #### Example
 
 ```js
+import { getOwner } from '@ensdomains/ui'
 const name = 'vitalik.eth'
 const owner = await getOwner('vitalik.eth')
 // 0x123...
 ```
 
-### `async function getResolver(name)`
+### `async function getResolver(name): Address`
 
 #### Arguments
 
@@ -48,12 +68,29 @@ owner (address): Ethereum address of the resolver contract
 #### Example
 
 ```js
+import { getResolver } from '@ensdomains/ui'
 const owner = await getResolver('vitalik.eth')
 // 0x123...
 ```
 
-function getResolverWithLabelHash(labelHash, nodeHash) {
-}
+### `async function getResolverWithLabelHash(labelHash, nodeHash): Address`
+
+#### Arguments
+
+labelHash (string): Hash of the label e.g vitalik (vitalik.eth)
+nodeHash (string): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
+
+#### Returns
+
+owner (address): Ethereum address of the resolver contract
+
+#### Example
+
+```js
+import { getResolverWithLabelHash } from '@ensdomains/ui'
+const owner = await getResolver(labelHash, nodeHash)
+// 0x123...
+```
 
 function getOwnerWithLabelHash(labelHash, nodeHash) {
 }
