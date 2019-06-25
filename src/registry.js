@@ -272,7 +272,7 @@ export async function getResolverDetails(node) {
   }
 }
 
-export async function claimAndSetReverseRecordName(name, overrides) {
+export async function claimAndSetReverseRecordName(name, overrides = {}) {
   const { reverseRegistrar } = await getReverseRegistrarContract()
   const networkId = await getNetworkId()
 
