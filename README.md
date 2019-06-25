@@ -82,31 +82,70 @@ nodeHash (string): Hash of the rest of the name (minus the library) e.g eth (vit
 
 #### Returns
 
-owner (address): Ethereum address of the resolver contract
+resolver (address): Ethereum address of the resolver contract
 
 #### Example
 
 ```js
 import { getResolverWithLabelHash } from '@ensdomains/ui'
-const owner = await getResolver(labelHash, nodeHash)
+const resolver = await getResolver(labelHash, nodeHash)
 // 0x123...
 ```
 
-function getOwnerWithLabelHash(labelHash, nodeHash) {
-}
+### `async function getOwnerWithLabelHash(labelHash, nodeHash): Address`
 
-function registerTestdomain(label) {
-}
+#### Arguments
 
-function expiryTimes(label, owner) {
-}
+labelHash (string): Hash of the label e.g vitalik (vitalik.eth)
+nodeHash (string): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
 
-function getAddr(name) {
-}
+#### Returns
 
-function getContent(name) {
+owner (address): Ethereum address of the resolver contract
 
-}
+#### Example
+
+```js
+import { getOwnerWithLabelHash } from '@ensdomains/ui'
+const owner = await getOwnerWithLabelHash(labelHash, nodeHash)
+// 0x123...
+```
+
+### `async function getAddr(name): Address`
+
+#### Arguments
+
+name (string): An ENS name (e.g: vitalik.eth)
+
+#### Returns
+
+address (address): An Ethereum address that was set on the resolver
+
+#### Example
+
+```js
+import { getAddr } from '@ensdomains/ui'
+const addr = await getAddr('vitalik.eth')
+// 0x123...
+```
+
+### `async function getContent(name): Contenthash`
+
+#### Arguments
+
+name (string): An ENS name (e.g: vitalik.eth)
+
+#### Returns
+
+contentHash (string): A content hash string for IPFS or swarm
+
+#### Example
+
+```js
+import { getContent } from '@ensdomains/ui'
+const content = await getContent('vitalik.eth')
+// ipfs://Qsxz...
+```
 
 function getName(address) {
 
@@ -167,4 +206,10 @@ name: `${labels[index] || encodeLabelhash(logs[index].label)}.${name}`,
 owner
 }
 }
+}
+
+function registerTestdomain(label) {
+}
+
+function expiryTimes(label, owner) {
 }
