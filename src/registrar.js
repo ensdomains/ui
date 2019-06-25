@@ -220,7 +220,7 @@ export const getEntry = async name => {
   }
 }
 
-export const transferOwner = async (name, to, overrides) => {
+export const transferOwner = async (name, to, overrides = {}) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
@@ -247,7 +247,7 @@ export const transferOwner = async (name, to, overrides) => {
   }
 }
 
-export const reclaim = async (name, address, overrides) => {
+export const reclaim = async (name, address, overrides = {}) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
