@@ -4,26 +4,31 @@ Most functions in this library are async functions and therefore return promises
 
 ## Contents
 
-- [setupENS()](#async-function-setupensname-void)
-- [getOwner()](#async-function-getownername-address)
-- [getResolver()](#async-function-getresolvername-address)
-- [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
-- [getResolverWithLabelhash()](#async-function-getresolverwithlabelhashlabelhash-nodehash-address)
-- [getAddress()](#async-function-getaddressname-address)
-- [getContent()](#async-function-getcontentname-contenthash)
-- [getName()](#async-function-getnameaddress-name)
-- [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-etherstransactionresponse)
-- [setResolver()](#async-function-setresolvername-resolver-etherstransactionresponse)
-- [setAddress()](#async-function-setaddressname-address-etherstransactionresponse)
-- [setContent() DEPRECATED](#async-function-setcontentname-content-etherstransactionresponse-deprecated)
-- [setContenthash()](#async-function-setcontenthashname-content-etherstransactionresponse)
-- [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
-- [createSubdomain()](#async-function-createsubdomainlabel-name-etherstransactionresponse)
-- [deleteSubdomain()](#async-function-deletesubdomainlabel-name-etherstransactionresponse)
-- [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-etherstransactionresponse)
-- [setReverseRecord](#async-function-setreverserecordnamename-etherstransactionresponse)
-- [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
-- [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
+- Registry and Resolvers
+
+  - [setupENS()](#async-function-setupensname-void)
+  - [getOwner()](#async-function-getownername-address)
+  - [getResolver()](#async-function-getresolvername-address)
+  - [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
+  - [getResolverWithLabelhash()](#async-function-getresolverwithlabelhashlabelhash-nodehash-address)
+  - [getAddress()](#async-function-getaddressname-address)
+  - [getContent()](#async-function-getcontentname-contenthash)
+  - [getName()](#async-function-getnameaddress-name)
+  - [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-etherstransactionresponse)
+  - [setResolver()](#async-function-setresolvername-resolver-etherstransactionresponse)
+  - [setAddress()](#async-function-setaddressname-address-etherstransactionresponse)
+  - [setContent() DEPRECATED](#async-function-setcontentname-content-etherstransactionresponse-deprecated)
+  - [setContenthash()](#async-function-setcontenthashname-content-etherstransactionresponse)
+  - [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
+  - [createSubdomain()](#async-function-createsubdomainlabel-name-etherstransactionresponse)
+  - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-etherstransactionresponse)
+  - [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-etherstransactionresponse)
+  - [setReverseRecord](#async-function-setreverserecordnamename-etherstransactionresponse)
+  - [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
+  - [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
+
+- Eth Registrar
+  -
 
 ## Setup
 
@@ -539,3 +544,128 @@ console.log(subdomains)
   }, ...]
 */
 ```
+
+export const getEntry = async name => {
+let legacyEntry = await getLegacyEntry(name)
+let block = await getBlock()
+let ret = {
+currentBlockDate: new Date(block.timestamp \* 1000),
+registrant: 0,
+transferEndDate: null,
+isNewRegistrar: false
+}
+
+try {
+let permEntry = await getPermanentEntry(name)
+if (legacyEntry.registrationDate && permEntry.migrationLockPeriod) {
+ret.migrationStartDate = new Date(
+legacyEntry.registrationDate + permEntry.migrationLockPeriod \* 1000
+)
+} else {
+ret.migrationStartDate = null
+}
+
+    if (permEntry.transferPeriodEnds) {
+      ret.transferEndDate = new Date(permEntry.transferPeriodEnds * 1000)
+    }
+    ret.available = permEntry.available
+    if (!permEntry.available) {
+      // Owned
+      ret.state = 2
+    }
+    if (permEntry.ownerOf) {
+      ret.isNewRegistrar = true
+      ret.registrant = permEntry.ownerOf
+    }
+    if (permEntry.nameExpires) {
+      ret.expiryTime = permEntry.nameExpires
+    }
+
+} catch (e) {
+console.log('error getting permanent registry', e)
+}
+return {
+...legacyEntry,
+...ret
+}
+}
+
+export const transferOwner = async (name, to, overrides = {}) => {
+}
+
+export const reclaim = async (name, address, overrides = {}) => {
+try {
+const nameArray = name.split('.')
+const labelHash = labelhash(nameArray[0])
+const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
+const networkId = await getNetworkId()
+if (parseInt(networkId) > 1000) {
+/_ if private network _/
+const gas = await Registrar.estimate.reclaim(labelHash, address)
+
+      overrides = {
+        ...overrides,
+        gasLimit: gas.toNumber() * 2
+      }
+    }
+
+    return Registrar.reclaim(labelHash, address, {
+      ...overrides
+    })
+
+} catch (e) {
+console.log('Error calling reclaim', e)
+}
+}
+
+getRentPrice = async (name, duration) => {
+}
+
+getMinimumCommitmentAge = async () => {
+}
+
+makeCommitment = async (name, owner, secret = '') => {
+const {
+permanentRegistrarController
+} = await getPermanentRegistrarController()
+
+return permanentRegistrarController.makeCommitment(name, owner, secret)
+}
+
+commit = async (label, secret = '') => {
+const {
+permanentRegistrarController
+} = await getPermanentRegistrarController()
+const account = await getAccount()
+const commitment = await makeCommitment(label, account, secret)
+
+return permanentRegistrarController.commit(commitment)
+}
+
+register = async (label, duration, secret) => {
+const {
+permanentRegistrarController
+} = await getPermanentRegistrarController()
+const account = await getAccount()
+const price = await getRentPrice(label, duration)
+
+return permanentRegistrarController.register(
+label,
+account,
+duration,
+secret,
+{ value: price }
+)
+}
+
+renew = async (label, duration) => {
+
+}
+
+export const transferRegistrars = async label => {
+
+}
+
+export const releaseDeed = async label => {
+)
+}
