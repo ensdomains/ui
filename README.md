@@ -23,7 +23,7 @@ Most functions in this library are async functions and therefore return promises
 - [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-etherstransactionresponse)
 - [setReverseRecord](#async-function-setreverserecordnamename-etherstransactionresponse)
 - [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
-- [getSubdomains](#async-function-getdomaindetailsname-etherstransactionresponse)
+- [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
 
 ## Setup
 
