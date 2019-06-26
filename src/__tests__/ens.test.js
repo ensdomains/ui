@@ -14,7 +14,7 @@ import {
   setSubnodeOwner,
   getResolver,
   setResolver,
-  getAddr,
+  getAddress,
   setAddress,
   getContent,
   setContent,
@@ -192,26 +192,26 @@ describe('Blockchain tests', () => {
   })
 
   describe('Resolver', () => {
-    test('getAddr returns an address', async () => {
-      const addr = await getAddr('resolver.eth')
+    test('getAddress returns an address', async () => {
+      const addr = await getAddress('resolver.eth')
       expect(addr).toBeHex()
       expect(addr).toBeEthAddress()
       expect(addr).not.toBe('0x0000000000000000000000000000000000000000')
     })
 
-    test('getAddr returns 0x000', async () => {
+    test('getAddress returns 0x000', async () => {
       const tx = await createSubdomain('addr', 'testing.eth')
       await tx.wait()
-      const resolverAddr = await getAddr('resolver.eth')
+      const resolverAddr = await getAddress('resolver.eth')
       const tx2 = await setResolver('addr.testing.eth', resolverAddr)
       await tx2.wait()
-      const addr = await getAddr('addr.testing.eth')
+      const addr = await getAddress('addr.testing.eth')
       expect(addr).toBe('0x0000000000000000000000000000000000000000')
     })
 
-    test('setAddr sets an address', async () => {
+    test('setAddress sets an address', async () => {
       //reverts if no addr is present
-      const resolverAddr = await getAddr('resolver.eth')
+      const resolverAddr = await getAddress('resolver.eth')
       const tx = await setResolver('superawesome.eth', resolverAddr)
       await tx.wait()
       const tx2 = await setAddress(
@@ -219,7 +219,7 @@ describe('Blockchain tests', () => {
         '0x0000000000000000000000000000000000012345'
       )
       await tx2.wait()
-      const addr = await getAddr('superawesome.eth')
+      const addr = await getAddress('superawesome.eth')
       expect(addr).toBe('0x0000000000000000000000000000000000012345')
     })
 
@@ -310,7 +310,7 @@ describe('Blockchain tests', () => {
           '0x0000000000000000000000000000000000000000'
         )
         expect(domain.resolver).toBeEthAddress()
-        const addr = await getAddr('resolver.eth')
+        const addr = await getAddress('resolver.eth')
         expect(domain.addr).toBe(addr)
         expect(domain.content).toMatchSnapshot()
       } catch (e) {

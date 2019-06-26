@@ -389,11 +389,53 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-function claimAndSetReverseRecordName(name) {
-}
+### `async function claimAndSetReverseRecordName(name): EthersTransactionResponse`
 
-function setReverseRecordName(name) {
-}
+This function will claim your Ethereum address on the reverse registrar, setup the reverse resolver and setup your name on the resolver all in one transaction. It can also be used to change your reverse record name to something else.
+
+#### Arguments
+
+name (string): An ENS name
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { claimAndSetReverseRecordName } from '@ensdomains/ui'
+
+const tx = await claimAndSetReverseRecordName('vitalik.eth')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function setReverseRecordName(name): EthersTransactionResponse`
+
+This function will set your reverse record name given that a resolver is already present on your ethereum address reverse name e.g. `123456abcdef.addr.reverse`. This can be useful if you don't want to use `claimAndSetReverseRecordName` to setup the default reverse registrar
+
+#### Arguments
+
+name (string): An ENS name
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setReverseRecordName } from '@ensdomains/ui'
+
+const tx = await setReverseRecordName('vitalik.eth')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
 
 function getDomainDetails(name) {
 return {

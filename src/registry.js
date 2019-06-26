@@ -54,23 +54,7 @@ export async function getOwnerWithLabelHash(labelhash, nodeHash) {
   return ENS.owner(namehash)
 }
 
-export async function registerTestdomain(label) {
-  const { registrar } = await getTestRegistrarContract()
-  const namehash = await utils.keccak256(label)
-  const account = await getAccount()
-  return registrar.register(namehash, account)
-}
-
-export async function expiryTimes(label, owner) {
-  const { registrar } = await getTestRegistrarContract()
-  const namehash = await utils.keccak256(label)
-  const result = await registrar.expiryTimes(namehash).call()
-  if (result > 0) {
-    return new Date(result * 1000)
-  }
-}
-
-export async function getAddr(name) {
+export async function getAddress(name) {
   const resolverAddr = await getResolver(name)
   if (parseInt(resolverAddr, 16) === 0) {
     return '0x00000000000000000000000000000000'
@@ -233,7 +217,7 @@ export async function deleteSubdomain(subdomain, domain) {
 
 export async function getResolverDetails(node) {
   try {
-    const addrPromise = getAddr(node.name)
+    const addrPromise = getAddress(node.name)
     const contentPromise = getContent(node.name)
     const [addr, content] = await Promise.all([addrPromise, contentPromise])
     return {
@@ -333,4 +317,20 @@ export const getSubDomains = async name => {
       }
     })
   )
+}
+
+export async function registerTestdomain(label) {
+  const { registrar } = await getTestRegistrarContract()
+  const namehash = await utils.keccak256(label)
+  const account = await getAccount()
+  return registrar.register(namehash, account)
+}
+
+export async function expiryTimes(label, owner) {
+  const { registrar } = await getTestRegistrarContract()
+  const namehash = await utils.keccak256(label)
+  const result = await registrar.expiryTimes(namehash).call()
+  if (result > 0) {
+    return new Date(result * 1000)
+  }
 }
