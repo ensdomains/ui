@@ -437,13 +437,125 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-function getDomainDetails(name) {
-return {
-...node,
-addr: null,
-content: null
+### `async function getDomainDetails(name): EthersTransactionResponse`
+
+This is a helper function to get all the details for a particular domain.
+
+#### Arguments
+
+name (string): An ENS name
+
+#### Returns
+
+DomainDetails (object): {
+name (string): ENS name
+label (string): label of the name
+labelhash: labelhash of the name
+owner (string): Address of the controller of the ENS name
+resolver (string): ENS resolver contract
+addr (string): Address the ENS name resolves to
+content (string): Contenthash the ENS name resolves to
 }
+
+#### Example
+
+```js
+import { getDomainDetails } from '@ensdomains/ui'
+
+const domainDetails = await getDomainDetails('vitalik.eth')
+console.log(domainDetails)
+/* 
+  {
+    name: "vitalik.eth",
+    label: "vitalik",
+    labelhash: "0x123456abc...",
+    owner: "0x123abcdef...",
+    resolver: "0x1234abdef...",
+    addr: "0xabcdef1234...",
+    content: "bzz://Qra123..."
+  }
+*/
+```
+
+### `async function getDomainDetails(name): EthersTransactionResponse`
+
+This is a helper function to get all the details for a particular domain.
+
+#### Arguments
+
+name (string): An ENS name
+
+#### Returns
+
+DomainDetails (object): {
+name (string): ENS name
+label (string): label of the name
+labelhash: labelhash of the name
+owner (string): Address of the controller of the ENS name
+resolver (string): ENS resolver contract
+addr (string): Address the ENS name resolves to
+content (string): Contenthash the ENS name resolves to
 }
+
+#### Example
+
+```js
+import { getDomainDetails } from '@ensdomains/ui'
+
+const domainDetails = await getDomainDetails('vitalik.eth')
+console.log(domainDetails)
+/* 
+  {
+    name: "vitalik.eth",
+    label: "vitalik",
+    labelhash: "0x123456abc...",
+    owner: "0x123abcdef...",
+    resolver: "0x1234abdef...",
+    addr: "0xabcdef1234...",
+    content: "bzz://Qra123..."
+  }
+*/
+```
+
+### `async function getDomainDetails(name): EthersTransactionResponse`
+
+This is a helper function to get all the details for a particular domain.
+
+#### Arguments
+
+name (string): An ENS name
+
+#### Returns
+
+DomainDetails (object): {
+name (string): ENS name
+label (string): label of the name
+labelhash: labelhash of the name
+owner (string): Address of the controller of the ENS name
+resolver (string): ENS resolver contract
+addr (string): Address the ENS name resolves to
+content (string): Contenthash the ENS name resolves to
+}
+
+#### Example
+
+```js
+import { getDomainDetails } from '@ensdomains/ui'
+
+const domainDetails = await getDomainDetails('vitalik.eth')
+console.log(domainDetails)
+/* 
+  {
+    name: "vitalik.eth",
+    label: "vitalik",
+    labelhash: "0x123456abc...",
+    owner: "0x123abcdef...",
+    resolver: "0x1234abdef...",
+    addr: "0xabcdef1234...",
+    content: "bzz://Qra123..."
+  }
+*/
+```
 
 const getSubDomains = name => {
 {

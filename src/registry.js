@@ -272,8 +272,7 @@ export async function getDomainDetails(name) {
     label: nameArray[0],
     labelhash,
     owner,
-    resolver,
-    subDomains: []
+    resolver
   }
 
   const hasResolver = parseInt(node.resolver, 16) !== 0
@@ -289,7 +288,7 @@ export async function getDomainDetails(name) {
   }
 }
 
-export const getSubDomains = async name => {
+export const getSubdomains = async name => {
   const startBlock = await ensStartBlock()
   const namehash = getNamehash(name)
   const rawLogs = await getENSEvent('NewOwner', {
