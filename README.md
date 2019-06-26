@@ -502,7 +502,7 @@ console.log(domainDetails)
 */
 ```
 
-### `async function getSubDomains(name): EthersTransactionResponse`
+### `async function getSubdomains(name): EthersTransactionResponse`
 
 This is a helper function to get all the subdomains for a name. Internally it will search for events for the `NewOwner` and filter out duplicates.
 
@@ -525,9 +525,9 @@ Subdomains (Array<Subdomain>): {
 #### Example
 
 ```js
-import { getSubDomains } from '@ensdomains/ui'
+import { getSubdomains } from '@ensdomains/ui'
 
-const subdomains = await getDomainDetails('vitalik.eth')
+const subdomains = await getSubdomains('vitalik.eth')
 console.log(subdomains)
 /* 
   [{

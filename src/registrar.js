@@ -337,19 +337,6 @@ export const renew = async (label, duration) => {
   return permanentRegistrarController.renew(label, duration, { value: price })
 }
 
-export const startAuctionsAndBid = async (
-  hashes,
-  sealedBid,
-  decoyBidAmount
-) => {
-  const Registrar = await getLegacyAuctionRegistrar()
-  const web3 = await getWeb3()
-
-  return Registrar.startAuctionsAndBid(hashes, sealedBid(), {
-    value: web3.utils.toWei(decoyBidAmount, 'ether')
-  })
-}
-
 export const transferRegistrars = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
   const hash = labelhash(label)
