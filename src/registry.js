@@ -196,29 +196,9 @@ export async function setContenthash(name, content) {
   return Resolver.setContenthash(namehash, encodedContenthash)
 }
 
-export async function checkSubDomain(subDomain, domain) {
+export async function checkSubdomain(subdomain, domain) {
   const { ENS } = await getENS()
-  return ENS.owner(subDomain + '.' + domain).call()
-}
-
-export async function buildSubDomain(label, node, owner) {
-  const labelhash = getLabelhash(label)
-  const resolver = await getResolver(label + '.' + node)
-  const subDomain = {
-    resolver,
-    labelhash,
-    owner,
-    label,
-    node,
-    name: label + '.' + node
-  }
-
-  if (parseInt(resolver, 16) === 0) {
-    return subDomain
-  } else {
-    const resolverAndNode = await getResolverDetails(subDomain)
-    return resolverAndNode
-  }
+  return ENS.owner(subdomain + '.' + domain)
 }
 
 export async function createSubdomain(subdomain, domain) {

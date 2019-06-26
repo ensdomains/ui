@@ -266,25 +266,130 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-function setContent(name, content) {
-}
+### `async function setContent(name, content): EthersTransactionResponse (DEPRECATED)`
 
-function setContenthash(name, content) {
-}
+Can only be called by the controller of the name.
 
-function checkSubDomain(subDomain, domain) {
-}
+This function has been deprecated in favour of `setContenthash` which uses [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md)
 
-function buildSubDomain(label, node, owner) {
-}
+#### Arguments
 
-function createSubdomain(subdomain, domain) {
-}
+name (string): An ENS name
+content (string): A content hash
 
-function deleteSubdomain(subdomain, domain) {
-}
+#### Returns
 
-function claimAndSetReverseRecordName(name, gas) {
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setContent } from '@ensdomains/ui'
+
+const tx = await setContent('vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function setContenthash(name, content): EthersTransactionResponse`
+
+Can only be called by the controller of the name.
+
+#### Arguments
+
+name (string): An ENS name
+contenthash (string): A content hash defined by [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md)
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setContent } from '@ensdomains/ui'
+
+const tx = await setContent('vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function checkSubdomain(label, name): EthersTransactionResponse`
+
+#### Arguments
+
+label (string): The label of the subdomain you want you check
+name (string): An ENS name
+
+#### Returns
+
+subdomainExists (Boolean): Whether or not the subdomain exists
+
+#### Example
+
+```js
+import { setContent } from '@ensdomains/ui'
+
+const subDomainExists = await checkSubDomain('sub', 'vitalik.eth')
+console.log(subDomainExists)
+// true/false
+```
+
+### `async function createSubdomain(label, name): EthersTransactionResponse`
+
+Can only be called by the controller of the name. This is a simplified version of `setSubnodeOwner` which it uses underneath to create a subdomain. It will automatically set the owner to the parent's names owner. If you call this function on an existing subdomain, it will change its owner to the current parent owner.
+
+#### Arguments
+
+label (string): ENS Label e.g: sub (sub.vitalik.eth)
+name (string): An ENS name
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { deleteSubdomain } from '@ensdomains/ui'
+
+const tx = await createSubdomain('sub', 'vitalik.eth')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function deleteSubdomain(label, name): EthersTransactionResponse`
+
+Can only be called by the controller of the name. This function will set the controller to `0x000...` and if it has a resolver, it will set the resolver `0x000...`, which will be a second transaction. Alternatively you can manually call `setSubnodeOwner` and set the controller to `0x000...`
+
+#### Arguments
+
+label (string): ENS Label e.g: sub (sub.vitalik.eth)
+name (string): An ENS name
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { deleteSubdomain } from '@ensdomains/ui'
+
+const tx = await deleteSubdomain('sub', 'vitalik.eth')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+function claimAndSetReverseRecordName(name) {
 }
 
 function setReverseRecordName(name) {
