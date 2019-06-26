@@ -4,7 +4,8 @@ Most functions in this library are async functions and therefore return promises
 
 ## Contents
 
-[setupENS()](#async-function-setupensname-void)
+- [setupENS()](#async-function-setupensname-void)
+- [getOwner()](#async-function-getownername-address)
 
 ## Setup
 
