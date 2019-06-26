@@ -190,7 +190,9 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setOwner(name, newOwner): EthersTransactionResponse`
+### `async function setSubnodeOwner(name, newOwner): EthersTransactionResponse`
+
+Can only be called by the controller of the name or the controller of the parent name.
 
 #### Arguments
 
@@ -214,11 +216,55 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-function setResolver(name, resolver) {
-}
+### `async function setResolver(name, resolver): EthersTransactionResponse`
 
-function setAddress(name, address) {
-}
+Can only be called by the controller of the name.
+
+#### Arguments
+
+name (string): An ENS name
+resolver (string): An ENS [resolver contract](https://github.com/ensdomains/resolvers)
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setResolver } from '@ensdomains/ui'
+
+const tx = await setResolver('vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function setAddress(name, address): EthersTransactionResponse`
+
+Can only be called by the controller of the name.
+
+#### Arguments
+
+name (string): An ENS name
+address (string): An Ethereum address
+
+#### Returns
+
+EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+
+#### Example
+
+```js
+import { setAddress } from '@ensdomains/ui'
+
+const tx = await setAddress('vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
 
 function setContent(name, content) {
 }
