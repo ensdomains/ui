@@ -517,9 +517,9 @@ console.log(domainDetails)
 */
 ```
 
-### `async function getDomainDetails(name): EthersTransactionResponse`
+### `async function getSubDomains(name): EthersTransactionResponse`
 
-This is a helper function to get all the details for a particular domain.
+This is a helper function to get all the subdomains for a name. Internally it will search for events for the `NewOwner` and filter out duplicates.
 
 #### Arguments
 
@@ -527,48 +527,31 @@ name (string): An ENS name
 
 #### Returns
 
-DomainDetails (object): {
+Subdomains (Array<Subdomain>): {
 name (string): ENS name
 label (string): label of the name
 labelhash: labelhash of the name
 owner (string): Address of the controller of the ENS name
-resolver (string): ENS resolver contract
-addr (string): Address the ENS name resolves to
-content (string): Contenthash the ENS name resolves to
+decrypted (boolean): Whether the label is known or not
 }
 
 #### Example
 
 ```js
-import { getDomainDetails } from '@ensdomains/ui'
+import { getSubDomains } from '@ensdomains/ui'
 
-const domainDetails = await getDomainDetails('vitalik.eth')
-console.log(domainDetails)
+const subdomains = await getDomainDetails('vitalik.eth')
+console.log(subdomains)
 /* 
-  {
+  [{
     name: "vitalik.eth",
     label: "vitalik",
     labelhash: "0x123456abc...",
     owner: "0x123abcdef...",
-    resolver: "0x1234abdef...",
-    addr: "0xabcdef1234...",
-    content: "bzz://Qra123..."
-  }
+    decrypted: true
+  }, ...]
 */
 ```
-
-const getSubDomains = name => {
-{
-return {
-label: labels[index],
-labelHash: logs[index].label,
-decrypted: labels[index] !== null,
-node: name,
-name: `${labels[index] || encodeLabelhash(logs[index].label)}.${name}`,
-owner
-}
-}
-}
 
 function registerTestdomain(label) {
 }
