@@ -2,6 +2,10 @@
 
 Most functions in this library are async functions and therefore return promises which can be awaited or chained with `.then`.
 
+## Contents
+
+[setupENS()](#async-function-setupensname-void)
+
 ## Setup
 
 Setup for the library is done by calling the `setupENS` function. It can be optionally provided with a customProvider and an ENS address. Generally you won't need this unless you are running ganache.
