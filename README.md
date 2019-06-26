@@ -6,6 +6,24 @@ Most functions in this library are async functions and therefore return promises
 
 - [setupENS()](#async-function-setupensname-void)
 - [getOwner()](#async-function-getownername-address)
+- [getResolver()](#async-function-getresolvername-address)
+- [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
+- [getResolverWithLabelhash()](#async-function-getresolverwithlabelhashlabelhash-nodehash-address)
+- [getAddress()](#async-function-getaddressname-address)
+- [getContent()](#async-function-getcontentname-contenthash)
+- [getName()](#async-function-getnameaddress-name)
+- [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-etherstransactionresponse)
+- [setResolver()](#async-function-setresolvername-resolver-etherstransactionresponse)
+- [setAddress()](#async-function-setaddressname-address-etherstransactionresponse)
+- [setContent() DEPRECATED](#async-function-setaddressname-address-etherstransactionresponse)
+- [setContenthash()](#async-function-setaddressname-address-etherstransactionresponse)
+- [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
+- [createSubdomain()](#async-function-createsubdomainlabel-name-etherstransactionresponse)
+- [deleteSubdomain()](#async-function-deletesubdomainlabel-name-etherstransactionresponse)
+- [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-etherstransactionresponse)
+- [setReverseRecord](#async-function-setreverserecordnamename-etherstransactionresponse)
+- [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
+- [getSubdomains](#async-function-getdomaindetailsname-etherstransactionresponse)
 
 ## Setup
 
@@ -28,7 +46,7 @@ window.addEventListener('load', async () => {
 
 options (object): {
 customProvider (object): Provider object from web3
-ensAddress (string): Address of the ENS registry
+ensAddress (String): Address of the ENS registry
 }
 
 #### Example
@@ -45,7 +63,7 @@ window.addEventListener('load', async () => {
 
 #### Arguments
 
-name (string): An ENS name (e.g: vitalik.eth)
+name (String): An ENS name (e.g: vitalik.eth)
 
 #### Returns
 
@@ -64,7 +82,7 @@ const owner = await getOwner('vitalik.eth')
 
 #### Arguments
 
-name (string): An ENS name (e.g: vitalik.eth)
+name (String): An ENS name (e.g: vitalik.eth)
 
 #### Returns
 
@@ -78,31 +96,12 @@ const owner = await getResolver('vitalik.eth')
 // 0x123...
 ```
 
-### `async function getResolverWithLabelHash(labelHash, nodeHash): Address`
-
-#### Arguments
-
-labelHash (string): Hash of the label e.g vitalik (vitalik.eth)
-nodeHash (string): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
-
-#### Returns
-
-resolver (address): Ethereum address of the resolver contract
-
-#### Example
-
-```js
-import { getResolverWithLabelHash } from '@ensdomains/ui'
-const resolver = await getResolver(labelHash, nodeHash)
-// 0x123...
-```
-
 ### `async function getOwnerWithLabelHash(labelHash, nodeHash): Address`
 
 #### Arguments
 
-labelHash (string): Hash of the label e.g vitalik (vitalik.eth)
-nodeHash (string): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
+labelHash (String): Hash of the label e.g vitalik (vitalik.eth)
+nodeHash (String): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
 
 #### Returns
 
@@ -116,11 +115,30 @@ const owner = await getOwnerWithLabelHash(labelHash, nodeHash)
 // 0x123...
 ```
 
-### `async function getAddr(name): Address`
+### `async function getResolverWithLabelHash(labelHash, nodeHash): Address`
 
 #### Arguments
 
-name (string): An ENS name (e.g: vitalik.eth)
+labelHash (String): Hash of the label e.g vitalik (vitalik.eth)
+nodeHash (String): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
+
+#### Returns
+
+resolver (address): Ethereum address of the resolver contract
+
+#### Example
+
+```js
+import { getResolverWithLabelHash } from '@ensdomains/ui'
+const resolver = await getResolver(labelHash, nodeHash)
+// 0x123...
+```
+
+### `async function getAddress(name): Address`
+
+#### Arguments
+
+name (String): An ENS name (e.g: vitalik.eth)
 
 #### Returns
 
@@ -129,8 +147,8 @@ address (address): An Ethereum address that was set on the resolver
 #### Example
 
 ```js
-import { getAddr } from '@ensdomains/ui'
-const addr = await getAddr('vitalik.eth')
+import { getAddress } from '@ensdomains/ui'
+const addr = await getAddress('vitalik.eth')
 // 0x123...
 ```
 
@@ -138,11 +156,11 @@ const addr = await getAddr('vitalik.eth')
 
 #### Arguments
 
-name (string): An ENS name (e.g: vitalik.eth)
+name (String): An ENS name (e.g: vitalik.eth)
 
 #### Returns
 
-contentHash (string): A content hash string for IPFS or swarm
+contentHash (String): A content hash String for IPFS or swarm
 
 #### Example
 
@@ -158,11 +176,11 @@ This function gets the reverse record of an address.
 
 #### Arguments
 
-address (string): An Ethereum address
+address (String): An Ethereum address
 
 #### Returns
 
-name (string): An ENS name
+name (String): An ENS name
 
 #### Example
 
@@ -176,8 +194,8 @@ const name = await getName('0x123abc...')
 
 #### Arguments
 
-name (string): An ENS name
-newOwner (string): An Ethereum address or contract
+name (String): An ENS name
+newOwner (String): An Ethereum address or contract
 
 #### Returns
 
@@ -201,9 +219,9 @@ Can only be called by the controller of the name or the controller of the parent
 
 #### Arguments
 
-label (string): ENS Label e.g: sub (sub.vitalik.eth)
-name (string): An ENS name
-newOwner (string): An Ethereum address or contract
+label (String): ENS Label e.g: sub (sub.vitalik.eth)
+name (String): An ENS name
+newOwner (String): An Ethereum address or contract
 
 #### Returns
 
@@ -227,8 +245,8 @@ Can only be called by the controller of the name.
 
 #### Arguments
 
-name (string): An ENS name
-resolver (string): An ENS [resolver contract](https://github.com/ensdomains/resolvers)
+name (String): An ENS name
+resolver (String): An ENS [resolver contract](https://github.com/ensdomains/resolvers)
 
 #### Returns
 
@@ -252,8 +270,8 @@ Can only be called by the controller of the name.
 
 #### Arguments
 
-name (string): An ENS name
-address (string): An Ethereum address
+name (String): An ENS name
+address (String): An Ethereum address
 
 #### Returns
 
@@ -279,8 +297,8 @@ This function has been deprecated in favour of `setContenthash` which uses [EIP1
 
 #### Arguments
 
-name (string): An ENS name
-content (string): A content hash
+name (String): An ENS name
+content (String): A content hash
 
 #### Returns
 
@@ -304,8 +322,8 @@ Can only be called by the controller of the name.
 
 #### Arguments
 
-name (string): An ENS name
-contenthash (string): A content hash defined by [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md)
+name (String): An ENS name
+contenthash (String): A content hash defined by [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md)
 
 #### Returns
 
@@ -323,12 +341,12 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function checkSubdomain(label, name): EthersTransactionResponse`
+### `async function checkSubdomain(label, name): Boolean`
 
 #### Arguments
 
-label (string): The label of the subdomain you want you check
-name (string): An ENS name
+label (String): The label of the subdomain you want you check
+name (String): An ENS name
 
 #### Returns
 
@@ -350,8 +368,8 @@ Can only be called by the controller of the name. This is a simplified version o
 
 #### Arguments
 
-label (string): ENS Label e.g: sub (sub.vitalik.eth)
-name (string): An ENS name
+label (String): ENS Label e.g: sub (sub.vitalik.eth)
+name (String): An ENS name
 
 #### Returns
 
@@ -375,8 +393,8 @@ Can only be called by the controller of the name. This function will set the con
 
 #### Arguments
 
-label (string): ENS Label e.g: sub (sub.vitalik.eth)
-name (string): An ENS name
+label (String): ENS Label e.g: sub (sub.vitalik.eth)
+name (String): An ENS name
 
 #### Returns
 
@@ -400,7 +418,7 @@ This function will claim your Ethereum address on the reverse registrar, setup t
 
 #### Arguments
 
-name (string): An ENS name
+name (String): An ENS name
 
 #### Returns
 
@@ -424,7 +442,7 @@ This function will set your reverse record name given that a resolver is already
 
 #### Arguments
 
-name (string): An ENS name
+name (String): An ENS name
 
 #### Returns
 
@@ -448,19 +466,19 @@ This is a helper function to get all the details for a particular domain.
 
 #### Arguments
 
-name (string): An ENS name
+name (String): An ENS name
 
 #### Returns
 
 ```
 DomainDetails (object): {
-  name (string): ENS name
-  label (string): label of the name
-  labelhash: labelhash of the name
-  owner (string): Address of the controller of the ENS name
-  resolver (string): ENS resolver contract
-  addr (string): Address the ENS name resolves to
-  content (string): Contenthash the ENS name resolves to
+  name (String): ENS name
+  label (String): label of the name
+  labelhash (String): labelhash of the name
+  owner (String): Address of the controller of the ENS name
+  resolver (String): ENS resolver contract
+  addr (String): Address the ENS name resolves to
+  content (String): Contenthash the ENS name resolves to
 }
 ```
 
@@ -490,16 +508,16 @@ This is a helper function to get all the subdomains for a name. Internally it wi
 
 #### Arguments
 
-name (string): An ENS name
+name (String): An ENS name
 
 #### Returns
 
 ```
 Subdomains (Array<Subdomain>): {
-  name (string): ENS name
-  label (string): label of the name
+  name (String): ENS name
+  label (String): label of the name
   labelhash: labelhash of the name
-  owner (string): Address of the controller of the ENS name
+  owner (String): Address of the controller of the ENS name
   decrypted (boolean): Whether the label is known or not
 }
 ```
