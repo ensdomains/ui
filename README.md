@@ -539,9 +539,3 @@ console.log(subdomains)
   }, ...]
 */
 ```
-
-function registerTestdomain(label) {
-}
-
-function expiryTimes(label, owner) {
-}
