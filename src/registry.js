@@ -197,22 +197,17 @@ export async function createSubdomain(domain) {
   }
 }
 
-export async function deleteSubdomain(subdomain, domain) {
-  const name = subdomain + '.' + domain
+export async function deleteSubdomain(name) {
   const resolver = await getResolver(name)
   const account = await getAccount()
   if (parseInt(resolver, 16) !== 0) {
-    const tx = await setSubnodeOwner(subdomain, domain, account)
-    tx.wait()
+    const tx = await setSubnodeOwner(name, account)
+    await tx.wait()
     const tx2 = await setResolver(name, 0)
-    tx2.wait()
+    await tx2.wait()
   }
   try {
-    return setSubnodeOwner(
-      subdomain,
-      domain,
-      '0x0000000000000000000000000000000000000000'
-    )
+    return setSubnodeOwner(name, '0x0000000000000000000000000000000000000000')
   } catch (e) {
     console.log('error deleting subdomain', e)
   }

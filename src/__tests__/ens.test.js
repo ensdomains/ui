@@ -22,7 +22,7 @@ import {
   createSubdomain,
   deleteSubdomain,
   getDomainDetails,
-  getSubDomains,
+  getSubdomains,
   getName,
   claimAndSetReverseRecordName
 } from '../registry'
@@ -179,7 +179,7 @@ describe('Blockchain tests', () => {
       const newOwner = await getOwner('b.subdomain.eth')
       // Verify owner is the user and therefore the subdomain exists
       expect(newOwner).toBe(accounts[0])
-      const tx2 = await deleteSubdomain('b', 'subdomain.eth')
+      const tx2 = await deleteSubdomain('b.subdomain.eth')
       await tx2.wait()
       const deletedOwner = await getOwner('b.subdomain.eth')
       // Verify owner has been set to 0x00... to ensure deletion
@@ -315,7 +315,7 @@ describe('Blockchain tests', () => {
     })
 
     test('getSubdomains gets all subdomains', async () => {
-      const domains = await getSubDomains('eth')
+      const domains = await getSubdomains('eth')
       expect(domains.length).toBeGreaterThan(0)
       expect(domains[0].label).toBe('subdomain')
     })
