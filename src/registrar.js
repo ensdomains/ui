@@ -226,17 +226,23 @@ export const getDNSEntry = async (name, tldOwner, owner) => {
       }
     } else {
       if (result.nsec) {
-        if (owner) {
-          dnsRegistrar.state = 7
-        } else {
-          dnsRegistrar.state = 2
+        if(result.results.length === 4){
+          // DNS entry does not exist
+          dnsRegistrar.state = 1
+        }else if(result.results.length === 6){
+          // DNS entry exists but _ens subdomain does not exist
+          dnsRegistrar.state = 3
+        }else{
+          throw(`DNSSEC results cannot be ${result.results.length}`)
         }
       } else {
-        dnsRegistrar.state = 1
+        // DNSSEC is not enabled
+        dnsRegistrar.state = 2
       }
     }
   } catch (e) {
-    console.log(e)
+    console.log('Problem fetching data from DNS', e)
+    // Problem fetching data from DNS
     dnsRegistrar.state = 0
   }
   return dnsRegistrar
