@@ -27,9 +27,7 @@ Most functions in this library are async functions and therefore return promises
   - [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
   - [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
 
-- ## Eth Registrar
-
-- ## [Transaction Response]()
+- [Transaction Response](#transaction-response)
 
 ## Setup
 
