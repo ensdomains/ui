@@ -109,7 +109,7 @@ describe('Blockchain tests', () => {
       const owner = await getOwner('subnode.resolver.eth')
       const accounts = await getAccounts()
       expect(owner).toBe('0x0000000000000000000000000000000000000000')
-      const tx = await setSubnodeOwner('subnode', 'resolver.eth', accounts[0])
+      const tx = await setSubnodeOwner('subnode.resolver.eth', accounts[0])
       await tx.wait()
       const newOwner = await getOwner('subnode.resolver.eth')
       expect(newOwner).toBe(accounts[0])
@@ -119,11 +119,7 @@ describe('Blockchain tests', () => {
       const owner = await getOwner('givethisaway.awesome.eth')
       const accounts = await getAccounts()
       expect(owner).toBe('0x0000000000000000000000000000000000000000')
-      const tx = await setSubnodeOwner(
-        'givethisaway',
-        'awesome.eth',
-        accounts[0]
-      )
+      const tx = await setSubnodeOwner('givethisaway.awesome.eth', accounts[0])
       await tx.wait()
       const owner2 = await getOwner('givethisaway.awesome.eth')
       expect(owner2).toBe(accounts[0])
@@ -166,7 +162,7 @@ describe('Blockchain tests', () => {
       const oldOwner = await getOwner('a.subdomain.eth')
       // expect the initial owner to be no one
       expect(oldOwner).toBe('0x0000000000000000000000000000000000000000')
-      const tx = await createSubdomain('new', 'resolver.eth')
+      const tx = await createSubdomain('new.resolver.eth')
       await tx.wait()
       const newOwner = await getOwner('new.resolver.eth')
       // Verify owner is the user and therefore the subdomain exists
@@ -178,7 +174,7 @@ describe('Blockchain tests', () => {
       const oldOwner = await getOwner('b.subdomain.eth')
       // expect the initial owner to be no one
       expect(oldOwner).toBe('0x0000000000000000000000000000000000000000')
-      const tx = await createSubdomain('b', 'subdomain.eth')
+      const tx = await createSubdomain('b.subdomain.eth')
       await tx.wait()
       const newOwner = await getOwner('b.subdomain.eth')
       // Verify owner is the user and therefore the subdomain exists
@@ -200,7 +196,7 @@ describe('Blockchain tests', () => {
     })
 
     test('getAddress returns 0x000', async () => {
-      const tx = await createSubdomain('addr', 'testing.eth')
+      const tx = await createSubdomain('addr.testing.eth')
       await tx.wait()
       const resolverAddr = await getAddress('resolver.eth')
       const tx2 = await setResolver('addr.testing.eth', resolverAddr)
