@@ -29,6 +29,8 @@ Most functions in this library are async functions and therefore return promises
 
 - ## Eth Registrar
 
+- ## [Transaction Response]()
+
 ## Setup
 
 Setup for the library is done by calling the `setupENS` function. It can be optionally provided with a customProvider and an ENS address. Generally you won't need this unless you are running ganache.
@@ -546,4 +548,50 @@ console.log(subdomains)
     decrypted: true
   }, ...]
 */
+```
+
+## Transaction Response
+
+The transaction response object gets return the promise of all state modifying functions of the library. The most important properties is the `wait` function which can be called by the initial response, before the transaction has been mined. You can await this promise and it will give you the transaction receipt. The transaction receipt, is the same as the transaction response object, except is has a `blockHash`, `blockNumber` and `timestamp` of the block the transaction has been included in.
+
+```js
+{
+    // Only avaibable for unmined transaction
+    wait: function(){}, //this function is to wait for the transaction to be mined
+    // Only available for mined transactions
+    blockHash: "0x7f20ef60e9f91896b7ebb0962a18b8defb5e9074e62e1b6cde992648fe78794b",
+    blockNumber: 3346463,
+    timestamp: 1489440489,
+
+    // Exactly one of these will be present (send vs. deploy contract)
+    // They will always be a properly formatted checksum address
+    creates: null,
+    to: "0xc149Be1bcDFa69a94384b46A1F91350E5f81c1AB",
+
+    // The transaction hash
+    hash: "0xf517872f3c466c2e1520e35ad943d833fdca5a6739cfea9e686c4c1b3ab1022e",
+
+    // See above "Transaction Requests" for details
+    data: "0x",
+    from: "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8",
+    gasLimit: utils.bigNumberify("90000"),
+    gasPrice: utils.bigNumberify("21488430592"),
+    nonce: 0,
+    value: utils.parseEther(1.0017071732629267),
+
+    // The chain ID; 0 indicates replay-attack vulnerable
+    // (eg. 1 = Homestead mainnet, 3 = Ropsten testnet)
+    chainId: 1,
+
+    // The signature of the transaction (TestRPC may fail to include these)
+    r: "0x5b13ef45ce3faf69d1f40f9d15b0070cc9e2c92f3df79ad46d5b3226d7f3d1e8",
+    s: "0x535236e497c59e3fba93b78e124305c7c9b20db0f8531b015066725e4bb31de6",
+    v: 37,
+
+    // The raw transaction (TestRPC may be missing this)
+    raw: "0xf87083154262850500cf6e0083015f9094c149be1bcdfa69a94384b46a1f913" +
+           "50e5f81c1ab880de6c75de74c236c8025a05b13ef45ce3faf69d1f40f9d15b0" +
+           "070cc9e2c92f3df79ad46d5b3226d7f3d1e8a0535236e497c59e3fba93b78e1" +
+           "24305c7c9b20db0f8531b015066725e4bb31de6",
+}
 ```
