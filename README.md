@@ -106,8 +106,8 @@ const owner = await getResolver('vitalik.eth')
 
 #### Arguments
 
-labelHash (String): Hash of the label e.g vitalik (vitalik.eth)
-nodeHash (String): Hash of the rest of the name (minus the library) e.g eth (vitalik.eth)
+labelHash (String): Sha3 hash of the label e.g vitalik (vitalik.eth)
+nodeHash (String): Namehash of the rest of the name (minus the label) e.g eth (vitalik.eth)
 
 #### Returns
 
