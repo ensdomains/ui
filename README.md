@@ -46,11 +46,13 @@ window.addEventListener('load', async () => {
 
 ### `async function setupENS(name): void`
 
+setupENS must be called before anything other function in this library. We recommend calling it in a window.load event to make sure that your web3 object has loaded. You can provide a custom provider yourself, but by default it will look for `window.web3` or `window.ethereum` if you do not give it a provider. We use the custom provider when we need to run automated tests with ganache. You can also it pass it the registry address, but by default it will derive the network you are on and instantiate ENS using that network's registry. You only need to provider it with an ens address if you are on a private network.
+
 #### Arguments
 
 options (object): {
-customProvider (object): Provider object from web3
-ensAddress (String): Address of the ENS registry
+customProvider (object): Provider object from web3 (optional)
+ensAddress (String): Address of the ENS registry (optional)
 }
 
 #### Example
