@@ -144,9 +144,12 @@ export async function setOwner(name, newOwner) {
   return ENS.setOwner(namehash, newOwner)
 }
 
-export async function setSubnodeOwner(unnormalizedLabel, node, newOwner) {
+export async function setSubnodeOwner(unnormalizedName, newOwner) {
   const { ENS } = await getENS()
-  const label = normalize(unnormalizedLabel)
+  const name = normalize(unnormalizedName)
+  const nameArray = name.split('.')
+  const label = nameArray[0]
+  const node = nameArray.slice(1).join('.')
   const labelhash = getLabelhash(label)
   const parentNamehash = getNamehash(node)
   return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
@@ -185,10 +188,10 @@ export async function checkSubdomain(subdomain, domain) {
   return ENS.owner(subdomain + '.' + domain)
 }
 
-export async function createSubdomain(subdomain, domain) {
+export async function createSubdomain(domain) {
   const account = await getAccount()
   try {
-    return setSubnodeOwner(subdomain, domain, account)
+    return setSubnodeOwner(domain, account)
   } catch (e) {
     console.log('error creating subdomain', e)
   }

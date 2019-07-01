@@ -27,8 +27,7 @@ Most functions in this library are async functions and therefore return promises
   - [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
   - [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
 
-- Eth Registrar
-  -
+- ## Eth Registrar
 
 ## Setup
 
@@ -220,11 +219,10 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 
 ### `async function setSubnodeOwner(name, newOwner): EthersTransactionResponse`
 
-Can only be called by the controller of the name or the controller of the parent name.
+Can only be called by the controller of the parent name.
 
 #### Arguments
 
-label (String): ENS Label e.g: sub (sub.vitalik.eth)
 name (String): An ENS name
 newOwner (String): An Ethereum address or contract
 
@@ -237,7 +235,7 @@ EthersTransactionObject (object): An [Ethers Transaction Response Object](https:
 ```js
 import { setSubnodeOwner } from '@ensdomains/ui'
 
-const tx = await setSubnodeOwner('sub', 'vitalik.eth', '0x123abc')
+const tx = await setSubnodeOwner('sub.vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -367,14 +365,13 @@ console.log(subDomainExists)
 // true/false
 ```
 
-### `async function createSubdomain(label, name): EthersTransactionResponse`
+### `async function createSubdomain(name): EthersTransactionResponse`
 
 Can only be called by the controller of the name. This is a simplified version of `setSubnodeOwner` which it uses underneath to create a subdomain. It will automatically set the owner to the parent's names owner. If you call this function on an existing subdomain, it will change its owner to the current parent owner.
 
 #### Arguments
 
-label (String): ENS Label e.g: sub (sub.vitalik.eth)
-name (String): An ENS name
+name (String): An ENS name (sub.vitalik.eth)
 
 #### Returns
 
