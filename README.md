@@ -14,18 +14,18 @@ Most functions in this library are async functions and therefore return promises
   - [getAddress()](#async-function-getaddressname-address)
   - [getContent()](#async-function-getcontentname-contenthash)
   - [getName()](#async-function-getnameaddress-name)
-  - [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-etherstransactionresponse)
-  - [setResolver()](#async-function-setresolvername-resolver-etherstransactionresponse)
-  - [setAddress()](#async-function-setaddressname-address-etherstransactionresponse)
-  - [setContent() DEPRECATED](#async-function-setcontentname-content-etherstransactionresponse-deprecated)
-  - [setContenthash()](#async-function-setcontenthashname-content-etherstransactionresponse)
+  - [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-transactionresponse)
+  - [setResolver()](#async-function-setresolvername-resolver-transactionresponse)
+  - [setAddress()](#async-function-setaddressname-address-transactionresponse)
+  - [setContent() DEPRECATED](#async-function-setcontentname-content-transactionresponse-deprecated)
+  - [setContenthash()](#async-function-setcontenthashname-content-transactionresponse)
   - [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
-  - [createSubdomain()](#async-function-createsubdomainlabel-name-etherstransactionresponse)
-  - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-etherstransactionresponse)
-  - [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-etherstransactionresponse)
-  - [setReverseRecord](#async-function-setreverserecordnamename-etherstransactionresponse)
-  - [getDomainDetails](#async-function-getdomaindetailsname-etherstransactionresponse)
-  - [getSubdomains](#async-function-getsubdomainsname-etherstransactionresponse)
+  - [createSubdomain()](#async-function-createsubdomainlabel-name-transactionresponse)
+  - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-transactionresponse)
+  - [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-transactionresponse)
+  - [setReverseRecord](#async-function-setreverserecordnamename-transactionresponse)
+  - [getDomainDetails](#async-function-getdomaindetailsname-transactionresponse)
+  - [getSubdomains](#async-function-getsubdomainsname-transactionresponse)
 
 - [Transaction Response](#transaction-response)
 
@@ -200,7 +200,7 @@ const name = await getName('0x123abc...')
 // vitalik.eth
 ```
 
-### `async function setOwner(name, newOwner): EthersTransactionResponse`
+### `async function setOwner(name, newOwner): TransactionResponse`
 
 #### Arguments
 
@@ -209,7 +209,7 @@ newOwner (String): An Ethereum address or contract
 
 #### Returns
 
-EthersTransactionObject (object): An [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -223,7 +223,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setSubnodeOwner(name, newOwner): EthersTransactionResponse`
+### `async function setSubnodeOwner(name, newOwner): TransactionResponse`
 
 Can only be called by the controller of the parent name.
 
@@ -234,7 +234,7 @@ newOwner (String): An Ethereum address or contract
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -248,7 +248,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setResolver(name, resolver): EthersTransactionResponse`
+### `async function setResolver(name, resolver): TransactionResponse`
 
 Can only be called by the controller of the name.
 
@@ -259,7 +259,7 @@ resolver (String): An ENS [resolver contract](https://github.com/ensdomains/reso
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -273,7 +273,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setAddress(name, address): EthersTransactionResponse`
+### `async function setAddress(name, address): TransactionResponse`
 
 Can only be called by the controller of the name.
 
@@ -284,7 +284,7 @@ address (String): An Ethereum address
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -298,7 +298,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setContent(name, content): EthersTransactionResponse (DEPRECATED)`
+### `async function setContent(name, content): TransactionResponse (DEPRECATED)`
 
 Can only be called by the controller of the name.
 
@@ -311,7 +311,7 @@ content (String): A content hash
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -325,7 +325,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setContenthash(name, content): EthersTransactionResponse`
+### `async function setContenthash(name, content): TransactionResponse`
 
 Can only be called by the controller of the name.
 
@@ -336,7 +336,7 @@ contenthash (String): A content hash defined by [EIP1577](https://github.com/eth
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -371,7 +371,7 @@ console.log(subDomainExists)
 // true/false
 ```
 
-### `async function createSubdomain(name): EthersTransactionResponse`
+### `async function createSubdomain(name): TransactionResponse`
 
 Can only be called by the controller of the name. This is a simplified version of `setSubnodeOwner` which it uses underneath to create a subdomain. It will automatically set the owner to the parent's names owner. If you call this function on an existing subdomain, it will change its owner to the current parent owner.
 
@@ -381,7 +381,7 @@ name (String): An ENS name (sub.vitalik.eth)
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -395,7 +395,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function deleteSubdomain(label, name): EthersTransactionResponse`
+### `async function deleteSubdomain(label, name): TransactionResponse`
 
 Can only be called by the controller of the name. This function will set the controller to `0x000...` and if it has a resolver, it will set the resolver `0x000...`, which will be a second transaction. Alternatively you can manually call `setSubnodeOwner` and set the controller to `0x000...`
 
@@ -406,7 +406,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -420,7 +420,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function claimAndSetReverseRecordName(name): EthersTransactionResponse`
+### `async function claimAndSetReverseRecordName(name): TransactionResponse`
 
 This function will claim your Ethereum address on the reverse registrar, setup the reverse resolver and setup your name on the resolver all in one transaction. It can also be used to change your reverse record name to something else.
 
@@ -430,7 +430,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -444,7 +444,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function setReverseRecordName(name): EthersTransactionResponse`
+### `async function setReverseRecordName(name): TransactionResponse`
 
 This function will set your reverse record name given that a resolver is already present on your ethereum address reverse name e.g. `123456abcdef.addr.reverse`. This can be useful if you don't want to use `claimAndSetReverseRecordName` to setup the default reverse registrar
 
@@ -454,7 +454,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
+transaction (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -468,7 +468,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
-### `async function getDomainDetails(name): EthersTransactionResponse`
+### `async function getDomainDetails(name): DomainDetails`
 
 This is a helper function to get all the details for a particular domain.
 
@@ -510,7 +510,7 @@ console.log(domainDetails)
 */
 ```
 
-### `async function getSubdomains(name): EthersTransactionResponse`
+### `async function getSubdomains(name): Array<Subdomain>`
 
 This is a helper function to get all the subdomains for a name. Internally it will search for events for the `NewOwner` and filter out duplicates.
 
@@ -554,7 +554,7 @@ The transaction response object gets return the promise of all state modifying f
 
 ```js
 {
-    // Only avaibable for unmined transaction
+    // Only available for unmined transactions
     wait: function(){}, //this function is to wait for the transaction to be mined
     // Only available for mined transactions
     blockHash: "0x7f20ef60e9f91896b7ebb0962a18b8defb5e9074e62e1b6cde992648fe78794b",
