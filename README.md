@@ -209,7 +209,7 @@ newOwner (String): An Ethereum address or contract
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): An [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -234,7 +234,7 @@ newOwner (String): An Ethereum address or contract
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -259,7 +259,7 @@ resolver (String): An ENS [resolver contract](https://github.com/ensdomains/reso
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -311,7 +311,7 @@ content (String): A content hash
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -336,7 +336,7 @@ contenthash (String): A content hash defined by [EIP1577](https://github.com/eth
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -381,7 +381,7 @@ name (String): An ENS name (sub.vitalik.eth)
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -406,7 +406,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -430,7 +430,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
@@ -454,7 +454,7 @@ name (String): An ENS name
 
 #### Returns
 
-EthersTransactionObject (object): An [Ethers Transaction Response Object](https://docs.ethers.io/ethers.js/html/api-providers.html#transaction-response)
+EthersTransactionObject (object): [Transaction Response Object](#transaction-response)
 
 #### Example
 
