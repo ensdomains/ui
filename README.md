@@ -140,6 +140,8 @@ const resolver = await getResolver(labelHash, nodeHash)
 
 ### `async function getAddress(name): Address`
 
+This function will call the resolver to get the address, if it cannot find a resolver, it will return `0x000...` as a fallback
+
 #### Arguments
 
 name (String): An ENS name (e.g: vitalik.eth)
@@ -157,6 +159,8 @@ const addr = await getAddress('vitalik.eth')
 ```
 
 ### `async function getContent(name): Contenthash`
+
+This function will call the resolver to get the contentHash, if it cannot find a resolver, it will return `0x000...` as a fallback. Otherwise it will return a contenthash in text format, as defined by [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md).
 
 #### Arguments
 
