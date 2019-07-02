@@ -187,43 +187,58 @@ export const isDNSRegistrar = async name => {
 }
 
 export const getDNSEntry = async (name, tldOwner, owner) => {
-  if (dnsRegistrar) {
-    return dnsRegistrar
-  } else {
+  // if (dnsRegistrar) {
+  //   return dnsRegistrar
+  // } else {
     dnsRegistrar = {}
-  }
+  // }
   const web3 = await getWeb3Read()
   const provider = web3._web3Provider
+  console.log(0, {name, tldOwner, owner, provider})
   const registrarjs = new DNSRegistrarJS(provider, tldOwner)
+  
   try {
+    console.log(1, owner)
     const claim = await registrarjs.claim(name)
+    console.log(1.1, owner)
     const result = claim.getResult()
+    console.log(2, result)
     dnsRegistrar.claim = claim
     dnsRegistrar.result = result
     if (result.found) {
-      dnsRegistrar.dnsOwner = claim.getOwner()
+      console.log(3, web3.utils)
       const proofs = result.proofs
       const proof = proofs[proofs.length - 1]
       const proven = await claim.oracle.knownProof(proof)
-      const dnsOwnerLower =
-        dnsRegistrar &&
-        dnsRegistrar.dnsOwner &&
-        dnsRegistrar.dnsOwner.toLowerCase()
-      const ownerLower = owner && owner.toLowerCase()
-      const sameOwner = dnsOwnerLower === ownerLower
-      if (proven.matched && sameOwner) {
-        dnsRegistrar.state = 5
-      } else if (owner === EMPTY_ADDRESS) {
+      dnsRegistrar.dnsOwner = claim.getOwner()
+      if (!dnsRegistrar.dnsOwner) {
+        // DNS Record is invalid
         dnsRegistrar.state = 4
-      } else if (!sameOwner) {
-        dnsRegistrar.state = 6
-      } else {
-        if (owner) {
-          dnsRegistrar.state = 7
-        } else {
-          dnsRegistrar.state = 3
-        }
+      }else{
+        const dnsOwnerLower =
+          dnsRegistrar &&
+          dnsRegistrar.dnsOwner &&
+          dnsRegistrar.dnsOwner.toLowerCase()
+
+        dnsRegistrar.state = 5
       }
+
+      console.log(4, {proven, dnsRegistrar})
+      // const ownerLower = owner && owner.toLowerCase()
+      // const sameOwner = dnsOwnerLower === ownerLower
+      // if (proven.matched && sameOwner) {
+      //   dnsRegistrar.state = 5
+      // } else if (owner === EMPTY_ADDRESS) {
+      //   dnsRegistrar.state = 4
+      // } else if (!sameOwner) {
+      //   dnsRegistrar.state = 6
+      // } else {
+      //   if (owner) {
+      //     dnsRegistrar.state = 7
+      //   } else {
+      //     dnsRegistrar.state = 3
+      //   }
+      // }
     } else {
       if (result.nsec) {
         if(result.results.length === 4){
@@ -245,6 +260,8 @@ export const getDNSEntry = async (name, tldOwner, owner) => {
     // Problem fetching data from DNS
     dnsRegistrar.state = 0
   }
+  // dnsRegistrar.state = Math.floor(Math.random() * 5)
+  console.log('dnsRegistrar.state', dnsRegistrar.state)
   return dnsRegistrar
 }
 
@@ -412,11 +429,18 @@ const releaseDeed = async label => {
   return ethRegistrar.releaseDeed(hash)
 }
 
-const submitProof = async () => {
-  const { claim, result } = await getDNSEntry()
+const submitProof = async (name, parentOwner) => {
+  console.log('submitProof1', name, parentOwner)
+  // await getDNSEntry(name, tldowner, owner)
+  // const tldowner = (await getOwner(tld)).toLocaleLowerCase()
+  const { claim, result } = await getDNSEntry(name, parentOwner)
+  console.log('submitProof2', { claim, result })
   const account = await getAccount()
+  console.log('submitProof3', {account})
   const data = await claim.oracle.getAllProofs(result, {})
+  console.log('submitProof4', {data})
   const allProven = await claim.oracle.allProven(result)
+  console.log('submitProof5', {allProven})
   let tx
   if (allProven) {
     tx = claim.registrar.methods.claim(claim.encodedName, data[1])
