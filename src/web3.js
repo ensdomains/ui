@@ -1,5 +1,4 @@
 import { ethers } from 'ethers'
-import { emptyAddress } from './utils/index'
 
 let provider
 let signer
@@ -19,6 +18,10 @@ export async function setupWeb3({ customProvider }) {
   if (window && window.ethereum) {
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
+
+    window.ethereum.on('accountsChanged', function() {
+      window.location.reload()
+    })
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
     provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
@@ -91,6 +94,7 @@ export async function getSignerOrProvider() {
   const provider = await getWeb3()
   try {
     const signer = provider.getSigner()
+    await signer.getAddress()
     return signer
   } catch (e) {
     return provider
