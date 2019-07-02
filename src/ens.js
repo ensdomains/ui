@@ -90,7 +90,7 @@ async function getTestRegistrarContract() {
   const provider = await getWeb3()
   const namehash = getNamehash('test')
   const testRegistrarAddr = await ENS.owner(namehash)
-  const registrar = new web3.eth.Contract(
+  const registrar = new Contract(
     testRegistrarAddr,
     testRegistrarContract,
     provider
