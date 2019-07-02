@@ -550,7 +550,7 @@ console.log(subdomains)
 
 ## Transaction Response
 
-The transaction response object gets return the promise of all state modifying functions of the library. The most important properties is the `wait` function which can be called by the initial response, before the transaction has been mined. You can await this promise and it will give you the transaction receipt. The transaction receipt, is the same as the transaction response object, except is has a `blockHash`, `blockNumber` and `timestamp` of the block the transaction has been included in.
+The transaction response object gets returned by the promise of all state modifying functions of the library. The most important properties is the `wait` function which can be called by the initial response, before the transaction has been mined. You can await this promise and it will give you the transaction receipt. The transaction receipt, is the same as the transaction response object, except is has a `blockHash`, `blockNumber` and `timestamp` of the block the transaction has been included in.
 
 ```js
 {
