@@ -318,15 +318,15 @@ export const getSubdomains = async name => {
 
 export async function registerTestdomain(label) {
   const { registrar } = await getTestRegistrarContract()
-  const namehash = await utils.keccak256(label)
+  const labelhash = getLabelhash(label)
   const account = await getAccount()
-  return registrar.register(namehash, account)
+  return registrar.register(labelhash, account)
 }
 
 export async function expiryTimes(label, owner) {
   const { registrar } = await getTestRegistrarContract()
-  const namehash = await utils.keccak256(label)
-  const result = await registrar.expiryTimes(namehash).call()
+  const labelhash = getLabelhash(label)
+  const result = await registrar.expiryTimes(labelhash)
   if (result > 0) {
     return new Date(result * 1000)
   }
