@@ -186,27 +186,20 @@ export const isDNSRegistrar = async name => {
   return isDNSSECSupported
 }
 
-export const getDNSEntry = async (name, tldOwner, owner) => {
+export const getDNSEntry = async (name, parentOwner, owner) => {
   // if (dnsRegistrar) {
   //   return dnsRegistrar
   // } else {
-    dnsRegistrar = {}
-  // }
+  dnsRegistrar = {}
   const web3 = await getWeb3Read()
   const provider = web3._web3Provider
-  console.log(0, {name, tldOwner, owner, provider})
-  const registrarjs = new DNSRegistrarJS(provider, tldOwner)
-  
+  const registrarjs = new DNSRegistrarJS(provider, parentOwner)
   try {
-    console.log(1, owner)
     const claim = await registrarjs.claim(name)
-    console.log(1.1, owner)
     const result = claim.getResult()
-    console.log(2, result)
     dnsRegistrar.claim = claim
     dnsRegistrar.result = result
     if (result.found) {
-      console.log(3, web3.utils)
       const proofs = result.proofs
       const proof = proofs[proofs.length - 1]
       const proven = await claim.oracle.knownProof(proof)
@@ -430,17 +423,10 @@ const releaseDeed = async label => {
 }
 
 const submitProof = async (name, parentOwner) => {
-  console.log('submitProof1', name, parentOwner)
-  // await getDNSEntry(name, tldowner, owner)
-  // const tldowner = (await getOwner(tld)).toLocaleLowerCase()
   const { claim, result } = await getDNSEntry(name, parentOwner)
-  console.log('submitProof2', { claim, result })
   const account = await getAccount()
-  console.log('submitProof3', {account})
   const data = await claim.oracle.getAllProofs(result, {})
-  console.log('submitProof4', {data})
   const allProven = await claim.oracle.allProven(result)
-  console.log('submitProof5', {allProven})
   let tx
   if (allProven) {
     tx = claim.registrar.methods.claim(claim.encodedName, data[1])
