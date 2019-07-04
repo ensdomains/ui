@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 let provider
 let signer
 let readOnly = false
+let requested = false
 
 export async function setupWeb3({
   customProvider,
@@ -101,13 +102,26 @@ export async function getSignerOrProvider() {
     await signer.getAddress()
     return signer
   } catch (e) {
-    return provider
+    if (window.ethereum) {
+      try {
+        if (requested === true) return provider
+        await window.ethereum.enable()
+        const signer = await provider.getSigner()
+        await signer.getAddress()
+        return signer
+      } catch (e) {
+        requested = true
+        return provider
+      }
+    } else {
+      return provider
+    }
   }
 }
 
 export async function getAccount() {
+  const provider = await getWeb3()
   try {
-    const provider = await getWeb3()
     const signer = await provider.getSigner()
     return signer.getAddress()
   } catch (e) {
