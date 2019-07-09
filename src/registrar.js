@@ -155,13 +155,14 @@ const getPermanentEntry = async label => {
     }
     // This is used for old registrar to figure out when the name can be migrated.
     obj.migrationLockPeriod = parseInt(await Registrar.MIGRATION_LOCK_PERIOD())
+    obj.gracePeriod = await Registrar.GRACE_PERIOD()    
     obj.transferPeriodEnds = await Registrar.transferPeriodEnds()
-    // Returns registrar address if owned by new registrar
-    obj.ownerOf = await Registrar.ownerOf(labelHash)
     const nameExpires = await Registrar.nameExpires(labelHash)
     if (nameExpires > 0) {
       obj.nameExpires = new Date(nameExpires * 1000)
     }
+    // Returns registrar address if owned by new registrar
+    obj.ownerOf = await Registrar.ownerOf(labelHash)
   } catch (e) {
     console.log('Error getting permanent registrar entry', e)
     obj.error = e.message
@@ -177,7 +178,8 @@ const getEntry = async name => {
     currentBlockDate: new Date(block.timestamp * 1000),
     registrant: 0,
     transferEndDate: null,
-    isNewRegistrar: false
+    isNewRegistrar: false,
+    gracePeriodEndDate: null
   }
 
   try {
@@ -198,12 +200,19 @@ const getEntry = async name => {
       // Owned
       ret.state = 2
     }
-    if (permEntry.ownerOf) {
-      ret.isNewRegistrar = true
-      ret.registrant = permEntry.ownerOf
-    }
     if (permEntry.nameExpires) {
       ret.expiryTime = permEntry.nameExpires
+    }
+    if (permEntry.ownerOf) {
+      ret.registrant = permEntry.ownerOf
+      ret.isNewRegistrar = true
+    }else if (permEntry.nameExpires && permEntry.gracePeriod){
+      const gracePeriodEndDate = new Date((new Date() ).getTime() +  (permEntry.gracePeriod * 1000))
+      // It is within grace period
+      if (permEntry.nameExpires < new Date() < gracePeriodEndDate){
+        ret.isNewRegistrar = true
+        ret.gracePeriodEndDate = gracePeriodEndDate
+      }
     }
   } catch (e) {
     console.log('error getting permanent registry', e)
