@@ -175,15 +175,17 @@ const getPermanentEntry = async label => {
 }
 
 export const isDNSRegistrar = async name => {
-  const { registrar } = await getDnsRegistrarContract(name)
-  let isDNSSECSupported = false
-  try {
-    isDNSSECSupported = await registrar
-      .supportsInterface(dnsRegistrarInterfaceId)
-  } catch (e) {
-    console.log({e})
-  }
-  return isDNSSECSupported
+  // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
+  return name === 'xyz'
+  // const { registrar } = await getDnsRegistrarContract(name)
+  // let isDNSSECSupported = false
+  // try {
+  //   isDNSSECSupported = await registrar
+  //     .supportsInterface(dnsRegistrarInterfaceId)
+  // } catch (e) {
+  //   console.log({e})
+  // }
+  // return isDNSSECSupported
 }
 
 export const getDNSEntry = async (name, parentOwner, owner) => {
