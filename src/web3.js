@@ -32,7 +32,6 @@ export async function setupWeb3({
     provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
-    console.log('_web3Provider2', provider._web3Provider)
     return { provider, signer }
   } else {
     try {
@@ -40,7 +39,6 @@ export async function setupWeb3({
       await fetch(url)
       console.log('local node active')
       provider = new ethers.providers.JsonRpcProvider(url)
-      console.log('_web3Provider3', provider._web3Provider)
     } catch (error) {
       if (
         error.readyState === 4 &&
@@ -54,7 +52,6 @@ export async function setupWeb3({
         )
         readOnly = true
         provider = new ethers.getDefaultProvider('homestead')
-        console.log('_web3Provider4', provider._web3Provider)
         return { provider, signer }
       }
     }
