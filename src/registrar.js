@@ -9,11 +9,11 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
-import { EMPTY_ADDRESS } from './utils/records'
+// import { EMPTY_ADDRESS } from './utils/records'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId,
-  dnsRegistrar: dnsRegistrarInterfaceId
+  // dnsRegistrar: dnsRegistrarInterfaceId
 } = interfaces
 
 let ethRegistrar
@@ -174,7 +174,7 @@ const getPermanentEntry = async label => {
   }
 }
 
-export const isDNSRegistrar = async name => {
+const isDNSRegistrar = async name => {
   // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
   return name === 'xyz'
   // const { registrar } = await getDnsRegistrarContract(name)
@@ -188,10 +188,8 @@ export const isDNSRegistrar = async name => {
   // return isDNSSECSupported
 }
 
-export const getDNSEntry = async (name, parentOwner, owner) => {
-  // if (dnsRegistrar) {
-  //   return dnsRegistrar
-  // } else {
+const getDNSEntry = async (name, parentOwner, owner) => {
+  // Do not cache as it needs to be refetched on "Refresh"
   dnsRegistrar = {}
   const web3 = await getWeb3Read()
   const provider = web3._web3Provider
@@ -203,37 +201,14 @@ export const getDNSEntry = async (name, parentOwner, owner) => {
     dnsRegistrar.result = result
     if (result.found) {
       const proofs = result.proofs
-      const proof = proofs[proofs.length - 1]
-      const proven = await claim.oracle.knownProof(proof)
       dnsRegistrar.dnsOwner = claim.getOwner()
       if (!dnsRegistrar.dnsOwner) {
         // DNS Record is invalid
         dnsRegistrar.state = 4
       }else{
-        const dnsOwnerLower =
-          dnsRegistrar &&
-          dnsRegistrar.dnsOwner &&
-          dnsRegistrar.dnsOwner.toLowerCase()
-
+        // Valid reacord is found
         dnsRegistrar.state = 5
       }
-
-      console.log(4, {proven, dnsRegistrar})
-      // const ownerLower = owner && owner.toLowerCase()
-      // const sameOwner = dnsOwnerLower === ownerLower
-      // if (proven.matched && sameOwner) {
-      //   dnsRegistrar.state = 5
-      // } else if (owner === EMPTY_ADDRESS) {
-      //   dnsRegistrar.state = 4
-      // } else if (!sameOwner) {
-      //   dnsRegistrar.state = 6
-      // } else {
-      //   if (owner) {
-      //     dnsRegistrar.state = 7
-      //   } else {
-      //     dnsRegistrar.state = 3
-      //   }
-      // }
     } else {
       if (result.nsec) {
         if(result.results.length === 4){
@@ -255,8 +230,6 @@ export const getDNSEntry = async (name, parentOwner, owner) => {
     // Problem fetching data from DNS
     dnsRegistrar.state = 0
   }
-  // dnsRegistrar.state = Math.floor(Math.random() * 5)
-  console.log('dnsRegistrar.state', dnsRegistrar.state)
   return dnsRegistrar
 }
 
@@ -449,6 +422,8 @@ const submitProof = async (name, parentOwner) => {
 
 export {
   getEntry,
+  getDNSEntry,
+  isDNSRegistrar,
   transferOwner,
   reclaim,
   getRentPrice,
