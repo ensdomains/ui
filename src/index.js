@@ -1,8 +1,12 @@
 import { setupWeb3 } from './web3'
 import { getENS } from './ens'
 
-export async function setupENS({ customProvider, ensAddress } = {}) {
-  await setupWeb3({ customProvider })
+export async function setupENS({
+  customProvider,
+  ensAddress,
+  reloadOnAccountsChange
+} = {}) {
+  await setupWeb3({ customProvider, reloadOnAccountsChange })
   await getENS(ensAddress)
 }
 

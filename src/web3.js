@@ -3,8 +3,12 @@ import { ethers } from 'ethers'
 let provider
 let signer
 let readOnly = false
+let requested = false
 
-export async function setupWeb3({ customProvider }) {
+export async function setupWeb3({
+  customProvider,
+  reloadOnAccountsChange = false
+}) {
   if (provider) {
     return { provider, signer }
   }
@@ -18,9 +22,11 @@ export async function setupWeb3({ customProvider }) {
   if (window && window.ethereum) {
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
-    window.ethereum.on('accountsChanged', function() {
-      window.location.reload()
-    })
+    if (window.ethereum.on && reloadOnAccountsChange) {
+      window.ethereum.on('accountsChanged', function() {
+        window.location.reload()
+      })
+    }
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
     provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
@@ -99,13 +105,26 @@ export async function getSignerOrProvider() {
     await signer.getAddress()
     return signer
   } catch (e) {
-    return provider
+    if (window.ethereum) {
+      try {
+        if (requested === true) return provider
+        await window.ethereum.enable()
+        const signer = await provider.getSigner()
+        await signer.getAddress()
+        return signer
+      } catch (e) {
+        requested = true
+        return provider
+      }
+    } else {
+      return provider
+    }
   }
 }
 
 export async function getAccount() {
+  const provider = await getWeb3()
   try {
-    const provider = await getWeb3()
     const signer = await provider.getSigner()
     return signer.getAddress()
   } catch (e) {
