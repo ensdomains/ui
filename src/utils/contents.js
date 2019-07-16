@@ -69,20 +69,3 @@ export function encodeContenthash(text) {
   }
   return encoded
 }
-
-// export function validateContent(encoded) {
-//   let codec
-//   try {
-//     codec = contentHash.getCodec(encoded)
-//   } catch (e) {
-//     console.warn(e.message)
-//     return false
-//   }
-
-//   return (
-//     codec === 'ipfs-ns' ||
-//     codec === 'swarm-ns' ||
-//     codec === 'onion' ||
-//     codec === 'onion3'
-//   )
-// }
