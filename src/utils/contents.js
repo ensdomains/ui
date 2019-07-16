@@ -1,4 +1,4 @@
-import contentHash from 'content-hash'
+import contentHash from 'content-hash/src'
 import { utils } from 'ethers'
 
 const supportedCodecs = ['ipfs-ns', 'swarm-ns', 'onion', 'onion3']
@@ -54,8 +54,8 @@ export function encodeContenthash(text) {
         encoded = '0x' + contentHash.fromIpfs(content)
       } else if (contentType === 'bzz') {
         encoded = '0x' + contentHash.fromSwarm(content)
-      } else if (contentType === 'onion') {//In the future insert here general encoding given by contentHash library
-        encoded = '0x' + contentHash.fromOnion(content)
+      } else if (contentType === 'onion') {
+        encoded = '0x' + contentHash.encode('onion', content);
       } else {
         console.warn('Unsupported protocol or invalid value', {
           contentType,
@@ -70,19 +70,19 @@ export function encodeContenthash(text) {
   return encoded
 }
 
-export function validateContent(encoded) {
-  let codec
-  try {
-    codec = contentHash.getCodec(encoded)
-  } catch (e) {
-    console.warn(e.message)
-    return false
-  }
+// export function validateContent(encoded) {
+//   let codec
+//   try {
+//     codec = contentHash.getCodec(encoded)
+//   } catch (e) {
+//     console.warn(e.message)
+//     return false
+//   }
 
-  return (
-    codec === 'ipfs-ns' ||
-    codec === 'swarm-ns' ||
-    codec === 'onion' ||
-    codec === 'onion3'
-  )
-}
+//   return (
+//     codec === 'ipfs-ns' ||
+//     codec === 'swarm-ns' ||
+//     codec === 'onion' ||
+//     codec === 'onion3'
+//   )
+// }
