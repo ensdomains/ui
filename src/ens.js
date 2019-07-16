@@ -168,12 +168,9 @@ async function getENSEvent(event, { topics, fromBlock }) {
   return parsed
 }
 
-async function getDnsRegistrarContract(name) {
-  const { ENS, web3 } = await getENS()
-  const provider = await getWeb3()
-  const namehash = getNamehash(name)
-  const address = await ENS.owner(namehash)
-  const registrar = new Contract(address,dnsRegistrarContract, provider)
+async function getDnsRegistrarContract(parentOwner) {
+  const signer = await getSignerOrProvider()
+  const registrar = new Contract(parentOwner, dnsRegistrarContract, signer)
   return {
     registrar: registrar,
     web3

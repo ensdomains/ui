@@ -9,11 +9,9 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
-// import { EMPTY_ADDRESS } from './utils/records'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
-  permanentRegistrar: permanentRegistrarInterfaceId,
-  // dnsRegistrar: dnsRegistrarInterfaceId
+  permanentRegistrar: permanentRegistrarInterfaceId
 } = interfaces
 
 let ethRegistrar
@@ -399,25 +397,18 @@ const releaseDeed = async label => {
 
 const submitProof = async (name, parentOwner) => {
   const { claim, result } = await getDNSEntry(name, parentOwner)
-  const account = await getAccount()
+  const { registrar } = await getDnsRegistrarContract(parentOwner)
   const data = await claim.oracle.getAllProofs(result, {})
   const allProven = await claim.oracle.allProven(result)
-  let tx
   if (allProven) {
-    tx = claim.registrar.methods.claim(claim.encodedName, data[1])
+    return registrar.claim(claim.encodedName, data[1])
   } else {
-    tx = claim.registrar.methods.proveAndClaim(
+    return registrar.proveAndClaim(
       claim.encodedName,
       data[0],
       data[1]
     )
   }
-  const gas = await tx.estimateGas({ from: account })
-  return () =>
-    tx.send({
-      from: account,
-      gas: gas
-    })
 }
 
 export {
