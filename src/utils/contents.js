@@ -55,7 +55,12 @@ export function encodeContenthash(text) {
       } else if (contentType === 'bzz') {
         encoded = '0x' + contentHash.fromSwarm(content)
       } else if (contentType === 'onion') {
-        encoded = '0x' + contentHash.encode('onion', content);
+        console.log(content.length)
+        if(content.length == 16) {
+          encoded = '0x' + contentHash.encode('onion', content);  
+        } else if(content.length == 56) {
+          encoded = '0x' + contentHash.encode('onion3', content);  
+        }
       } else {
         console.warn('Unsupported protocol or invalid value', {
           contentType,

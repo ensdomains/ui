@@ -83,29 +83,29 @@ describe('test contenthash utility functions', () => {
 
   test('encodeContentHash returns encoded hash', () => {
     const encodedContentHash = encodeContenthash(
-      'onion://vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd'
+      'onion://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd'
     )
 
     expect(encodedContentHash).toBe(
-      '0xbc03767777367962616c34626437737a6d676e6379727575637067666b7161687a64646933376b7463656f336168376e676d636f706e70797964'
+      '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
     )
   })
 
   test('decodeContentHash returns decoded contenthash', () => {
     const decoded = decodeContenthash(
-      '0xbc03767777367962616c34626437737a6d676e6379727575637067666b7161687a64646933376b7463656f336168376e676d636f706e70797964'
+      '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
     )
 
     expect(decoded.decoded).toBe(
-      'vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd'
+      'p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd'
     )
-    expect(decoded.protocolType).toBe('onion')
+    expect(decoded.protocolType).toBe('onion3')
     expect(decoded.error).toBe(undefined)
   })
 
   test('isValidContent returns true for real contenthash', () => {
     const valid = isValidContenthash(
-      '0xbc03767777367962616c34626437737a6d676e6379727575637067666b7161687a64646933376b7463656f336168376e676d636f706e70797964'
+      '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
     )
 
     expect(valid).toBe(true)
