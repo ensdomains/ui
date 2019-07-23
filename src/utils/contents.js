@@ -67,7 +67,7 @@ export function encodeContenthash(text) {
         })
       }
     } catch (err) {
-      console.warn('Error encoding content hash', { text, encoded })
+      console.warn('Error encoding content hash', { text, encoded }, err)
       throw 'Error encoding content hash'
     }
   }
