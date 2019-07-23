@@ -4,7 +4,7 @@ import {
   isValidContenthash
 } from './contents'
 
-describe('test contenthash utility functions', () => {
+describe('test contenthash utility functions for swarm', () => {
   test('encodeContentHash returns encoded hash', () => {
     const encodedContentHash = encodeContenthash(
       'bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
@@ -15,7 +15,7 @@ describe('test contenthash utility functions', () => {
     )
   })
 
-  test('decodeContentHash returns decoded contenthash', () => {
+  test('decodeContentHash returns decoded contenthash for swarm', () => {
     const decoded = decodeContenthash(
       '0xe40101fa011b20d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
     )
@@ -51,37 +51,27 @@ describe('test contenthash utility functions', () => {
     expect(valid).toBe(false)
   })
 
-  test('encodeContentHash returns encoded hash', () => {
-    const encodedContentHash = encodeContenthash(
-      'onion://3g2upl4pq6kufc4m'
-    )
+  test('encodeContentHash returns encoded hash for onion protocol', () => {
+    const encodedContentHash = encodeContenthash('onion://3g2upl4pq6kufc4m')
 
-    expect(encodedContentHash).toBe(
-      '0xbc0333673275706c347071366b756663346d'
-    )
+    expect(encodedContentHash).toBe('0xbc0333673275706c347071366b756663346d')
   })
 
-  test('decodeContentHash returns decoded contenthash', () => {
-    const decoded = decodeContenthash(
-      '0xbc0333673275706c347071366b756663346d'
-    )
+  test('decodeContentHash returns decoded contenthash for onion protocol', () => {
+    const decoded = decodeContenthash('0xbc0333673275706c347071366b756663346d')
 
-    expect(decoded.decoded).toBe(
-      '3g2upl4pq6kufc4m'
-    )
+    expect(decoded.decoded).toBe('3g2upl4pq6kufc4m')
     expect(decoded.protocolType).toBe('onion')
     expect(decoded.error).toBe(undefined)
   })
 
-  test('isValidContent returns true for real contenthash', () => {
-    const valid = isValidContenthash(
-      '0xbc0333673275706c347071366b756663346d'
-    )
+  test('isValidContent returns true for real contenthash of onion protocol', () => {
+    const valid = isValidContenthash('0xbc0333673275706c347071366b756663346d')
 
     expect(valid).toBe(true)
   })
 
-  test('encodeContentHash returns encoded hash', () => {
+  test('encodeContentHash returns encoded hash for onion protocol', () => {
     const encodedContentHash = encodeContenthash(
       'onion://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd'
     )
@@ -91,7 +81,7 @@ describe('test contenthash utility functions', () => {
     )
   })
 
-  test('decodeContentHash returns decoded contenthash', () => {
+  test('decodeContentHash returns decoded contenthash for onion 3 protocol', () => {
     const decoded = decodeContenthash(
       '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
     )
@@ -103,7 +93,7 @@ describe('test contenthash utility functions', () => {
     expect(decoded.error).toBe(undefined)
   })
 
-  test('isValidContent returns true for real contenthash', () => {
+  test('isValidContent returns true for real contenthash for onion 3 protocol', () => {
     const valid = isValidContenthash(
       '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
     )
