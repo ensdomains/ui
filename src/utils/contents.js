@@ -43,7 +43,7 @@ export function encodeContenthash(text) {
   let content, contentType
   let encoded = false
   if (!!text) {
-    let matched = text.match(/^(ipfs|bzz|onion):\/\/(.*)/)
+    let matched = text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/)
     if (matched) {
       contentType = matched[1]
       content = matched[2]
@@ -51,14 +51,19 @@ export function encodeContenthash(text) {
 
     try {
       if (contentType === 'ipfs') {
-        encoded = '0x' + contentHash.fromIpfs(content)
+        if(content.length >= 4) {
+          encoded = '0x' + contentHash.fromIpfs(content)
+        }
       } else if (contentType === 'bzz') {
-        encoded = '0x' + contentHash.fromSwarm(content)
+        if(content.length >= 4) {
+          encoded = '0x' + contentHash.fromSwarm(content)
+        }
       } else if (contentType === 'onion') {
-        console.log(content.length)
         if(content.length == 16) {
           encoded = '0x' + contentHash.encode('onion', content);  
-        } else if(content.length == 56) {
+        } 
+      } else if (contentType === 'onion3') {
+        if(content.length == 56) {
           encoded = '0x' + contentHash.encode('onion3', content);  
         }
       } else {
@@ -69,7 +74,7 @@ export function encodeContenthash(text) {
       }
     } catch (err) {
       console.warn('Error encoding content hash', { text, encoded })
-      throw 'Error encoding content hash'
+      //throw 'Error encoding content hash'
     }
   }
   return encoded
