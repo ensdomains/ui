@@ -1,4 +1,4 @@
-import contentHash from 'content-hash/src'
+import contentHash from 'content-hash'
 import { utils } from 'ethers'
 
 const supportedCodecs = ['ipfs-ns', 'swarm-ns', 'onion', 'onion3']
