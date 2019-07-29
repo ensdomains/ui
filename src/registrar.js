@@ -205,7 +205,11 @@ const getDNSEntry = async (name, parentOwner, owner) => {
         dnsRegistrar.state = 4
       }else{
         // Valid reacord is found
-        dnsRegistrar.state = 5
+        if(dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()){
+          dnsRegistrar.state = 5
+        }else{
+          dnsRegistrar.state = 6
+        }
       }
     } else {
       if (result.nsec) {
