@@ -158,11 +158,19 @@ export async function getNetworkId() {
 }
 
 export async function getBlock() {
-  const provider = await getWeb3()
-  const block = await provider.getBlockNumber()
-  const blockDetails = await provider.getBlock(block)
-  return {
-    number: blockDetails.number,
-    timestamp: blockDetails.timestamp
+  try {
+    const provider = await getWeb3()
+    const block = await provider.getBlockNumber()
+    const blockDetails = await provider.getBlock(block)
+    return {
+      number: blockDetails.number,
+      timestamp: blockDetails.timestamp
+    }
+  } catch (e) {
+    console.log('error getting block details', e)
+    return {
+      number: 0,
+      timestamp: 0
+    }
   }
 }
