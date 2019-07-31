@@ -155,7 +155,7 @@ const getPermanentEntry = async label => {
     }
     // This is used for old registrar to figure out when the name can be migrated.
     obj.migrationLockPeriod = parseInt(await Registrar.MIGRATION_LOCK_PERIOD())
-    obj.gracePeriod = await Registrar.GRACE_PERIOD()    
+    obj.gracePeriod = await Registrar.GRACE_PERIOD()
     obj.transferPeriodEnds = await Registrar.transferPeriodEnds()
     const nameExpires = await Registrar.nameExpires(labelHash)
     if (nameExpires > 0) {
@@ -206,10 +206,11 @@ const getEntry = async name => {
     if (permEntry.ownerOf) {
       ret.registrant = permEntry.ownerOf
       ret.isNewRegistrar = true
-    }else if (permEntry.nameExpires && permEntry.gracePeriod){
-      const gracePeriodEndDate = new Date((new Date() ).getTime() +  (permEntry.gracePeriod * 1000))
+    }else if (permEntry.nameExpires){
+      const currentTime = new Date(ret.currentBlockDate)
+      const gracePeriodEndDate = new Date(currentTime.getTime() +  (permEntry.gracePeriod * 1000))
       // It is within grace period
-      if (permEntry.nameExpires < new Date() < gracePeriodEndDate){
+      if (permEntry.nameExpires < currentTime < gracePeriodEndDate){
         ret.isNewRegistrar = true
         ret.gracePeriodEndDate = gracePeriodEndDate
       }
