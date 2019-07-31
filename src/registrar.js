@@ -1,5 +1,6 @@
-import { getENS, getNamehash, getResolverContract } from './ens'
-import { getAccount, getBlock, getSignerOrProvider, getNetworkId } from './web3'
+
+import { getENS, getNamehash, getResolverContract, getDnsRegistrarContract } from './ens'
+import { getWeb3Read, getAccount, getBlock, getSignerOrProvider, getNetworkId } from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -7,13 +8,14 @@ import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/buil
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
-
+import DNSRegistrarJS from '@ensdomains/dnsregistrar'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
 } = interfaces
 
 let ethRegistrar
+let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
 
@@ -169,6 +171,70 @@ const getPermanentEntry = async label => {
   } finally {
     return obj
   }
+}
+
+const isDNSRegistrar = async name => {
+  // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
+  return name === 'xyz'
+  // const { registrar } = await getDnsRegistrarContract(name)
+  // let isDNSSECSupported = false
+  // try {
+  //   isDNSSECSupported = await registrar
+  //     .supportsInterface(dnsRegistrarInterfaceId)
+  // } catch (e) {
+  //   console.log({e})
+  // }
+  // return isDNSSECSupported
+}
+
+const getDNSEntry = async (name, parentOwner, owner) => {
+  // Do not cache as it needs to be refetched on "Refresh"
+  dnsRegistrar = {}
+  const web3 = await getWeb3Read()
+  const provider = web3._web3Provider
+  const registrarjs = new DNSRegistrarJS(provider, parentOwner)
+  try {
+    const claim = await registrarjs.claim(name)
+    const result = claim.getResult()
+    dnsRegistrar.claim = claim
+    dnsRegistrar.result = result
+    if (result.found) {
+      const proofs = result.proofs
+      dnsRegistrar.dnsOwner = claim.getOwner()
+      if (!dnsRegistrar.dnsOwner) {
+        // DNS Record is invalid
+        dnsRegistrar.state = 4
+      }else{
+        // Valid reacord is found
+        if(!owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()){
+          dnsRegistrar.state = 5
+          // Out of sync
+        }else{
+          dnsRegistrar.state = 6
+        }
+      }
+    } else {
+      if (result.nsec) {
+        if(result.results.length === 4){
+          // DNS entry does not exist
+          dnsRegistrar.state = 1
+        }else if(result.results.length === 6){
+          // DNS entry exists but _ens subdomain does not exist
+          dnsRegistrar.state = 3
+        }else{
+          throw(`DNSSEC results cannot be ${result.results.length}`)
+        }
+      } else {
+        // DNSSEC is not enabled
+        dnsRegistrar.state = 2
+      }
+    }
+  } catch (e) {
+    console.log('Problem fetching data from DNS', e)
+    // Problem fetching data from DNS
+    dnsRegistrar.state = 0
+  }
+  return dnsRegistrar
 }
 
 const getEntry = async name => {
@@ -344,8 +410,26 @@ const releaseDeed = async label => {
   return ethRegistrar.releaseDeed(hash)
 }
 
+const submitProof = async (name, parentOwner) => {
+  const { claim, result } = await getDNSEntry(name, parentOwner)
+  const { registrar } = await getDnsRegistrarContract(parentOwner)
+  const data = await claim.oracle.getAllProofs(result, {})
+  const allProven = await claim.oracle.allProven(result)
+  if (allProven) {
+    return registrar.claim(claim.encodedName, data[1])
+  } else {
+    return registrar.proveAndClaim(
+      claim.encodedName,
+      data[0],
+      data[1]
+    )
+  }
+}
+
 export {
   getEntry,
+  getDNSEntry,
+  isDNSRegistrar,
   transferOwner,
   reclaim,
   getRentPrice,
@@ -355,5 +439,6 @@ export {
   register,
   renew,
   transferRegistrars,
-  releaseDeed
+  releaseDeed,
+  submitProof
 }
