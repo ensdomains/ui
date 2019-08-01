@@ -30,6 +30,10 @@ export function decodeContenthash(encoded) {
   return { protocolType, decoded, error }
 }
 
+export function validateContent(encoded){
+  return contentHash.isHashOfType(encoded, contentHash.Types.ipfs) || contentHash.isHashOfType(encoded, contentHash.Types.swarm)
+}
+
 export function isValidContenthash(encoded) {
   try {
     const codec = contentHash.getCodec(encoded)
