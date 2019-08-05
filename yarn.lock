@@ -834,7 +834,7 @@
     truffle "^5.0.5"
     web3-utils "^1.0.0-beta.48"
 
-"@ensdomains/mock@^1.0.12":
+"@ensdomains/mock@^1.0.13":
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-1.0.13.tgz#8f6a40461d6134b4f5011c3dff1eda68fc74915d"
   integrity sha512-Czn7+aAuEcgTywqC8T2RA6Wf/MdI8xNbqyoG4FpeL3uBQZQ3kR6kancX0DkEYxe3G11V78Jfc5NN3aih7ItxtQ==
