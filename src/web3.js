@@ -25,11 +25,11 @@ export async function setupWeb3({
     try {
       const iframeProvider = new IFrameEthereumProvider({ targetOrigin: 'https://myethvault.com' });
 
-      await Promise.race(
+      await Promise.race([
         iframeProvider.enable(),
         // Race the enable with a promise that rejects after 1 second
-        new Promise((_, reject) => setTimeout(reject, 1000))
-      )
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out after 1 second')), 1000))
+      ])
 
       window.web3 = iframeProvider
       window.ethereum = iframeProvider
