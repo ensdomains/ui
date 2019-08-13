@@ -18,6 +18,7 @@ let ethRegistrar
 let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
+let permanetEntry
 
 const getEthResolver = async () => {
   const { ENS } = await getENS()
@@ -139,36 +140,52 @@ const getLegacyEntry = async name => {
 }
 
 const getPermanentEntry = async label => {
+  if (permanetEntry) {
+    return {
+      permanetEntry
+    }
+  }
+  let getAvailable
   let obj = {
     available: null,
     nameExpires: null
   }
   try {
     const labelHash = labelhash(label)
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    const {
-      permanentRegistrarController: RegistrarController
-    } = await getPermanentRegistrarController()
+    const [
+      { permanentRegistrar: Registrar},
+      { permanentRegistrarController: RegistrarController }
+    ] = await Promise.all([
+      getPermanentRegistrar(),
+      getPermanentRegistrarController()
+    ])
     // Returns true if name is available
     if (isEncodedLabelhash(label)) {
-      obj.available = await Registrar.available(labelHash)
+      getAvailable = Registrar.available(labelHash)
     } else {
-      obj.available = await RegistrarController.available(label)
+      getAvailable = RegistrarController.available(label)
     }
-    // This is used for old registrar to figure out when the name can be migrated.
-    obj.migrationLockPeriod = parseInt(await Registrar.MIGRATION_LOCK_PERIOD())
-    obj.gracePeriod = await Registrar.GRACE_PERIOD()
-    obj.transferPeriodEnds = await Registrar.transferPeriodEnds()
-    const nameExpires = await Registrar.nameExpires(labelHash)
-    if (nameExpires > 0) {
-      obj.nameExpires = new Date(nameExpires * 1000)
+    const [available, migrationLockPeriod, gracePeriod, transferPeriodEnds, nameExpires] = await Promise.all([
+      getAvailable,
+      Registrar.MIGRATION_LOCK_PERIOD(),
+      Registrar.GRACE_PERIOD(),
+      Registrar.transferPeriodEnds(),
+      Registrar.nameExpires(labelHash)
+    ])
+    obj = {
+      ...obj,
+      migrationLockPeriod: parseInt(migrationLockPeriod),
+      available, gracePeriod, transferPeriodEnds,
+      nameExpires: nameExpires > 0 ? new Date(nameExpires * 1000) : null
     }
-    // Returns registrar address if owned by new registrar
+    // Returns registrar address if owned by new registrar.
+    // Keep it as a separate call as this will throw exception for non existing domains
     obj.ownerOf = await Registrar.ownerOf(labelHash)
   } catch (e) {
     console.log('Error getting permanent registrar entry', e)
     obj.error = e.message
   } finally {
+    permanetEntry = obj
     return obj
   }
 }
