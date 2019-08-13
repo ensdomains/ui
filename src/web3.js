@@ -15,8 +15,11 @@ export async function setupWeb3({
   }
 
   if (customProvider) {
-    //for testing
-    provider = new ethers.providers.Web3Provider(customProvider)
+    if (customProvider._ethersType === 'Provider') {
+      provider = customProvider
+    } else {
+      provider = new ethers.providers.Web3Provider(customProvider)
+    }
     return { provider, signer }
   }
 
