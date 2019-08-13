@@ -19,6 +19,8 @@ let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
 let permanetEntry
+let migrationLockPeriod
+let gracePeriod
 
 const getEthResolver = async () => {
   const { ENS } = await getENS()
@@ -165,10 +167,17 @@ const getPermanentEntry = async label => {
     } else {
       getAvailable = RegistrarController.available(label)
     }
-    const [available, migrationLockPeriod, gracePeriod, transferPeriodEnds, nameExpires] = await Promise.all([
+
+    // Caching because they are constant
+    if(!migrationLockPeriod){
+      migrationLockPeriod = await Registrar.MIGRATION_LOCK_PERIOD()
+    }
+    if(!gracePeriod){
+      gracePeriod = await Registrar.GRACE_PERIOD()
+    }
+
+    const [available, transferPeriodEnds, nameExpires] = await Promise.all([
       getAvailable,
-      Registrar.MIGRATION_LOCK_PERIOD(),
-      Registrar.GRACE_PERIOD(),
       Registrar.transferPeriodEnds(),
       Registrar.nameExpires(labelHash)
     ])
