@@ -142,14 +142,14 @@ const getLegacyEntry = async name => {
 
     // Caching because they are constant
     
-async function getMigrationLockPeriod(){
+async function getMigrationLockPeriod(Registrar){
   if(!migrationLockPeriod){
     return Registrar.MIGRATION_LOCK_PERIOD()
   }
   return migrationLockPeriod
 }
 
-async function getGracePeriod(){
+async function getGracePeriod(Registrar){
   if(!gracePeriod){
     return Registrar.GRACE_PERIOD()
   }
@@ -182,10 +182,10 @@ const getPermanentEntry = async label => {
       getAvailable,
       Registrar.transferPeriodEnds(),
       Registrar.nameExpires(labelHash),
-      getGracePeriod(),
-      getMigrationLockPeriod()
+      getGracePeriod(Registrar),
+      getMigrationLockPeriod(Registrar)
     ])
-    
+
     obj = {
       ...obj,
       migrationLockPeriod: parseInt(migrationLockPeriod),
@@ -199,7 +199,6 @@ const getPermanentEntry = async label => {
     console.log('Error getting permanent registrar entry', e)
     obj.error = e.message
   } finally {
-    permanetEntry = obj
     return obj
   }
 }
