@@ -18,7 +18,6 @@ let ethRegistrar
 let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
-let permanetEntry
 let migrationLockPeriod
 let gracePeriod
 
@@ -141,12 +140,23 @@ const getLegacyEntry = async name => {
   return obj
 }
 
-const getPermanentEntry = async label => {
-  if (permanetEntry) {
-    return {
-      permanetEntry
-    }
+    // Caching because they are constant
+    
+async function getMigrationLockPeriod(){
+  if(!migrationLockPeriod){
+    return Registrar.MIGRATION_LOCK_PERIOD()
   }
+  return migrationLockPeriod
+}
+
+async function getGracePeriod(){
+  if(!gracePeriod){
+    return Registrar.GRACE_PERIOD()
+  }
+  return gracePeriod
+}
+
+const getPermanentEntry = async label => {
   let getAvailable
   let obj = {
     available: null,
@@ -168,19 +178,14 @@ const getPermanentEntry = async label => {
       getAvailable = RegistrarController.available(label)
     }
 
-    // Caching because they are constant
-    if(!migrationLockPeriod){
-      migrationLockPeriod = await Registrar.MIGRATION_LOCK_PERIOD()
-    }
-    if(!gracePeriod){
-      gracePeriod = await Registrar.GRACE_PERIOD()
-    }
-
-    const [available, transferPeriodEnds, nameExpires] = await Promise.all([
+    const [available, transferPeriodEnds, nameExpires, gracePeriod, migrationLockPeriod] = await Promise.all([
       getAvailable,
       Registrar.transferPeriodEnds(),
-      Registrar.nameExpires(labelHash)
+      Registrar.nameExpires(labelHash),
+      getGracePeriod(),
+      getMigrationLockPeriod()
     ])
+    
     obj = {
       ...obj,
       migrationLockPeriod: parseInt(migrationLockPeriod),
