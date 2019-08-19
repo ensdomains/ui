@@ -41,6 +41,16 @@ describe('test contenthash utility functions for swarm', () => {
         '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
       )
     })
+
+    test('encodeContentHash returns encoded hash for zeronet protocol', () => {
+      const encodedContentHash = encodeContenthash(
+        'zeronet://1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D'
+      )
+
+      expect(encodedContentHash).toBe(
+        '0xe6013148654c4c6f34757a6a614c65744678364e4833504d774650337162526254663344'
+      )
+    })
   })
 
   describe('decodeContentHash', () => {
@@ -89,6 +99,16 @@ describe('test contenthash utility functions for swarm', () => {
       expect(decoded.protocolType).toBe('onion3')
       expect(decoded.error).toBe(undefined)
     })
+
+    test('decodeContentHash returns decoded contenthash for zeronet protocol', () => {
+      const decoded = decodeContenthash(
+        '0xe6013148654c4c6f34757a6a614c65744678364e4833504d774650337162526254663344'
+      )
+
+      expect(decoded.decoded).toBe('1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D')
+      expect(decoded.protocolType).toBe('zeronet')
+      expect(decoded.error).toBe(undefined)
+    })
   })
 
   describe('isValidContent', () => {
@@ -117,6 +137,14 @@ describe('test contenthash utility functions for swarm', () => {
     test('isValidContent returns true for real contenthash for onion 3 protocol', () => {
       const valid = isValidContenthash(
         '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
+      )
+
+      expect(valid).toBe(true)
+    })
+
+    test('isValidContent returns true for real contenthash for zeronet protocol', () => {
+      const valid = isValidContenthash(
+        '0xe6013148654c4c6f34757a6a614c65744678364e4833504d774650337162526254663344'
       )
 
       expect(valid).toBe(true)

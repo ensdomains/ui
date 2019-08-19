@@ -1,7 +1,7 @@
 import contentHash from 'content-hash'
 import { utils } from 'ethers'
 
-const supportedCodecs = ['ipfs-ns', 'swarm-ns', 'onion', 'onion3']
+const supportedCodecs = ['ipfs-ns', 'swarm-ns', 'onion', 'onion3', 'zeronet']
 
 export function decodeContenthash(encoded) {
   let decoded, protocolType, error
@@ -20,6 +20,8 @@ export function decodeContenthash(encoded) {
         protocolType = 'onion'
       } else if (codec === 'onion3') {
         protocolType = 'onion3'
+      } else if (codec === 'zeronet') {
+        protocolType = 'zeronet'
       } else {
         decoded = encoded
       }
@@ -47,7 +49,7 @@ export function encodeContenthash(text) {
   let content, contentType
   let encoded = false
   if (!!text) {
-    let matched = text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/)
+    let matched = text.match(/^(ipfs|bzz|onion|onion3|zeronet):\/\/(.*)/)
     if (matched) {
       contentType = matched[1]
       content = matched[2]
@@ -64,12 +66,14 @@ export function encodeContenthash(text) {
         }
       } else if (contentType === 'onion') {
         if(content.length == 16) {
-          encoded = '0x' + contentHash.encode('onion', content);  
+          encoded = '0x' + contentHash.encode('onion', content)
         } 
       } else if (contentType === 'onion3') {
         if(content.length == 56) {
-          encoded = '0x' + contentHash.encode('onion3', content);  
+          encoded = '0x' + contentHash.encode('onion3', content)
         }
+      } else if (contentType === 'zeronet') {
+        encoded = '0x' + contentHash.encode('zeronet', content)
       } else {
         console.warn('Unsupported protocol or invalid value', {
           contentType,
