@@ -32,7 +32,7 @@ describe('test contenthash utility functions for swarm', () => {
       expect(encodedContentHash).toBe('0xbc0333673275706c347071366b756663346d')
     })
 
-    test('encodeContentHash returns encoded hash for onion protocol', () => {
+    test('encodeContentHash returns encoded hash for onion 3 protocol', () => {
       const encodedContentHash = encodeContenthash(
         'onion3://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd'
       )
