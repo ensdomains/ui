@@ -50,10 +50,12 @@ setupENS must be called before anything other function in this library. We recom
 
 #### Arguments
 
+```
 options (object): {
-customProvider (object): Provider object from web3 (optional)
-ensAddress (String): Address of the ENS registry (optional)
+  customProvider (object): Provider object from web3 (optional)
+  ensAddress (String): Address of the ENS registry (optional)
 }
+```
 
 #### Example
 
