@@ -6,7 +6,7 @@ Most functions in this library are async functions and therefore return promises
 
 - Registry and Resolvers
 
-  - [setupENS()](#async-function-setupensname-void)
+  - [setupENS()](#async-function-setupensoptions-void)
   - [getOwner()](#async-function-getownername-address)
   - [getResolver()](#async-function-getresolvername-address)
   - [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
@@ -44,7 +44,7 @@ window.addEventListener('load', async () => {
 
 ## API
 
-### `async function setupENS(name): void`
+### `async function setupENS(options): void`
 
 setupENS must be called before anything other function in this library. We recommend calling it in a window.load event to make sure that your web3 object has loaded. You can provide a custom provider yourself, but by default it will look for `window.web3` or `window.ethereum` if you do not give it a provider. We use the custom provider when we need to run automated tests with ganache. You can also it pass it the registry address, but by default it will derive the network you are on and instantiate ENS using that network's registry. You only need to provider it with an ens address if you are on a private network.
 
