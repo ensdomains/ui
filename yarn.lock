@@ -3691,10 +3691,10 @@ ethers@4.0.0-beta.14:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^4.0.30:
-  version "4.0.30"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.30.tgz#140653fd08adf2834bb2f3aceefa10d04205b47d"
-  integrity sha512-1a39Y+q5zTfrXCLndV+CHsTHq+T5/TvAx5y0S/PKd700C0lfU70CJnU7q89bd+4pIuWp05TkrEsrTj2dXhkcSA==
+ethers@4.0.36:
+  version "4.0.36"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.36.tgz#96519fd3cc9317f938c8ee4d22050f34e3c2ef0e"
+  integrity sha512-rWdchEhUyXx01GiwexH6Sha97CQ9tJdQwe6FtYKxShC7VEZV41nuKt+lzCQ4OqvQwZK5PcAKaAZv2GDsCH33SA==
   dependencies:
     "@types/node" "^10.3.2"
     aes-js "3.0.0"
