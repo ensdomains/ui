@@ -26,6 +26,16 @@ describe('test contenthash utility functions for swarm', () => {
       )
     })
 
+    test('encodeContentHash returns encoded hash for ipfs protocol with /ipfs/ format', () => {
+      const encodedContentHash = encodeContenthash(
+        '/ipfs/QmaEBknbGT4bTQiQoe2VNgBJbRfygQGktnaW5TbuKixjYL'
+      )
+
+      expect(encodedContentHash).toBe(
+        '0xe30101701220b0a44811601eee636e078819dd955f530ded320d7c8b7e498be00958103dc269'
+      )
+    })
+
     test('encodeContentHash returns encoded hash for onion protocol', () => {
       const encodedContentHash = encodeContenthash('onion://3g2upl4pq6kufc4m')
 
