@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import has from 'lodash/has'
 import { Contract, utils } from 'ethers'
 import { getWeb3, getNetworkId, getSignerOrProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
@@ -111,7 +111,7 @@ const getENS = async ensAddress => {
     ensAddress = process.env.REACT_APP_ENS_ADDRESS
   }
 
-  const hasRegistry = _.has(contracts[networkId], 'registry')
+  const hasRegistry = has(contracts[networkId], 'registry')
 
   if (!ENS) {
     if (!hasRegistry && !ensAddress) {
@@ -176,7 +176,6 @@ async function getDnsRegistrarContract(parentOwner) {
     web3
   }
 }
-
 
 export {
   getENS,
