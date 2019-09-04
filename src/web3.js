@@ -15,8 +15,13 @@ export async function setupWeb3({
   }
 
   if (customProvider) {
-    //for testing
-    provider = new ethers.providers.Web3Provider(customProvider)
+    if (typeof customProvider === 'string') {
+      // handle raw RPC endpoint URL
+      provider = new ethers.providers.JsonRpcProvider(customProvider)
+    } else {
+      // handle EIP 1193 provider
+      provider = new ethers.providers.Web3Provider(customProvider)
+    }
     return { provider, signer }
   }
 
