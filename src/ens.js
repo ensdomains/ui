@@ -103,7 +103,7 @@ async function getTestRegistrarContract() {
 const getENS = async ensAddress => {
   const networkId = await getNetworkId()
 
-  const hasRegistry = _.has(contracts[networkId], 'registry')
+  const hasRegistry = has(contracts[networkId], 'registry')
 
   if (!ENS) {
     if (!hasRegistry && !ensAddress) {
