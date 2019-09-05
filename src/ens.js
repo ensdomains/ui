@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import has from 'lodash/has'
 import { Contract, utils } from 'ethers'
 import { getWeb3, getNetworkId, getSignerOrProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'

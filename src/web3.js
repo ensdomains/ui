@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { IFrameEthereumProvider } from '@ethvault/iframe-provider';
+import { IFrameEthereumProvider } from '@ethvault/iframe-provider'
 
 let provider
 let signer
@@ -13,28 +13,37 @@ export async function setupWeb3({
   if (provider) {
     return { provider, signer }
   }
-
   if (customProvider) {
-    //for testing
-    provider = new ethers.providers.Web3Provider(customProvider)
+    if (typeof customProvider === 'string') {
+      // handle raw RPC endpoint URL
+      provider = new ethers.providers.JsonRpcProvider(customProvider)
+      signer = provider.getSigner()
+    } else {
+      // handle EIP 1193 provider
+      provider = new ethers.providers.Web3Provider(customProvider)
+    }
     return { provider, signer }
   }
 
   // If the window is in an iframe, return the iframe provider IFF the iframe provider can be enabled
   if (window && window.parent && window.self && window.self !== window.parent) {
     try {
-      const iframeProvider = new IFrameEthereumProvider({ targetOrigin: 'https://myethvault.com' });
+      const iframeProvider = new IFrameEthereumProvider({
+        targetOrigin: 'https://myethvault.com'
+      })
 
-      await Promise.race(
+      await Promise.race([
         iframeProvider.enable(),
         // Race the enable with a promise that rejects after 1 second
-        new Promise((_, reject) => setTimeout(reject, 1000))
-      )
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timed out after 1 second')), 1000)
+        )
+      ])
 
       window.web3 = iframeProvider
       window.ethereum = iframeProvider
     } catch (error) {
-      console.error('Failed to create and enable iframe provider', error);
+      console.error('Failed to create and enable iframe provider', error)
     }
   }
 

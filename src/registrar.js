@@ -1,6 +1,16 @@
-
-import { getENS, getNamehash, getResolverContract, getDnsRegistrarContract } from './ens'
-import { getWeb3Read, getAccount, getBlock, getSignerOrProvider, getNetworkId } from './web3'
+import {
+  getENS,
+  getNamehash,
+  getResolverContract,
+  getDnsRegistrarContract
+} from './ens'
+import {
+  getWeb3Read,
+  getAccount,
+  getBlock,
+  getSignerOrProvider,
+  getNetworkId
+} from './web3'
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -18,6 +28,8 @@ let ethRegistrar
 let dnsRegistrar
 let permanentRegistrar
 let permanentRegistrarController
+let migrationLockPeriod
+let gracePeriod
 
 const getEthResolver = async () => {
   const { ENS } = await getENS()
@@ -105,7 +117,7 @@ export const getPermanentRegistrarController = async () => {
   }
 }
 
-const getLegacyEntry = async name => {
+const getLegacyEntry = async (Registrar, name) => {
   let obj
   try {
     const { ethRegistrar: Registrar } = await getLegacyAuctionRegistrar()
@@ -138,35 +150,74 @@ const getLegacyEntry = async name => {
   return obj
 }
 
-const getPermanentEntry = async label => {
+// Caching because they are constant
+
+async function getMigrationLockPeriod(Registrar) {
+  if (!migrationLockPeriod) {
+    return Registrar.MIGRATION_LOCK_PERIOD()
+  }
+  return migrationLockPeriod
+}
+
+async function getGracePeriod(Registrar) {
+  if (!gracePeriod) {
+    return Registrar.GRACE_PERIOD()
+  }
+  return gracePeriod
+}
+
+async function getOwnerOf(Registrar, labelHash) {
+  try {
+    return Registrar.ownerOf(labelHash)
+  } catch {
+    return '0x0'
+  }
+}
+
+const getPermanentEntry = async (Registrar, RegistrarController, label) => {
+  let getAvailable
   let obj = {
     available: null,
     nameExpires: null
   }
   try {
     const labelHash = labelhash(label)
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-    const {
-      permanentRegistrarController: RegistrarController
-    } = await getPermanentRegistrarController()
+
     // Returns true if name is available
     if (isEncodedLabelhash(label)) {
-      obj.available = await Registrar.available(labelHash)
+      getAvailable = Registrar.available(labelHash)
     } else {
-      obj.available = await RegistrarController.available(label)
+      getAvailable = RegistrarController.available(label)
     }
-    // This is used for old registrar to figure out when the name can be migrated.
-    obj.migrationLockPeriod = parseInt(await Registrar.MIGRATION_LOCK_PERIOD())
-    obj.transferPeriodEnds = await Registrar.transferPeriodEnds()
-    // Returns registrar address if owned by new registrar
+
+    const [
+      available,
+      transferPeriodEnds,
+      nameExpires,
+      gracePeriod,
+      migrationLockPeriod
+    ] = await Promise.all([
+      getAvailable,
+      Registrar.transferPeriodEnds(),
+      Registrar.nameExpires(labelHash),
+      getGracePeriod(Registrar),
+      getMigrationLockPeriod(Registrar)
+    ])
+
+    obj = {
+      ...obj,
+      migrationLockPeriod: parseInt(migrationLockPeriod),
+      available,
+      gracePeriod,
+      transferPeriodEnds,
+      nameExpires: nameExpires > 0 ? new Date(nameExpires * 1000) : null
+    }
+    // Returns registrar address if owned by new registrar.
+    // Keep it as a separate call as this will throw exception for non existing domains
     obj.ownerOf = await Registrar.ownerOf(labelHash)
-    const nameExpires = await Registrar.nameExpires(labelHash)
-    if (nameExpires > 0) {
-      obj.nameExpires = new Date(nameExpires * 1000)
-    }
   } catch (e) {
     console.log('Error getting permanent registrar entry', e)
-    obj.error = e.message
+    return false
   } finally {
     return obj
   }
@@ -203,25 +254,28 @@ const getDNSEntry = async (name, parentOwner, owner) => {
       if (!dnsRegistrar.dnsOwner) {
         // DNS Record is invalid
         dnsRegistrar.state = 4
-      }else{
+      } else {
         // Valid reacord is found
-        if(!owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()){
+        if (
+          !owner ||
+          dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
+        ) {
           dnsRegistrar.state = 5
           // Out of sync
-        }else{
+        } else {
           dnsRegistrar.state = 6
         }
       }
     } else {
       if (result.nsec) {
-        if(result.results.length === 4){
+        if (result.results.length === 4) {
           // DNS entry does not exist
           dnsRegistrar.state = 1
-        }else if(result.results.length === 6){
+        } else if (result.results.length === 6) {
           // DNS entry exists but _ens subdomain does not exist
           dnsRegistrar.state = 3
-        }else{
-          throw(`DNSSEC results cannot be ${result.results.length}`)
+        } else {
+          throw `DNSSEC results cannot be ${result.results.length}`
         }
       } else {
         // DNSSEC is not enabled
@@ -237,17 +291,30 @@ const getDNSEntry = async (name, parentOwner, owner) => {
 }
 
 const getEntry = async name => {
-  let legacyEntry = await getLegacyEntry(name)
-  let block = await getBlock()
+  const [
+    { ethRegistrar: AuctionRegistrar },
+    { permanentRegistrar: Registrar },
+    { permanentRegistrarController: RegistrarController }
+  ] = await Promise.all([
+    getLegacyAuctionRegistrar(),
+    getPermanentRegistrar(),
+    getPermanentRegistrarController()
+  ])
+  let [block, legacyEntry, permEntry] = await Promise.all([
+    getBlock(),
+    getLegacyEntry(AuctionRegistrar, name),
+    getPermanentEntry(Registrar, RegistrarController, name)
+  ])
+
   let ret = {
     currentBlockDate: new Date(block.timestamp * 1000),
     registrant: 0,
     transferEndDate: null,
-    isNewRegistrar: false
+    isNewRegistrar: false,
+    gracePeriodEndDate: null
   }
 
-  try {
-    let permEntry = await getPermanentEntry(name)
+  if (permEntry) {
     if (legacyEntry.registrationDate && permEntry.migrationLockPeriod) {
       ret.migrationStartDate = new Date(
         legacyEntry.registrationDate + permEntry.migrationLockPeriod * 1000
@@ -264,16 +331,25 @@ const getEntry = async name => {
       // Owned
       ret.state = 2
     }
-    if (permEntry.ownerOf) {
-      ret.isNewRegistrar = true
-      ret.registrant = permEntry.ownerOf
-    }
     if (permEntry.nameExpires) {
       ret.expiryTime = permEntry.nameExpires
     }
-  } catch (e) {
-    console.log('error getting permanent registry', e)
+    if (permEntry.ownerOf) {
+      ret.registrant = permEntry.ownerOf
+      ret.isNewRegistrar = true
+    } else if (permEntry.nameExpires) {
+      const currentTime = new Date(ret.currentBlockDate)
+      const gracePeriodEndDate = new Date(
+        currentTime.getTime() + permEntry.gracePeriod * 1000
+      )
+      // It is within grace period
+      if (permEntry.nameExpires < currentTime < gracePeriodEndDate) {
+        ret.isNewRegistrar = true
+        ret.gracePeriodEndDate = gracePeriodEndDate
+      }
+    }
   }
+
   return {
     ...legacyEntry,
     ...ret
@@ -408,11 +484,7 @@ const submitProof = async (name, parentOwner) => {
   if (allProven) {
     return registrar.claim(claim.encodedName, data[1])
   } else {
-    return registrar.proveAndClaim(
-      claim.encodedName,
-      data[0],
-      data[1]
-    )
+    return registrar.proveAndClaim(claim.encodedName, data[0], data[1])
   }
 }
 
