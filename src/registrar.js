@@ -327,10 +327,6 @@ const getEntry = async name => {
       ret.transferEndDate = new Date(permEntry.transferPeriodEnds * 1000)
     }
     ret.available = permEntry.available
-    if (!permEntry.available) {
-      // Owned
-      ret.state = 2
-    }
     if (permEntry.nameExpires) {
       ret.expiryTime = permEntry.nameExpires
     }
