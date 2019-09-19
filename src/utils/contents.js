@@ -49,7 +49,7 @@ export function encodeContenthash(text) {
   let content, contentType
   let encoded = false
   if (!!text) {
-    let matched = text.match(/^(ipfs|bzz|onion|onion3|zeronet):\/\/(.*)/)
+    let matched = text.match(/^(ipfs|bzz|onion|onion3|zeronet):\/\/(.*)/) || text.match(/\/(ipfs)\/(.*)/)
     if (matched) {
       contentType = matched[1]
       content = matched[2]

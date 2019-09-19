@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import has from 'lodash/has'
 import { Contract, utils } from 'ethers'
 import { getWeb3, getNetworkId, getSignerOrProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
@@ -26,7 +26,6 @@ var contracts = {
 }
 
 let ENS
-let readENS
 
 function getNamehash(unsanitizedName) {
   return namehash(unsanitizedName)
@@ -70,7 +69,6 @@ async function getENSContract() {
 
   const ENS = new Contract(contracts[networkId].registry, ensContract, signer)
   return {
-    readENS: ENS,
     ENS: ENS
   }
 }
@@ -105,20 +103,12 @@ async function getTestRegistrarContract() {
 const getENS = async ensAddress => {
   const networkId = await getNetworkId()
 
-  //TODO: remove
-  if (process.env.REACT_APP_ENS_ADDRESS && networkId > 1000) {
-    //Assuming public main/test networks have a networkId of less than 1000
-    ensAddress = process.env.REACT_APP_ENS_ADDRESS
-  }
-
-  const hasRegistry = _.has(contracts[networkId], 'registry')
+  const hasRegistry = has(contracts[networkId], 'registry')
 
   if (!ENS) {
     if (!hasRegistry && !ensAddress) {
       throw new Error(`Unsupported network ${networkId}`)
-    }
-
-    if (contracts[networkId]) {
+    } else if (contracts[networkId] && !ensAddress) {
       ensAddress = contracts[networkId].registry
     }
 
@@ -126,22 +116,15 @@ const getENS = async ensAddress => {
     contracts[networkId].registry = ensAddress
   } else {
     return {
-      ENS: ENS,
-      _ENS: ENS,
-      readENS: readENS,
-      _readENS: readENS
+      ENS: ENS
     }
   }
 
-  const { ENS: ENSContract, readENS: readENSContract } = await getENSContract()
+  const { ENS: ENSContract } = await getENSContract()
   ENS = ENSContract
-  readENS = readENSContract
 
   return {
-    ENS: ENSContract,
-    _ENS: ENSContract,
-    readENS: readENS,
-    _readENS: readENS
+    ENS: ENSContract
   }
 }
 
@@ -176,7 +159,6 @@ async function getDnsRegistrarContract(parentOwner) {
     web3
   }
 }
-
 
 export {
   getENS,
