@@ -117,6 +117,24 @@ export async function getContent(name) {
   }
 }
 
+export async function getText(name, key) {
+  const resolverAddr = await getResolver(name)
+  if (parseInt(resolverAddr, 16) === 0) {
+    return ''
+  }
+  const namehash = getNamehash(name)
+  try {
+    const { Resolver } = await getResolverContract(resolverAddr)
+    const addr = await Resolver.text(namehash)
+    return addr
+  } catch (e) {
+    console.warn(
+      'Error getting text record on the resolver contract, are you sure the resolver address is a resolver contract?'
+    )
+    return ''
+  }
+}
+
 export async function getName(address) {
   const reverseNode = `${address.slice(2)}.addr.reverse`
   const reverseNamehash = getNamehash(reverseNode)
@@ -181,6 +199,13 @@ export async function setContenthash(name, content) {
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
   return Resolver.setContenthash(namehash, encodedContenthash)
+}
+
+export async function setText(name, key, value) {
+  const namehash = getNamehash(name)
+  const resolverAddr = await getResolver(name)
+  const { Resolver } = await getResolverContract(resolverAddr)
+  return Resolver.setText(namehash, key, value)
 }
 
 export async function checkSubdomain(subdomain, domain) {
