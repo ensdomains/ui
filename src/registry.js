@@ -125,7 +125,7 @@ export async function getText(name, key) {
   const namehash = getNamehash(name)
   try {
     const { Resolver } = await getResolverContract(resolverAddr)
-    const addr = await Resolver.text(namehash)
+    const addr = await Resolver.text(namehash, key)
     return addr
   } catch (e) {
     console.warn(
@@ -201,11 +201,11 @@ export async function setContenthash(name, content) {
   return Resolver.setContenthash(namehash, encodedContenthash)
 }
 
-export async function setText(name, key, value) {
+export async function setText(name, key, recordValue) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  return Resolver.setText(namehash, key, value)
+  return Resolver.setText(namehash, key, recordValue)
 }
 
 export async function checkSubdomain(subdomain, domain) {
