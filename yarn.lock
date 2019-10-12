@@ -881,6 +881,11 @@
     lodash "^4.17.11"
     web3 "1.0.0-beta.34"
 
+"@ensdomains/resolver@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.10.tgz#c376f22f4941fed61c48800eea633d15424bf647"
+  integrity sha512-r+zkzH/sx0PyFhvC+3jAW53kvBsYqzeVJ4xcaEKNi5F/xX5BnGLshSn5z+9lMkiS+tFf1Ucs7/V039W1KZWmaw==
+
 "@ensdomains/resolver@^0.1.6":
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.6.tgz#15e070a58d5f2be6b46787661121dddae0cfe132"
