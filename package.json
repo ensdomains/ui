@@ -50,6 +50,7 @@
     "@ensdomains/resolver": "0.1.10",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
+    "bech32": "^1.1.3",
     "content-hash": "^2.4.1",
     "cross-fetch": "^3.0.2",
     "eth-ens-namehash": "^2.0.8",
