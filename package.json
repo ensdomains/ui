@@ -49,6 +49,7 @@
     "@ensdomains/ethregistrar": "^1.2.2",
     "@ensdomains/resolver": "^0.1.6",
     "@ethvault/iframe-provider": "0.1.9",
+    "base58check": "^2.0.0",
     "content-hash": "^2.4.1",
     "cross-fetch": "^3.0.2",
     "eth-ens-namehash": "^2.0.8",

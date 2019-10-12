@@ -21,6 +21,9 @@ import {
 
 import { encodeLabelhash } from './utils/labelhash'
 
+import { encodeToHex, decodeFromHex } from './multicoin'
+import coins from './constants/coins'
+
 import {
   isValidContenthash,
   encodeContenthash,
@@ -64,6 +67,25 @@ export async function getAddress(name) {
     const { Resolver } = await getResolverContract(resolverAddr)
     const addr = await Resolver.addr(namehash)
     return addr
+  } catch (e) {
+    console.warn(
+      'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
+    )
+    return '0x00000000000000000000000000000000'
+  }
+}
+
+export async function getAddr(name, key) {
+  const resolverAddr = await getResolver(name)
+  if (parseInt(resolverAddr, 16) === 0) {
+    return '0x00000000000000000000000000000000'
+  }
+  const namehash = getNamehash(name)
+  try {
+    const { Resolver } = await getResolverContract(resolverAddr)
+    const addr = await Resolver.addr(namehash, key)
+    const decoded = decodeFromHex(addr, coins[key].base)
+    return decoded
   } catch (e) {
     console.warn(
       'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
@@ -184,6 +206,14 @@ export async function setAddress(name, address) {
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
   return Resolver.setAddr(namehash, address)
+}
+
+export async function setAddr(name, key, address) {
+  const namehash = getNamehash(name)
+  const resolverAddr = await getResolver(name)
+  const { Resolver } = await getResolverContract(resolverAddr)
+  const hexAddress = encodeToHex(address, coins[key].base)
+  return Resolver.setAddr(namehash, key, hexAddress)
 }
 
 export async function setContent(name, content) {
