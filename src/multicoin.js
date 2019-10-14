@@ -1,5 +1,4 @@
 import bs58 from 'bs58'
-import bech32 from 'bech32'
 
 export function encodeToBytes(input, encoding) {
   switch (encoding) {
@@ -16,7 +15,7 @@ export function encodeToBytes(input, encoding) {
 export function decodeFromBytes(bytes, encoding) {
   switch (encoding) {
     case 'hex-checksum':
-      return hex
+      return '0x' + bytes.toString('hex')
     case 'base58check':
       return bs58.encode(bytes)
     default:
