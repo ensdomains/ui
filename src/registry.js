@@ -21,6 +21,9 @@ import {
 
 import { encodeLabelhash } from './utils/labelhash'
 
+import { encodeToBytes, decodeFromBytes } from './multicoin'
+import coins from './constants/coins'
+
 import {
   isValidContenthash,
   encodeContenthash,
@@ -62,9 +65,34 @@ export async function getAddress(name) {
   const namehash = getNamehash(name)
   try {
     const { Resolver } = await getResolverContract(resolverAddr)
-    const addr = await Resolver.addr(namehash)
+    const addr = await Resolver['addr(bytes32)'](namehash)
     return addr
   } catch (e) {
+    console.warn(
+      'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
+    )
+    return '0x00000000000000000000000000000000'
+  }
+}
+
+export async function getAddr(name, key) {
+  const resolverAddr = await getResolver(name)
+  if (parseInt(resolverAddr, 16) === 0) {
+    return '0x00000000000000000000000000000000'
+  }
+  const namehash = getNamehash(name)
+  try {
+    const { Resolver } = await getResolverContract(resolverAddr)
+    const index = coins[key].index
+    const addr = await Resolver['addr(bytes32,uint256)'](namehash, index)
+    if (addr === '0x') return '0x00000000000000000000000000000000'
+    const decoded = decodeFromBytes(
+      Buffer.from(addr.slice(2), 'hex'),
+      coins[key].encoding
+    )
+    return decoded
+  } catch (e) {
+    console.log(e)
     console.warn(
       'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
     )
@@ -183,7 +211,20 @@ export async function setAddress(name, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  return Resolver.setAddr(namehash, address)
+  return Resolver['setAddr(bytes32,address)'](namehash, address)
+}
+
+export async function setAddr(name, key, address) {
+  const namehash = getNamehash(name)
+  const resolverAddr = await getResolver(name)
+  const { Resolver } = await getResolverContract(resolverAddr)
+  const addressAsBytes = encodeToBytes(address, coins[key].encoding)
+  const index = coins[key].index
+  return Resolver['setAddr(bytes32,uint256,bytes)'](
+    namehash,
+    index,
+    addressAsBytes
+  )
 }
 
 export async function setContent(name, content) {
