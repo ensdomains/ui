@@ -21,7 +21,7 @@ import {
 
 import { encodeLabelhash } from './utils/labelhash'
 
-import { encodeToHex, decodeFromHex } from './multicoin'
+import { encodeToBytes, decodeFromBytes } from './multicoin'
 import coins from './constants/coins'
 
 import {
@@ -84,11 +84,12 @@ export async function getAddr(name, key) {
   try {
     const { Resolver } = await getResolverContract(resolverAddr)
     const index = coins[key].index
-    console.log('index', index)
     const addr = await Resolver['addr(bytes32,uint256)'](namehash, index)
-    console.log(key, addr)
     if (addr === '0x') return '0x00000000000000000000000000000000'
-    const decoded = decodeFromHex(addr, coins[key].encoding)
+    const decoded = decodeFromBytes(
+      Buffer.from(addr.slice(2), 'hex'),
+      coins[key].encoding
+    )
     return decoded
   } catch (e) {
     console.log(e)
@@ -217,9 +218,13 @@ export async function setAddr(name, key, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  const hexAddress = encodeToHex(address, coins[key].encoding)
+  const addressAsBytes = encodeToBytes(address, coins[key].encoding)
   const index = coins[key].index
-  return Resolver['setAddr(bytes32,uint256,bytes)'](namehash, index, hexAddress)
+  return Resolver['setAddr(bytes32,uint256,bytes)'](
+    namehash,
+    index,
+    addressAsBytes
+  )
 }
 
 export async function setContent(name, content) {
