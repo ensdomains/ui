@@ -15,7 +15,7 @@ describe('encodeToBytes', () => {
 
 describe('decodeFromBytes', () => {
   it('decodes bitcoin hex to correct base58 string', () => {
-    const hash = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+    const address = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
     expect(
       decodeFromBytes(
         Buffer.from([
@@ -47,12 +47,11 @@ describe('decodeFromBytes', () => {
         ]),
         'base58check'
       )
-    ).toEqual('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa')
+    ).toEqual(address)
   })
 
   it('decodes litecoin hex to correct base58 string', () => {
     const address = 'LeJ4KvE7QhURHecZfNH7Kj6CDRwgM6rEGN'
-    const hex = '0x30d1311d991d05dc801d63acc3c142321012efabed'
     expect(
       decodeFromBytes(
         Buffer.from([
