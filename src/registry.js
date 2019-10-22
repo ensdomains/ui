@@ -20,7 +20,6 @@ import {
 } from './utils'
 
 import { encodeLabelhash } from './utils/labelhash'
-import { encodeToBytes, decodeFromBytes } from './multicoin'
 import { formatsByName } from '@ensdomains/address-encoder'
 import coins from './constants/coins'
 import {
