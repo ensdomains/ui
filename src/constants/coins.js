@@ -2,30 +2,46 @@ const coinInfo = {
   BTC: {
     index: 0,
     symbol: 'BTC',
-    base: 58,
-    name: 'Bitcoin',
-    encoding: 'base58check'
+    name: 'Bitcoin'
   },
   LTC: {
     index: 2,
     symbol: 'LTC',
-    base: 58,
-    name: 'Litecoin',
-    encoding: 'base58check'
+    name: 'Litecoin'
   },
   ETH: {
     index: 60,
     symbol: 'ETH',
-    base: 16,
-    name: 'Ethereum',
-    encoding: 'hex-checksum'
+    name: 'Ethereum'
   },
   ETC: {
     index: 61,
     symbol: 'ETC',
-    base: 16,
-    name: 'Ethereum Classic',
-    encoding: 'hex-checksum'
+    name: 'Ethereum Classic'
+  },
+  RSK: {
+    index: 137,
+    symbol: 'RSK',
+  },
+  MONA: {
+    index: 22,
+    symbol: 'MONA',
+  },
+  BNB: {
+    index: 714,
+    symbol: 'BNB'
+  },
+  DOGE: {
+    index: 3,
+    symbol: 'DOGE'
+  },
+  BCH: {
+    index: 145,
+    symbol: 'BCH'
+  },
+  XRP: {
+    index: 144,
+    symbol: 'XRP',
   }
 }
 
