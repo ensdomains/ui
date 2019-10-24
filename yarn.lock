@@ -727,6 +727,19 @@
     ripple-address-codec "^4.0.0"
     safe-buffer "^5.2.0"
 
+"@ensdomains/address-encoder@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.1.2.tgz#2c75a36d7fa7b067e0ed755cae24833154ad0e62"
+  integrity sha512-aW6UV6rTJR4NNVlz7PlRS7/YeD0ZSQy/xZsbWlx8/Zt7hDzBRiigCl5ud0tCYt88C7bCl+luoKhScMtq2LPFVw==
+  dependencies:
+    "@types/cashaddrjs" "^0.3.0"
+    bech32 "^1.1.3"
+    bs58check "^2.1.2"
+    cashaddrjs "^0.3.8"
+    ripple-address-codec "^4.0.0"
+    rskjs-util "^1.0.3"
+    safe-buffer "^5.2.0"
+
 "@ensdomains/buffer@0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@ensdomains/buffer/-/buffer-0.0.6.tgz#d44616ca44afe19fde84601ca84db7b6e6715365"
@@ -8471,6 +8484,13 @@ rlp@^2.0.0:
   dependencies:
     bn.js "^4.11.1"
     safe-buffer "^5.1.1"
+
+rskjs-util@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/rskjs-util/-/rskjs-util-1.0.3.tgz#c0242d9308d7dc1eb653ffbf0dd1af1309bf55ca"
+  integrity sha512-Q6zfYFQndaBln1iY2gnBfYgDLymbZHAxKXOcZVLAKJkHilcieoUN3ZXVxLA3K30KlgAfmRVG72iTzi+yPNZB1w==
+  dependencies:
+    keccak "^1.0.2"
 
 rsvp@^4.8.4:
   version "4.8.4"
