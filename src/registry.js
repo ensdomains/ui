@@ -21,7 +21,6 @@ import {
 
 import { encodeLabelhash } from './utils/labelhash'
 import { formatsByName } from '@ensdomains/address-encoder'
-import coins from './constants/coins'
 import {
   isValidContenthash,
   encodeContenthash,
@@ -81,12 +80,10 @@ export async function getAddr(name, key) {
   const namehash = getNamehash(name)
   try {
     const { Resolver } = await getResolverContract(resolverAddr)
-    const {symbol, index} = coins[key]
-    const addr = await Resolver['addr(bytes32,uint256)'](namehash, index)
+    const { coinType, encoder } = formatsByName[key]
+    const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
     if (addr === '0x') return '0x00000000000000000000000000000000'
-    const format = formatsByName[symbol]
-    const decoded = format.encoder(Buffer.from(addr.slice(2),'hex'))
-    return decoded
+    return encoder(Buffer.from(addr.slice(2),'hex'))
   } catch (e) {
     console.log(e)
     console.warn(
@@ -214,10 +211,9 @@ export async function setAddr(name, key, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
-  const {symbol, index} = coins[key]
-  const format = formatsByName[symbol]
-  const addressAsBytes = format.decoder(address)
-  return Resolver['setAddr(bytes32,uint256,bytes)'](namehash,index,addressAsBytes)
+  const { decoder, coinType } = formatsByName[key]
+  const addressAsBytes = decoder(address)
+  return Resolver['setAddr(bytes32,uint256,bytes)'](namehash,coinType,addressAsBytes)
 }
 
 export async function setContent(name, content) {
