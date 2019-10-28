@@ -213,7 +213,7 @@ export async function setAddr(name, key, address) {
   const { Resolver } = await getResolverContract(resolverAddr)
   const { decoder, coinType } = formatsByName[key]
   let addressAsBytes
-  if (!!address || address === ''){
+  if (!address || address === ''){
     addressAsBytes = emptyAddress
   }else{
     addressAsBytes = decoder(address)
