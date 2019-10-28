@@ -214,7 +214,7 @@ export async function setAddr(name, key, address) {
   const { decoder, coinType } = formatsByName[key]
   let addressAsBytes
   if (!address || address === ''){
-    addressAsBytes = Buffer.from('')
+    addressAssBytes = Buffer.from('')
   }else{
     addressAsBytes = decoder(address)
   }
