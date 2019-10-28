@@ -81,7 +81,7 @@ export async function getAddr(name, key) {
     const { Resolver } = await getResolverContract(resolverAddr)
     const { coinType, encoder } = formatsByName[key]
     const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
-    if (addr === '0x' || parseInt(addr, 16) === 0) return emptyAddress
+    if (addr === '0x') return emptyAddress
 
     return encoder(Buffer.from(addr.slice(2),'hex'))
   } catch (e) {
@@ -214,7 +214,7 @@ export async function setAddr(name, key, address) {
   const { decoder, coinType } = formatsByName[key]
   let addressAsBytes
   if (!address || address === ''){
-    addressAsBytes = emptyAddress
+    addressAsBytes = Buffer.from('')
   }else{
     addressAsBytes = decoder(address)
   }
