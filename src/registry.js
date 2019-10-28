@@ -57,7 +57,7 @@ export async function getOwnerWithLabelHash(labelhash, nodeHash) {
 export async function getAddress(name) {
   const resolverAddr = await getResolver(name)
   if (parseInt(resolverAddr, 16) === 0) {
-    return '0x00000000000000000000000000000000'
+    return emptyAddress
   }
   const namehash = getNamehash(name)
   try {
@@ -68,35 +68,35 @@ export async function getAddress(name) {
     console.warn(
       'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
     )
-    return '0x00000000000000000000000000000000'
+    return emptyAddress
   }
 }
 
 export async function getAddr(name, key) {
   const resolverAddr = await getResolver(name)
-  if (parseInt(resolverAddr, 16) === 0) {
-    return '0x00000000000000000000000000000000'
-  }
+  if (parseInt(resolverAddr, 16) === 0) return emptyAddress
+
   const namehash = getNamehash(name)
   try {
     const { Resolver } = await getResolverContract(resolverAddr)
     const { coinType, encoder } = formatsByName[key]
     const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
-    if (addr === '0x') return '0x00000000000000000000000000000000'
+    if (addr === '0x' || parseInt(addr, 16) === 0) return emptyAddress
+
     return encoder(Buffer.from(addr.slice(2),'hex'))
   } catch (e) {
     console.log(e)
     console.warn(
       'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
     )
-    return '0x00000000000000000000000000000000'
+    return emptyAddress
   }
 }
 
 export async function getContent(name) {
   const resolverAddr = await getResolver(name)
   if (parseInt(resolverAddr, 16) === 0) {
-    return '0x00000000000000000000000000000000'
+    return emptyAddress
   }
   try {
     const namehash = getNamehash(name)
@@ -212,7 +212,12 @@ export async function setAddr(name, key, address) {
   const resolverAddr = await getResolver(name)
   const { Resolver } = await getResolverContract(resolverAddr)
   const { decoder, coinType } = formatsByName[key]
-  const addressAsBytes = decoder(address)
+  let addressAsBytes
+  if (!address || address === ''){
+    addressAsBytes = emptyAddress
+  }else{
+    addressAsBytes = decoder(address)
+  }
   return Resolver['setAddr(bytes32,uint256,bytes)'](namehash,coinType,addressAsBytes)
 }
 
@@ -262,7 +267,7 @@ export async function deleteSubdomain(name) {
     await tx2.wait()
   }
   try {
-    return setSubnodeOwner(name, '0x0000000000000000000000000000000000000000')
+    return setSubnodeOwner(name, emptyAddress)
   } catch (e) {
     console.log('error deleting subdomain', e)
   }
