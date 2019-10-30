@@ -909,7 +909,12 @@
     lodash "^4.17.11"
     web3 "1.0.0-beta.34"
 
-"@ensdomains/resolver@0.1.11", "@ensdomains/resolver@^0.1.11":
+"@ensdomains/resolver@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.12.tgz#44ca93d6a3c4fa0a4080f2d59496ca5cd011d4e5"
+  integrity sha512-7Fv+KVSH7PBgRmHoWumI18HlI8ePcXp9ojUiY72VQCmmjOVoXDO/cd4ChoeCQIGxfd0TP1XkK3yOnGz22utHMQ==
+
+"@ensdomains/resolver@^0.1.11":
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.11.tgz#7202f787622d80cfd9a177264b979cf2fdb16aa9"
   integrity sha512-mDSxoPj3E8ZvHHUjKL86b/sqo/aJOf+zWCs3d7nRt5tqOOh55L1HW0NrFSm54x7eEaYf/CozAiQbcRo61crW+g==
