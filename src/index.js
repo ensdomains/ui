@@ -4,10 +4,11 @@ import { getENS } from './ens'
 export async function setupENS({
   customProvider,
   ensAddress,
-  reloadOnAccountsChange
+  reloadOnAccountsChange,
+  skipCache
 } = {}) {
-  await setupWeb3({ customProvider, reloadOnAccountsChange })
-  await getENS(ensAddress)
+  await setupWeb3({ customProvider, reloadOnAccountsChange, skipCache })
+  await getENS(ensAddress, skipCache)
 }
 
 export * from './ens'
