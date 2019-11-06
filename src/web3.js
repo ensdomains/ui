@@ -6,6 +6,13 @@ let signer
 let readOnly = false
 let requested = false
 
+export const clearWeb3Cache = () => {
+  provider = undefined
+  signer = undefined
+  readOnly = false
+  requested = false
+}
+
 export async function setupWeb3({
   customProvider,
   reloadOnAccountsChange = false

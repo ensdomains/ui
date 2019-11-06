@@ -1,5 +1,6 @@
-import { setupWeb3 } from './web3'
-import { getENS } from './ens'
+import { setupWeb3, clearWeb3Cache } from './web3'
+import { getENS, clearENSCache } from './ens'
+import { clearRegistrarCache } from './registrar'
 
 export async function setupENS({
   customProvider,
@@ -8,6 +9,12 @@ export async function setupENS({
 } = {}) {
   await setupWeb3({ customProvider, reloadOnAccountsChange })
   await getENS(ensAddress)
+}
+
+export function clearCache() {
+  clearWeb3Cache()
+  clearENSCache()
+  clearRegistrarCache()
 }
 
 export * from './ens'
