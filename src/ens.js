@@ -97,12 +97,12 @@ async function getTestRegistrarContract() {
   }
 }
 
-const getENS = async (ensAddress, skipCache) => {
+const getENS = async ensAddress => {
   const networkId = await getNetworkId()
 
   const hasRegistry = has(contracts[networkId], 'registry')
 
-  if (!ENS || skipCache) {
+  if (!ENS) {
     if (!hasRegistry && !ensAddress) {
       throw new Error(`Unsupported network ${networkId}`)
     } else if (contracts[networkId] && !ensAddress) {

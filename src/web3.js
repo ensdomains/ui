@@ -8,10 +8,9 @@ let requested = false
 
 export async function setupWeb3({
   customProvider,
-  reloadOnAccountsChange = false,
-  skipCache = false
+  reloadOnAccountsChange = false
 }) {
-  if (provider && !skipCache) {
+  if (provider) {
     return { provider, signer }
   }
   if (customProvider) {
