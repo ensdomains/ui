@@ -123,7 +123,11 @@ function getNetworkProviderUrl(id) {
   }
 }
 
-export async function getSignerOrProvider() {
+export async function getProvider() {
+  return getWeb3()
+}
+
+export async function getSigner() {
   const provider = await getWeb3()
   try {
     const signer = provider.getSigner()
@@ -138,6 +142,7 @@ export async function getSignerOrProvider() {
         await signer.getAddress()
         return signer
       } catch (e) {
+        console.log(e)
         requested = true
         return provider
       }

@@ -81,7 +81,7 @@ describe('Blockchain tests', () => {
     })
 
     test('ens registry, resolver and reverse registrar deployed', async () => {
-      const { ENS } = await getENS()
+      const ENS = await getENS()
       const accounts = await getAccounts()
 
       const eth = getNamehash('eth')

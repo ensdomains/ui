@@ -8,7 +8,7 @@ import {
   getWeb3Read,
   getAccount,
   getBlock,
-  getSignerOrProvider,
+  getProvider,
   getNetworkId
 } from './web3'
 import { Contract } from 'ethers'
@@ -32,13 +32,13 @@ let migrationLockPeriod
 let gracePeriod
 
 const getEthResolver = async () => {
-  const { ENS } = await getENS()
+  const ENS = await getENS()
   const resolverAddr = await ENS.resolver(getNamehash('eth'))
   return getResolverContract(resolverAddr)
 }
 
 const getDeed = async address => {
-  const signer = await getSignerOrProvider()
+  const provider = await getProvider()
   return new Contract(address, deedContract, signer)
 }
 
@@ -49,8 +49,8 @@ export const getLegacyAuctionRegistrar = async () => {
     }
   }
   try {
-    const { Resolver } = await getEthResolver()
-    const signer = await getSignerOrProvider()
+    const Resolver = await getEthResolver()
+    const provider = await getProvider()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       legacyRegistrarInterfaceId
@@ -59,7 +59,7 @@ export const getLegacyAuctionRegistrar = async () => {
     ethRegistrar = new Contract(
       legacyAuctionRegistrarAddress,
       legacyAuctionRegistrarContract,
-      signer
+      provider
     )
 
     return {
@@ -76,13 +76,13 @@ export const getPermanentRegistrar = async () => {
   }
 
   try {
-    const { ENS } = await getENS()
-    const signer = await getSignerOrProvider()
+    const ENS = await getENS()
+    const provider = await getProvider()
     const ethAddr = await ENS.owner(getNamehash('eth'))
     permanentRegistrar = new Contract(
       ethAddr,
       permanentRegistrarContract,
-      signer
+      provider
     )
     return {
       permanentRegistrar
@@ -98,8 +98,8 @@ export const getPermanentRegistrarController = async () => {
   }
 
   try {
-    const { Resolver } = await getEthResolver()
-    const signer = await getSignerOrProvider()
+    const Resolver = await getEthResolver()
+    const provider = await getProvider()
     let controllerAddress = await Resolver.interfaceImplementer(
       getNamehash('eth'),
       permanentRegistrarInterfaceId
@@ -107,7 +107,7 @@ export const getPermanentRegistrarController = async () => {
     permanentRegistrarController = new Contract(
       controllerAddress,
       permanentRegistrarControllerContract,
-      signer
+      provider
     )
     return {
       permanentRegistrarController
