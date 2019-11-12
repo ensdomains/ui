@@ -9,6 +9,7 @@ import {
   getAccount,
   getBlock,
   getProvider,
+  getSigner,
   getNetworkId
 } from './web3'
 import { Contract } from 'ethers'
@@ -357,8 +358,9 @@ const transferOwner = async (name, to, overrides = {}) => {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
     const account = await getAccount()
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
-
+    const { permanentRegistrar } = await getPermanentRegistrar()
+    const signer = await getSigner()
+    const Registrar = permanentRegistrar.connect(signer)
     const networkId = await getNetworkId()
     if (parseInt(networkId) > 1000) {
       /* if private network */
@@ -383,7 +385,9 @@ const reclaim = async (name, address, overrides = {}) => {
   try {
     const nameArray = name.split('.')
     const labelHash = labelhash(nameArray[0])
-    const { permanentRegistrar: Registrar } = await getPermanentRegistrar()
+    const { permanentRegistrar } = await getPermanentRegistrar()
+    const signer = await getSigner()
+    const Registrar = permanentRegistrar.connect(signer)
     const networkId = await getNetworkId()
     if (parseInt(networkId) > 1000) {
       /* if private network */
@@ -419,16 +423,23 @@ const getMinimumCommitmentAge = async () => {
 
 const makeCommitment = async (name, owner, secret = '') => {
   const {
-    permanentRegistrarController
+    permanentRegistrarController: permanentRegistrarControllerWithoutSigner
   } = await getPermanentRegistrarController()
-
+  const signer = await getSigner()
+  const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+    signer
+  )
   return permanentRegistrarController.makeCommitment(name, owner, secret)
 }
 
 const commit = async (label, secret = '') => {
   const {
-    permanentRegistrarController
+    permanentRegistrarController: permanentRegistrarControllerWithoutSigner
   } = await getPermanentRegistrarController()
+  const signer = await getSigner()
+  const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+    signer
+  )
   const account = await getAccount()
   const commitment = await makeCommitment(label, account, secret)
 
@@ -437,8 +448,12 @@ const commit = async (label, secret = '') => {
 
 const register = async (label, duration, secret) => {
   const {
-    permanentRegistrarController
+    permanentRegistrarController: permanentRegistrarControllerWithoutSigner
   } = await getPermanentRegistrarController()
+  const signer = await getSigner()
+  const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+    signer
+  )
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
 
@@ -453,8 +468,12 @@ const register = async (label, duration, secret) => {
 
 const renew = async (label, duration) => {
   const {
-    permanentRegistrarController
+    permanentRegistrarController: permanentRegistrarControllerWithoutSigner
   } = await getPermanentRegistrarController()
+  const signer = await getSigner()
+  const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+    signer
+  )
   const price = await getRentPrice(label, duration)
 
   return permanentRegistrarController.renew(label, duration, { value: price })
@@ -462,19 +481,27 @@ const renew = async (label, duration) => {
 
 const transferRegistrars = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
+  const signer = await getSigner()
+  const ethRegistrarWithSigner = ethRegistrar.connect(signer)
   const hash = labelhash(label)
-  return ethRegistrar.transferRegistrars(hash)
+  return ethRegistrarWithSigner.transferRegistrars(hash)
 }
 
 const releaseDeed = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
+  const signer = await getSigner()
+  const ethRegistrarWithSigner = ethRegistrar.connect(signer)
   const hash = labelhash(label)
-  return ethRegistrar.releaseDeed(hash)
+  return ethRegistrarWithSigner.releaseDeed(hash)
 }
 
 const submitProof = async (name, parentOwner) => {
   const { claim, result } = await getDNSEntry(name, parentOwner)
-  const { registrar } = await getDnsRegistrarContract(parentOwner)
+  const { registrar: registrarWithoutSigner } = await getDnsRegistrarContract(
+    parentOwner
+  )
+  const signer = await getSigner()
+  const registrar = registrarWithoutSigner.connect(signer)
   const data = await claim.oracle.getAllProofs(result, {})
   const allProven = await claim.oracle.allProven(result)
   if (allProven) {
