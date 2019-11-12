@@ -319,7 +319,11 @@ export async function getResolverDetails(node) {
 }
 
 export async function claimAndSetReverseRecordName(name, overrides = {}) {
-  const { reverseRegistrar } = await getReverseRegistrarContract()
+  const {
+    reverseRegistrar: reverseRegistrarWithoutSigner
+  } = await getReverseRegistrarContract()
+  const signer = await getSigner()
+  const reverseRegistrar = reverseRegistrarWithoutSigner.connect(signer)
   const networkId = await getNetworkId()
 
   if (parseInt(networkId) > 1000) {
