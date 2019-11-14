@@ -72,7 +72,7 @@ describe('Blockchain tests', () => {
     reverseRegistrar = reverseRegistrarAddress
 
     await setupENS({ customProvider: provider, ensAddress })
-  }, 100000)
+  }, 1000000)
 
   describe('Test contract and Web3 setup', () => {
     test('accounts exist', async () => {
@@ -81,7 +81,7 @@ describe('Blockchain tests', () => {
     })
 
     test('ens registry, resolver and reverse registrar deployed', async () => {
-      const { ENS } = await getENS()
+      const ENS = await getENS()
       const accounts = await getAccounts()
 
       const eth = getNamehash('eth')

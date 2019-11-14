@@ -26,11 +26,11 @@ import {
   encodeContenthash,
   decodeContenthash
 } from './utils/contents'
-import { getWeb3, getAccount, getSigner, getNetworkId } from './web3'
+import { getAccount, getSigner, getNetworkId } from './web3'
 import { utils } from 'ethers'
 
 export async function getOwner(name) {
-  const { ENS } = await getENS()
+  const ENS = await getENS()
   const namehash = getNamehash(name)
   const owner = await ENS.owner(namehash)
   return owner
@@ -38,18 +38,18 @@ export async function getOwner(name) {
 
 export async function getResolver(name) {
   const namehash = getNamehash(name)
-  const { ENS } = await getENS()
+  const ENS = await getENS()
   return ENS.resolver(namehash)
 }
 
 export async function getResolverWithLabelhash(labelhash, nodehash) {
-  let { ENS } = await getENS()
+  let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
   return ENS.resolver(namehash)
 }
 
 export async function getOwnerWithLabelHash(labelhash, nodeHash) {
-  let { ENS } = await getENS()
+  let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
   return ENS.owner(namehash)
 }
@@ -61,7 +61,7 @@ export async function getAddress(name) {
   }
   const namehash = getNamehash(name)
   try {
-    const { Resolver } = await getResolverContract(resolverAddr)
+    const Resolver = await getResolverContract(resolverAddr)
     const addr = await Resolver['addr(bytes32)'](namehash)
     return addr
   } catch (e) {
@@ -83,7 +83,7 @@ export async function getAddr(name, key) {
     const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
     if (addr === '0x') return emptyAddress
 
-    return encoder(Buffer.from(addr.slice(2),'hex'))
+    return encoder(Buffer.from(addr.slice(2), 'hex'))
   } catch (e) {
     console.log(e)
     console.warn(
@@ -100,7 +100,7 @@ export async function getContent(name) {
   }
   try {
     const namehash = getNamehash(name)
-    const { Resolver } = await getResolverContract(resolverAddr)
+    const Resolver = await getResolverContract(resolverAddr)
     const contentHashSignature = utils
       .solidityKeccak256(['string'], ['contenthash(bytes32)'])
       .slice(0, 10)
@@ -145,7 +145,7 @@ export async function getText(name, key) {
   }
   const namehash = getNamehash(name)
   try {
-    const { Resolver } = await getResolverContract(resolverAddr)
+    const Resolver = await getResolverContract(resolverAddr)
     const addr = await Resolver.text(namehash, key)
     return addr
   } catch (e) {
@@ -167,7 +167,7 @@ export async function getName(address) {
   }
 
   try {
-    const { Resolver } = await getResolverContract(resolverAddr)
+    const Resolver = await getResolverContract(resolverAddr)
     const name = await Resolver.name(reverseNamehash)
     return {
       name
@@ -177,14 +177,20 @@ export async function getName(address) {
   }
 }
 
+/* non-constant functions */
+
 export async function setOwner(name, newOwner) {
-  const { ENS } = await getENS()
+  const ENSWithoutSigner = await getENS()
+  const signer = await getSigner()
+  const ENS = ENSWithoutSigner.connect(signer)
   const namehash = getNamehash(name)
   return ENS.setOwner(namehash, newOwner)
 }
 
 export async function setSubnodeOwner(unnormalizedName, newOwner) {
-  const { ENS } = await getENS()
+  const ENSWithoutSigner = await getENS()
+  const signer = await getSigner()
+  const ENS = ENSWithoutSigner.connect(signer)
   const name = normalize(unnormalizedName)
   const nameArray = name.split('.')
   const label = nameArray[0]
@@ -196,14 +202,18 @@ export async function setSubnodeOwner(unnormalizedName, newOwner) {
 
 export async function setResolver(name, resolver) {
   const namehash = getNamehash(name)
-  const { ENS } = await getENS()
+  const ENSWithoutSigner = await getENS()
+  const signer = await getSigner()
+  const ENS = ENSWithoutSigner.connect(signer)
   return ENS.setResolver(namehash, resolver)
 }
 
 export async function setAddress(name, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   return Resolver['setAddr(bytes32,address)'](namehash, address)
 }
 
@@ -213,18 +223,24 @@ export async function setAddr(name, key, address) {
   const { Resolver } = await getResolverContract(resolverAddr)
   const { decoder, coinType } = formatsByName[key]
   let addressAsBytes
-  if (!address || address === ''){
-    addressAssBytes = Buffer.from('')
-  }else{
+  if (!address || address === '') {
+    addressAsBytes = Buffer.from('')
+  } else {
     addressAsBytes = decoder(address)
   }
-  return Resolver['setAddr(bytes32,uint256,bytes)'](namehash,coinType,addressAsBytes)
+  return Resolver['setAddr(bytes32,uint256,bytes)'](
+    namehash,
+    coinType,
+    addressAsBytes
+  )
 }
 
 export async function setContent(name, content) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   return Resolver.setContent(namehash, content)
 }
 
@@ -232,19 +248,23 @@ export async function setContenthash(name, content) {
   const encodedContenthash = encodeContenthash(content)
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   return Resolver.setContenthash(namehash, encodedContenthash)
 }
 
 export async function setText(name, key, recordValue) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   return Resolver.setText(namehash, key, recordValue)
 }
 
 export async function checkSubdomain(subdomain, domain) {
-  const { ENS } = await getENS()
+  const ENS = await getENS()
   return ENS.owner(subdomain + '.' + domain)
 }
 
@@ -295,7 +315,11 @@ export async function getResolverDetails(node) {
 }
 
 export async function claimAndSetReverseRecordName(name, overrides = {}) {
-  const { reverseRegistrar } = await getReverseRegistrarContract()
+  const {
+    reverseRegistrar: reverseRegistrarWithoutSigner
+  } = await getReverseRegistrarContract()
+  const signer = await getSigner()
+  const reverseRegistrar = reverseRegistrarWithoutSigner.connect(signer)
   const networkId = await getNetworkId()
 
   if (parseInt(networkId) > 1000) {
@@ -313,7 +337,9 @@ export async function setReverseRecordName(name) {
   const account = await getAccount()
   const reverseNode = `${account.slice(2)}.addr.reverse`
   const resolverAddress = await getResolver(reverseNode)
-  let { Resolver } = await getResolverContract(resolverAddress)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddress)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   let namehash = getNamehash(reverseNode)
   return Resolver.setName(namehash, name)
 }

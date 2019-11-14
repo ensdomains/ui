@@ -1,6 +1,6 @@
 import has from 'lodash/has'
 import { Contract, utils } from 'ethers'
-import { getWeb3, getNetworkId, getSignerOrProvider } from './web3'
+import { getWeb3, getNetworkId, getProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
@@ -41,14 +41,14 @@ function getLabelhash(label) {
 }
 
 async function getReverseRegistrarContract() {
-  const { ENS } = await getENS()
-  const signer = await getSignerOrProvider()
+  const ENS = await getENS()
+  const provider = await getProvider()
   const namehash = getNamehash('addr.reverse')
   const reverseRegistrarAddr = await ENS.owner(namehash)
   const reverseRegistrar = new Contract(
     reverseRegistrarAddr,
     reverseRegistrarContract,
-    signer
+    provider
   )
   return {
     reverseRegistrar
@@ -56,18 +56,15 @@ async function getReverseRegistrarContract() {
 }
 
 async function getResolverContract(addr) {
-  const signer = await getSignerOrProvider()
-  const Resolver = new Contract(addr, resolverContract, signer)
-  return {
-    Resolver
-  }
+  const provider = await getProvider()
+  return new Contract(addr, resolverContract, provider)
 }
 
 async function getENSContract() {
   const networkId = await getNetworkId()
-  const signer = await getSignerOrProvider()
+  const provider = await getProvider()
 
-  const ENS = new Contract(contracts[networkId].registry, ensContract, signer)
+  const ENS = new Contract(contracts[networkId].registry, ensContract, provider)
   return {
     ENS: ENS
   }
@@ -85,14 +82,14 @@ async function getFifsRegistrarContract() {
 }
 
 async function getTestRegistrarContract() {
-  const { ENS } = await getENS()
-  const signerOrProvider = await getSignerOrProvider()
+  const ENS = await getENS()
+  const providerOrProvider = await getProvider()
   const namehash = getNamehash('test')
   const testRegistrarAddr = await ENS.owner(namehash)
   const registrar = new Contract(
     testRegistrarAddr,
     testRegistrarContract,
-    signerOrProvider
+    providerOrProvider
   )
 
   return {
@@ -115,22 +112,18 @@ const getENS = async ensAddress => {
     contracts[networkId] = {}
     contracts[networkId].registry = ensAddress
   } else {
-    return {
-      ENS: ENS
-    }
+    return ENS
   }
 
   const { ENS: ENSContract } = await getENSContract()
   ENS = ENSContract
 
-  return {
-    ENS: ENSContract
-  }
+  return ENS
 }
 
 async function getENSEvent(event, { topics, fromBlock }) {
   const provider = await getWeb3()
-  const { ENS } = await getENS()
+  const ENS = await getENS()
   const ensInterface = new utils.Interface(ensContract)
   let Event = ENS.filters[event]()
 
@@ -152,8 +145,8 @@ async function getENSEvent(event, { topics, fromBlock }) {
 }
 
 async function getDnsRegistrarContract(parentOwner) {
-  const signer = await getSignerOrProvider()
-  const registrar = new Contract(parentOwner, dnsRegistrarContract, signer)
+  const provider = await getProvider()
+  const registrar = new Contract(parentOwner, dnsRegistrarContract, provider)
   return {
     registrar: registrar,
     web3
