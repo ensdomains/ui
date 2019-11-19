@@ -220,7 +220,9 @@ export async function setAddress(name, address) {
 export async function setAddr(name, key, address) {
   const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
-  const { Resolver } = await getResolverContract(resolverAddr)
+  const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+  const signer = await getSigner()
+  const Resolver = ResolverWithoutSigner.connect(signer)
   const { decoder, coinType } = formatsByName[key]
   let addressAsBytes
   if (!address || address === '') {
