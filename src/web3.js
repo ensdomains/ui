@@ -145,7 +145,6 @@ export async function getSigner() {
         await signer.getAddress()
         return signer
       } catch (e) {
-        console.log(e)
         requested = true
         return provider
       }
@@ -162,7 +161,6 @@ export async function getAccount() {
     const address = await signer.getAddress()
     return address
   } catch (e) {
-    console.log('error', e)
     return '0x0'
   }
 }
