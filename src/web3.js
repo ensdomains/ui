@@ -46,10 +46,13 @@ export async function setupWeb3({
       console.error('Failed to create and enable iframe provider', error)
     }
   }
+  console.log('here in web3.js')
 
   if (window && window.ethereum) {
+    console.log('has window and window.ethereum')
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
+    console.log('address', signer.getAddress())
     if (window.ethereum.on && reloadOnAccountsChange) {
       window.ethereum.on('accountsChanged', async function(accounts) {
         console.log(accounts)
@@ -160,18 +163,19 @@ export async function getAccount() {
   const provider = await getWeb3()
   try {
     const signer = await provider.getSigner()
-    return signer.getAddress()
+    const address = await signer.getAddress()
+    return address
   } catch (e) {
-    throw e
+    console.log('error', e)
+    return '0x0'
   }
 }
 
 export async function getAccounts() {
   try {
-    const accounts = [await signer.getAddress()]
-
-    if (accounts.length > 0) {
-      return accounts
+    const account = await getAccount()
+    if (parseInt(account, 16) !== 0) {
+      return [account]
     } else if (window.ethereum) {
       try {
         const accounts = await window.ethereum.enable()
@@ -183,7 +187,7 @@ export async function getAccounts() {
     } else {
       return []
     }
-  } catch (_) {
+  } catch (e) {
     return []
   }
 }

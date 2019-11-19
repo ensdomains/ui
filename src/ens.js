@@ -83,13 +83,13 @@ async function getFifsRegistrarContract() {
 
 async function getTestRegistrarContract() {
   const ENS = await getENS()
-  const providerOrProvider = await getProvider()
+  const provider = await getProvider()
   const namehash = getNamehash('test')
   const testRegistrarAddr = await ENS.owner(namehash)
   const registrar = new Contract(
     testRegistrarAddr,
     testRegistrarContract,
-    providerOrProvider
+    provider
   )
 
   return {
