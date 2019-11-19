@@ -403,9 +403,11 @@ export const getSubdomains = async name => {
 }
 
 export async function registerTestdomain(label) {
-  const { registrar } = await getTestRegistrarContract()
+  const { registrar: registrarWithoutSigner } = await getTestRegistrarContract()
+  const signer = await getSigner()
   const labelhash = getLabelhash(label)
   const account = await getAccount()
+  const registrar = registrarWithoutSigner.connect(signer)
   return registrar.register(labelhash, account)
 }
 
