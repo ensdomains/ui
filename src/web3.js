@@ -145,7 +145,6 @@ export async function getSigner() {
         await signer.getAddress()
         return signer
       } catch (e) {
-        console.log(e)
         requested = true
         return provider
       }
@@ -159,18 +158,18 @@ export async function getAccount() {
   const provider = await getWeb3()
   try {
     const signer = await provider.getSigner()
-    return signer.getAddress()
+    const address = await signer.getAddress()
+    return address
   } catch (e) {
-    throw e
+    return '0x0'
   }
 }
 
 export async function getAccounts() {
   try {
-    const accounts = [await signer.getAddress()]
-
-    if (accounts.length > 0) {
-      return accounts
+    const account = await getAccount()
+    if (parseInt(account, 16) !== 0) {
+      return [account]
     } else if (window.ethereum) {
       try {
         const accounts = await window.ethereum.enable()
@@ -182,7 +181,7 @@ export async function getAccounts() {
     } else {
       return []
     }
-  } catch (_) {
+  } catch (e) {
     return []
   }
 }

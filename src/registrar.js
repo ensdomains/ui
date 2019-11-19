@@ -39,8 +39,8 @@ const getEthResolver = async () => {
 }
 
 const getDeed = async address => {
-  const signer = await getSigner()
-  return new Contract(address, deedContract, signer)
+  const provider = await getProvider()
+  return new Contract(address, deedContract, provider)
 }
 
 export const getLegacyAuctionRegistrar = async () => {
