@@ -39,7 +39,7 @@ const getEthResolver = async () => {
 }
 
 const getDeed = async address => {
-  const provider = await getProvider()
+  const signer = await getSigner()
   return new Contract(address, deedContract, signer)
 }
 
