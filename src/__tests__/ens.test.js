@@ -16,6 +16,8 @@ import {
   setResolver,
   getAddress,
   setAddress,
+  setAddr,
+  getAddr,
   getContent,
   setContent,
   setContenthash,
@@ -205,6 +207,13 @@ describe('Blockchain tests', () => {
       expect(addr).toBe('0x0000000000000000000000000000000000000000')
     })
 
+    test('getAddr returns an eth address', async () => {
+      const addr = await getAddress('resolver.eth', 'ETH')
+      expect(addr).toBeHex()
+      expect(addr).toBeEthAddress()
+      expect(addr).not.toBe('0x0000000000000000000000000000000000000000')
+    })
+
     test('setAddress sets an address', async () => {
       //reverts if no addr is present
       const resolverAddr = await getAddress('resolver.eth')
@@ -216,6 +225,21 @@ describe('Blockchain tests', () => {
       )
       await tx2.wait()
       const addr = await getAddress('superawesome.eth')
+      expect(addr).toBe('0x0000000000000000000000000000000000012345')
+    })
+
+    test('setAddr sets an eth address', async () => {
+      //reverts if no addr is present
+      const resolverAddr = await getAddress('resolver.eth')
+      const tx = await setResolver('superawesome.eth', resolverAddr)
+      await tx.wait()
+      const tx2 = await setAddr(
+        'superawesome.eth',
+        'ETH',
+        '0x0000000000000000000000000000000000012345'
+      )
+      await tx2.wait()
+      const addr = await getAddr('superawesome.eth', 'ETH')
       expect(addr).toBe('0x0000000000000000000000000000000000012345')
     })
 

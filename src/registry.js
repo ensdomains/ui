@@ -56,6 +56,10 @@ export async function getOwnerWithLabelHash(labelhash, nodeHash) {
 
 export async function getAddress(name) {
   const resolverAddr = await getResolver(name)
+  return getEthAddressWithResolver(name, resolverAddr)
+}
+
+export async function getEthAddressWithResolver(name, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
     return emptyAddress
   }
@@ -75,7 +79,10 @@ export async function getAddress(name) {
 export async function getAddr(name, key) {
   const resolverAddr = await getResolver(name)
   if (parseInt(resolverAddr, 16) === 0) return emptyAddress
+  return getAddrWithResolver(name, key, resolverAddr)
+}
 
+export async function getAddrWithResolver(name, key, resolverAddr) {
   const namehash = getNamehash(name)
   try {
     const Resolver = await getResolverContract(resolverAddr)
@@ -95,6 +102,10 @@ export async function getAddr(name, key) {
 
 export async function getContent(name) {
   const resolverAddr = await getResolver(name)
+  return getContentWithResolver(name, resolverAddr)
+}
+
+export async function getContentWithResolver(name, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
     return emptyAddress
   }
@@ -140,6 +151,10 @@ export async function getContent(name) {
 
 export async function getText(name, key) {
   const resolverAddr = await getResolver(name)
+  return getTextWithResolver(name, key, resolverAddr)
+}
+
+export async function getTextWithResolver(name, key, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
     return ''
   }
@@ -158,8 +173,13 @@ export async function getText(name, key) {
 
 export async function getName(address) {
   const reverseNode = `${address.slice(2)}.addr.reverse`
-  const reverseNamehash = getNamehash(reverseNode)
   const resolverAddr = await getResolver(reverseNode)
+  return getNameWithResolver(address, resolverAddr)
+}
+
+export async function getNameWithResolver(address, resolverAddr) {
+  const reverseNode = `${address.slice(2)}.addr.reverse`
+  const reverseNamehash = getNamehash(reverseNode)
   if (parseInt(resolverAddr, 16) === 0) {
     return {
       name: null
@@ -209,8 +229,12 @@ export async function setResolver(name, resolver) {
 }
 
 export async function setAddress(name, address) {
-  const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
+  return setAddressWithResolver(name, address, resolverAddr)
+}
+
+export async function setAddressWithResolver(name, address, resolverAddr) {
+  const namehash = getNamehash(name)
   const ResolverWithoutSigner = await getResolverContract(resolverAddr)
   const signer = await getSigner()
   const Resolver = ResolverWithoutSigner.connect(signer)
@@ -218,8 +242,12 @@ export async function setAddress(name, address) {
 }
 
 export async function setAddr(name, key, address) {
-  const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
+  return setAddrWithResolver(name, key, address, resolverAddr)
+}
+
+export async function setAddrWithResolver(name, key, address, resolverAddr) {
+  const namehash = getNamehash(name)
   const ResolverWithoutSigner = await getResolverContract(resolverAddr)
   const signer = await getSigner()
   const Resolver = ResolverWithoutSigner.connect(signer)
@@ -238,8 +266,12 @@ export async function setAddr(name, key, address) {
 }
 
 export async function setContent(name, content) {
-  const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
+  return setContentWithResolver(name, content, resolverAddr)
+}
+
+export async function setContentWithResolver(name, content, resolverAddr) {
+  const namehash = getNamehash(name)
   const ResolverWithoutSigner = await getResolverContract(resolverAddr)
   const signer = await getSigner()
   const Resolver = ResolverWithoutSigner.connect(signer)
@@ -247,9 +279,13 @@ export async function setContent(name, content) {
 }
 
 export async function setContenthash(name, content) {
+  const resolverAddr = await getResolver(name)
+  return setContenthashWithResolver(name, content, resolverAddr)
+}
+
+export async function setContenthashWithResolver(name, content, resolverAddr) {
   const encodedContenthash = encodeContenthash(content)
   const namehash = getNamehash(name)
-  const resolverAddr = await getResolver(name)
   const ResolverWithoutSigner = await getResolverContract(resolverAddr)
   const signer = await getSigner()
   const Resolver = ResolverWithoutSigner.connect(signer)
@@ -257,8 +293,17 @@ export async function setContenthash(name, content) {
 }
 
 export async function setText(name, key, recordValue) {
-  const namehash = getNamehash(name)
   const resolverAddr = await getResolver(name)
+  return setTextWithResolver(name, key, recordValue, resolverAddr)
+}
+
+export async function setTextWithResolver(
+  name,
+  key,
+  recordValue,
+  resolverAddr
+) {
+  const namehash = getNamehash(name)
   const ResolverWithoutSigner = await getResolverContract(resolverAddr)
   const signer = await getSigner()
   const Resolver = ResolverWithoutSigner.connect(signer)
