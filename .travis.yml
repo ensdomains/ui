@@ -18,7 +18,7 @@ jobs:
     - stage: test
       name: 'Test'
       install:
-        - yarn test
+        - yarn
       script: 'yarn test'
 
 stages:
