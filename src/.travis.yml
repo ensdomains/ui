@@ -23,7 +23,6 @@ jobs:
 
 stages:
   - name: test
-    if: branch != master
 
 notifications:
   email: false
