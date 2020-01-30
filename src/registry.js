@@ -207,11 +207,10 @@ export async function setOwner(name, newOwner) {
   return ENS.setOwner(namehash, newOwner)
 }
 
-export async function setSubnodeOwner(unnormalizedName, newOwner) {
+export async function setSubnodeOwner(name, newOwner) {
   const ENSWithoutSigner = await getENS()
   const signer = await getSigner()
   const ENS = ENSWithoutSigner.connect(signer)
-  const name = normalize(unnormalizedName)
   const nameArray = name.split('.')
   const label = nameArray[0]
   const node = nameArray.slice(1).join('.')
@@ -417,6 +416,12 @@ export async function getDomainDetails(name) {
     addr: null,
     content: null
   }
+}
+
+export const isMigrated = async name => {
+  const ENS = await getENS()
+  const namehash = getNamehash(name)
+  return await ENS.recordExists(namehash)
 }
 
 export const getSubdomains = async name => {
