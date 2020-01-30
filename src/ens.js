@@ -3,12 +3,9 @@ import { Contract, utils } from 'ethers'
 import { getWeb3, getNetworkId, getProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './utils'
-import { labelhash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
-import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json'
-// Temporarily put back to PublicResolver, as Resolver only had setName for some reson.
-// import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
+import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
 import { abi as fifsRegistrarContract } from '@ensdomains/ens/build/contracts/FIFSRegistrar.json'
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
 import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/contracts/DNSRegistrar.json'
@@ -40,7 +37,7 @@ async function getNamehashWithLabelHash(labelHash, nodeHash) {
 }
 
 function getLabelhash(label) {
-  return labelhash(label)
+  return utils.solidityKeccak256(['string'], [label])
 }
 
 async function getReverseRegistrarContract() {
