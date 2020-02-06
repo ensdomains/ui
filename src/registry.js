@@ -42,6 +42,12 @@ export async function getResolver(name) {
   return ENS.resolver(namehash)
 }
 
+export async function getTTL(name) {
+  const namehash = getNamehash(name)
+  const ENS = await getENS()
+  return ENS.ttl(namehash)
+}
+
 export async function getResolverWithLabelhash(labelhash, nodehash) {
   let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
@@ -217,6 +223,25 @@ export async function setSubnodeOwner(name, newOwner) {
   const labelhash = getLabelhash(label)
   const parentNamehash = getNamehash(node)
   return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
+}
+
+export async function setSubnodeRecord(name, newOwner, resolver) {
+  const ENSWithoutSigner = await getENS()
+  const signer = await getSigner()
+  const ENS = ENSWithoutSigner.connect(signer)
+  const nameArray = name.split('.')
+  const label = nameArray[0]
+  const node = nameArray.slice(1).join('.')
+  const labelhash = getLabelhash(label)
+  const parentNamehash = getNamehash(node)
+  const ttl = await getTTL(name)
+  return ENS.setSubnodeRecord(
+    parentNamehash,
+    labelhash,
+    newOwner,
+    resolver,
+    ttl
+  )
 }
 
 export async function setResolver(name, resolver) {
