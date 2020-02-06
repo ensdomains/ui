@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import GanacheCLI from 'ganache-cli'
+import ganache from 'ganache-core'
 import {
   setupWeb3 as setupWeb3Test,
   getAccounts
@@ -14,6 +14,7 @@ import {
   setSubnodeOwner,
   getResolver,
   setResolver,
+  getTTL,
   getAddress,
   setAddress,
   setAddr,
@@ -42,7 +43,7 @@ describe('Blockchain tests', () => {
   beforeAll(async () => {
     switch (ENV) {
       case 'GANACHE_CLI':
-        var provider = GanacheCLI.provider()
+        var provider = ganache.provider()
         var web3 = await setupWeb3Test({ provider, Web3 })
         break
       case 'GANACHE_GUI':
@@ -84,15 +85,10 @@ describe('Blockchain tests', () => {
 
     test('ens registry, resolver and reverse registrar deployed', async () => {
       const ENS = await getENS()
-      const accounts = await getAccounts()
 
       const eth = getNamehash('eth')
       const ethOwner = await ENS.owner(eth)
       expect(ethOwner).toBe(baseRegistrar)
-
-      const reverse = getNamehash('reverse')
-      const reverseOwner = await ENS.owner(reverse)
-      expect(reverseOwner).toBe(accounts[0])
 
       const reverseNode = getNamehash('addr.reverse')
       const reverseNodeOwner = await ENS.owner(reverseNode)
@@ -103,7 +99,7 @@ describe('Blockchain tests', () => {
   describe('Registry', () => {
     test('getOwner returns owner', async () => {
       const accounts = await getAccounts()
-      const owner = await getOwner('reverse')
+      const owner = await getOwner('resolver.eth')
       expect(owner).toBe(accounts[0])
     })
 
@@ -157,6 +153,11 @@ describe('Blockchain tests', () => {
       expect(newResolver).toBeHex()
       expect(newResolver).toBeEthAddress()
       expect(newResolver.toLowerCase()).toBe(mockResolver)
+    })
+
+    test('getTTL returns a TTL', async () => {
+      const ttl = await getTTL('resolver.eth')
+      expect(parseInt(ttl, 16)).toBe(0)
     })
 
     test('createSubdomain makes a new subdomain', async () => {

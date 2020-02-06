@@ -23,7 +23,7 @@
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/plugin-transform-spread": "^7.2.2",
     "@babel/preset-env": "^7.4.4",
-    "@ensdomains/mock": "^2.0.2",
+    "@ensdomains/mock": "2.0.4",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.6.0",
     "babel-jest-assertions": "^0.1.0",
@@ -38,7 +38,7 @@
     "eslint-plugin-react": "^7.1.0",
     "eslint-plugin-standard": "^3.0.1",
     "esm": "^3.2.22",
-    "ganache-cli": "^6.4.3",
+    "ganache-core": "^2.10.1",
     "jest": "^24.8.0",
     "web3": "^1.2.6"
   },
