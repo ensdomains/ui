@@ -12,6 +12,7 @@ import {
   getOwner,
   setOwner,
   setSubnodeOwner,
+  setSubnodeRecord,
   getResolver,
   setResolver,
   getTTL,
@@ -38,6 +39,7 @@ const ENV = ENVIRONMENTS[1]
 
 let reverseRegistrar
 let baseRegistrar
+let publicResolver
 
 describe('Blockchain tests', () => {
   beforeAll(async () => {
@@ -65,7 +67,8 @@ describe('Blockchain tests', () => {
     const {
       ensAddress,
       reverseRegistrarAddress,
-      baseRegistrarAddress
+      baseRegistrarAddress,
+      resolverAddress
     } = await deployENS({
       web3,
       accounts
@@ -73,6 +76,7 @@ describe('Blockchain tests', () => {
 
     baseRegistrar = baseRegistrarAddress
     reverseRegistrar = reverseRegistrarAddress
+    publicResolver = resolverAddress
 
     await setupENS({ customProvider: provider, ensAddress })
   }, 1000000)
@@ -111,6 +115,23 @@ describe('Blockchain tests', () => {
       await tx.wait()
       const newOwner = await getOwner('subnode.resolver.eth')
       expect(newOwner).toBe(accounts[0])
+    })
+
+    test('setSubnodeRecord sets new subnode owner', async () => {
+      const accounts = await getAccounts()
+      const tx = await setSubnodeRecord(
+        'subnode.resolver.eth',
+        accounts[1],
+        publicResolver,
+        0
+      )
+      await tx.wait()
+      const newOwner = await getOwner('subnode.resolver.eth')
+      const newResolver = await getResolver('subnode.resolver.eth')
+      const newTTL = await getTTL('subnode.resolver.eth')
+      expect(newOwner).toBe(accounts[1])
+      expect(newResolver).toBe(publicResolver)
+      expect(parseInt(newTTL, 16)).toBe(0)
     })
 
     test('setNewOwner sets new owner', async () => {
