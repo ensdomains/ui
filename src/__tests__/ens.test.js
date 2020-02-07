@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import GanacheCLI from 'ganache-cli'
+import ganache from 'ganache-core'
 import {
   setupWeb3 as setupWeb3Test,
   getAccounts
@@ -12,8 +12,10 @@ import {
   getOwner,
   setOwner,
   setSubnodeOwner,
+  setSubnodeRecord,
   getResolver,
   setResolver,
+  getTTL,
   getAddress,
   setAddress,
   setAddr,
@@ -37,12 +39,13 @@ const ENV = ENVIRONMENTS[1]
 
 let reverseRegistrar
 let baseRegistrar
+let publicResolver
 
 describe('Blockchain tests', () => {
   beforeAll(async () => {
     switch (ENV) {
       case 'GANACHE_CLI':
-        var provider = GanacheCLI.provider()
+        var provider = ganache.provider()
         var web3 = await setupWeb3Test({ provider, Web3 })
         break
       case 'GANACHE_GUI':
@@ -64,7 +67,8 @@ describe('Blockchain tests', () => {
     const {
       ensAddress,
       reverseRegistrarAddress,
-      baseRegistrarAddress
+      baseRegistrarAddress,
+      resolverAddress
     } = await deployENS({
       web3,
       accounts
@@ -72,6 +76,7 @@ describe('Blockchain tests', () => {
 
     baseRegistrar = baseRegistrarAddress
     reverseRegistrar = reverseRegistrarAddress
+    publicResolver = resolverAddress
 
     await setupENS({ customProvider: provider, ensAddress })
   }, 1000000)
@@ -84,15 +89,10 @@ describe('Blockchain tests', () => {
 
     test('ens registry, resolver and reverse registrar deployed', async () => {
       const ENS = await getENS()
-      const accounts = await getAccounts()
 
       const eth = getNamehash('eth')
       const ethOwner = await ENS.owner(eth)
       expect(ethOwner).toBe(baseRegistrar)
-
-      const reverse = getNamehash('reverse')
-      const reverseOwner = await ENS.owner(reverse)
-      expect(reverseOwner).toBe(accounts[0])
 
       const reverseNode = getNamehash('addr.reverse')
       const reverseNodeOwner = await ENS.owner(reverseNode)
@@ -103,7 +103,7 @@ describe('Blockchain tests', () => {
   describe('Registry', () => {
     test('getOwner returns owner', async () => {
       const accounts = await getAccounts()
-      const owner = await getOwner('reverse')
+      const owner = await getOwner('resolver.eth')
       expect(owner).toBe(accounts[0])
     })
 
@@ -115,6 +115,23 @@ describe('Blockchain tests', () => {
       await tx.wait()
       const newOwner = await getOwner('subnode.resolver.eth')
       expect(newOwner).toBe(accounts[0])
+    })
+
+    test('setSubnodeRecord sets new subnode owner', async () => {
+      const accounts = await getAccounts()
+      const tx = await setSubnodeRecord(
+        'subnode.resolver.eth',
+        accounts[1],
+        publicResolver,
+        0
+      )
+      await tx.wait()
+      const newOwner = await getOwner('subnode.resolver.eth')
+      const newResolver = await getResolver('subnode.resolver.eth')
+      const newTTL = await getTTL('subnode.resolver.eth')
+      expect(newOwner).toBe(accounts[1])
+      expect(newResolver).toBe(publicResolver)
+      expect(parseInt(newTTL, 16)).toBe(0)
     })
 
     test('setNewOwner sets new owner', async () => {
@@ -157,6 +174,11 @@ describe('Blockchain tests', () => {
       expect(newResolver).toBeHex()
       expect(newResolver).toBeEthAddress()
       expect(newResolver.toLowerCase()).toBe(mockResolver)
+    })
+
+    test('getTTL returns a TTL', async () => {
+      const ttl = await getTTL('resolver.eth')
+      expect(parseInt(ttl, 16)).toBe(0)
     })
 
     test('createSubdomain makes a new subdomain', async () => {
