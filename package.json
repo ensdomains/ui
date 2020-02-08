@@ -50,7 +50,7 @@
     "@ensdomains/ens": "^0.4.0",
     "@ensdomains/ens-022": "npm:@ensdomains/ens@0.2.2",
     "@ensdomains/ethregistrar": "^2.0.0",
-    "@ensdomains/resolver": "0.2.0",
+    "@ensdomains/resolver": "0.2.1",
     "@ensdomains/subdomain-registrar": "^0.2.1",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",

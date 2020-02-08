@@ -7,7 +7,6 @@ import { labelhash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
 // import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json'
-// Temporarily put back to PublicResolver, as Resolver only had setName for some reson.
 import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
 import { abi as fifsRegistrarContract } from '@ensdomains/ens/build/contracts/FIFSRegistrar.json'
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
