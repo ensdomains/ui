@@ -60,7 +60,6 @@ async function getReverseRegistrarContract() {
 async function getResolverContract(addr) {
   const provider = await getProvider()
   const resolver = new Contract(addr, resolverContract, provider)
-  console.log('resolver contract', resolver)
   return resolver
 }
 
