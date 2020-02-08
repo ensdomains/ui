@@ -12,6 +12,11 @@ import {
   getSigner,
   getNetworkId
 } from './web3'
+
+import {
+  getAddress
+} from './registry'
+
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -403,7 +408,8 @@ const makeCommitment = async (name, owner, secret = '') => {
   )
   const account = await getAccount()
   const ENS = await getENS()
-  const resolverAddr = await ENS.resolver(getNamehash('resolver.eth'))
+  const resolverAddr = await getAddress('resolver.eth')
+
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.makeCommitment(name, owner, secret)
   } else {
@@ -442,7 +448,7 @@ const register = async (label, duration, secret) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
   const ENS = await getENS()
-  const resolverAddr = await ENS.resolver(getNamehash('resolver.eth'))
+  const resolverAddr = await getAddress('resolver.eth')
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.register(
       label,
