@@ -93,7 +93,7 @@ export async function getAddrWithResolver(name, key, resolverAddr) {
   try {
     const Resolver = await getResolverContract(resolverAddr)
     const { coinType, encoder } = formatsByName[key]
-    const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
+    const addr = await Resolver['addr(bytes32,uint)'](namehash, coinType)
     if (addr === '0x') return emptyAddress
 
     return encoder(Buffer.from(addr.slice(2), 'hex'))
