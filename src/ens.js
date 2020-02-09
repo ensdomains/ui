@@ -7,6 +7,7 @@ import { labelhash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
 import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json'
+import { abi as oldResolverContract } from '@ensdomains/ens-022/build/contracts/PublicResolver.json'
 // import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
 import { abi as fifsRegistrarContract } from '@ensdomains/ens/build/contracts/FIFSRegistrar.json'
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
@@ -60,6 +61,12 @@ async function getReverseRegistrarContract() {
 async function getResolverContract(addr) {
   const provider = await getProvider()
   const resolver = new Contract(addr, resolverContract, provider)
+  return resolver
+}
+
+async function getOldResolverContract(addr) {
+  const provider = await getProvider()
+  const resolver = new Contract(addr, oldResolverContract, provider)
   return resolver
 }
 
@@ -166,6 +173,7 @@ export {
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,
+  getOldResolverContract,
   getDnsRegistrarContract,
   getFifsRegistrarContract,
   normalize
