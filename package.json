@@ -1,6 +1,6 @@
 {
   "name": "@ensdomains/ui",
-  "version": "2.0.7",
+  "version": "2.0.9",
   "description": "UI components and reusable code",
   "main": "src/index.js",
   "files": [
