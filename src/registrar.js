@@ -25,6 +25,7 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
+import { getAddress } from './registry'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
@@ -407,9 +408,7 @@ const makeCommitment = async (name, owner, secret = '') => {
     signer
   )
   const account = await getAccount()
-  const ENS = await getENS()
   const resolverAddr = await getAddress('resolver.eth')
-
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.makeCommitment(name, owner, secret)
   } else {
@@ -447,7 +446,6 @@ const register = async (label, duration, secret) => {
   )
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
-  const ENS = await getENS()
   const resolverAddr = await getAddress('resolver.eth')
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.register(

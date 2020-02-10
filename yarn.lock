@@ -914,6 +914,11 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.2.0.tgz#762255d9f9de087bdcbba8516b347cf89650d7f8"
   integrity sha512-RqwaRgY3WVk6TPoAH7MzGCbyU4iYYrbwLvqnhaNX8lFWXRl/E+hXoNHzz4UQ39Ulrsk5JJL4OxoCbpDdMG/D8g==
 
+"@ensdomains/resolver@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.2.1.tgz#ccf182c0bca7cb37187022c5fbbf47bcccb970a2"
+  integrity sha512-lcUBdsB6h5n+OCiZOfpfatxhhCqLe57Uhi5X1nSY15lCowcXjCGFO5iF2idqMCvp6VB/rOGqvEhI8AujJrHJMA==
+
 "@ensdomains/resolver@^0.1.13":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.1.13.tgz#3a43df9f2d6f4e60c677adf60311805643aac781"
