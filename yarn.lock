@@ -869,6 +869,19 @@
     testrpc "0.0.1"
     web3-utils "^1.0.0-beta.31"
 
+"@ensdomains/ens@^0.4.3":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens/-/ens-0.4.4.tgz#05e7bb138471a5e5844b4c1f263ec0ad7edcd272"
+  integrity sha512-Qya0A4pd0dd3fF4tPqJve9eyEHp82jIMv17ElZU4dSHy68xN8sEpuiyI6Z8+2sGeHLRQ55LaCM6p293YHnYRlQ==
+  dependencies:
+    bluebird "^3.5.2"
+    eth-ens-namehash "^2.0.8"
+    ethereumjs-testrpc "^6.0.3"
+    ganache-cli "^6.1.0"
+    solc "^0.4.20"
+    testrpc "0.0.1"
+    web3-utils "^1.0.0-beta.31"
+
 "@ensdomains/ethregistrar@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@ensdomains/ethregistrar/-/ethregistrar-2.0.0.tgz#b8cdfd3f2c12942c2b86f0f61185b08083e7cf66"
@@ -914,10 +927,10 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.2.0.tgz#762255d9f9de087bdcbba8516b347cf89650d7f8"
   integrity sha512-RqwaRgY3WVk6TPoAH7MzGCbyU4iYYrbwLvqnhaNX8lFWXRl/E+hXoNHzz4UQ39Ulrsk5JJL4OxoCbpDdMG/D8g==
 
-"@ensdomains/resolver@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.2.1.tgz#ccf182c0bca7cb37187022c5fbbf47bcccb970a2"
-  integrity sha512-lcUBdsB6h5n+OCiZOfpfatxhhCqLe57Uhi5X1nSY15lCowcXjCGFO5iF2idqMCvp6VB/rOGqvEhI8AujJrHJMA==
+"@ensdomains/resolver@0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@ensdomains/resolver/-/resolver-0.2.4.tgz#c10fe28bf5efbf49bff4666d909aed0265efbc89"
+  integrity sha512-bvaTH34PMCbv6anRa9I/0zjLJgY4EuznbEMgbV77JBCQ9KNC46rzi0avuxpOfu+xDjPEtSFGqVEOr5GlUSGudA==
 
 "@ensdomains/resolver@^0.1.13":
   version "0.1.13"
