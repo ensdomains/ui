@@ -7,7 +7,8 @@ export async function setupENS({
   reloadOnAccountsChange
 } = {}) {
   await setupWeb3({ customProvider, reloadOnAccountsChange })
-  await getENS(ensAddress)
+  const ENS = await getENS(ensAddress)
+  return { ENS }
 }
 
 export * from './ens'
