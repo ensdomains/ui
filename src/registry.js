@@ -34,36 +34,41 @@ export async function getOwner(name) {
   const namehash = getNamehash(name)
   const owner = await ENS.owner(namehash)
   return owner
-}
+} //
 
 export async function getResolver(name) {
   const namehash = getNamehash(name)
   const ENS = await getENS()
   return ENS.resolver(namehash)
 }
+//
 
 export async function getTTL(name) {
   const namehash = getNamehash(name)
   const ENS = await getENS()
   return ENS.ttl(namehash)
 }
+//
 
 export async function getResolverWithLabelhash(labelhash, nodehash) {
   let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
   return ENS.resolver(namehash)
 }
+//
 
 export async function getOwnerWithLabelHash(labelhash, nodeHash) {
   let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
   return ENS.owner(namehash)
 }
+//
 
 export async function getAddress(name) {
   const resolverAddr = await getResolver(name)
   return getEthAddressWithResolver(name, resolverAddr)
 }
+//
 
 export async function getEthAddressWithResolver(name, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
@@ -81,12 +86,14 @@ export async function getEthAddressWithResolver(name, resolverAddr) {
     return emptyAddress
   }
 }
+//
 
 export async function getAddr(name, key) {
   const resolverAddr = await getResolver(name)
   if (parseInt(resolverAddr, 16) === 0) return emptyAddress
   return getAddrWithResolver(name, key, resolverAddr)
 }
+//
 
 export async function getAddrWithResolver(name, key, resolverAddr) {
   const namehash = getNamehash(name)
@@ -105,11 +112,13 @@ export async function getAddrWithResolver(name, key, resolverAddr) {
     return emptyAddress
   }
 }
+//
 
 export async function getContent(name) {
   const resolverAddr = await getResolver(name)
   return getContentWithResolver(name, resolverAddr)
 }
+//
 
 export async function getContentWithResolver(name, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
@@ -154,11 +163,13 @@ export async function getContentWithResolver(name, resolverAddr) {
     return { value: message, contentType: 'error' }
   }
 }
+//
 
 export async function getText(name, key) {
   const resolverAddr = await getResolver(name)
   return getTextWithResolver(name, key, resolverAddr)
 }
+//
 
 export async function getTextWithResolver(name, key, resolverAddr) {
   if (parseInt(resolverAddr, 16) === 0) {
@@ -176,12 +187,14 @@ export async function getTextWithResolver(name, key, resolverAddr) {
     return ''
   }
 }
+//
 
 export async function getName(address) {
   const reverseNode = `${address.slice(2)}.addr.reverse`
   const resolverAddr = await getResolver(reverseNode)
   return getNameWithResolver(address, resolverAddr)
 }
+//
 
 export async function getNameWithResolver(address, resolverAddr) {
   const reverseNode = `${address.slice(2)}.addr.reverse`
@@ -202,6 +215,7 @@ export async function getNameWithResolver(address, resolverAddr) {
     console.log(`Error getting name for reverse record of ${address}`, e)
   }
 }
+//
 
 /* non-constant functions */
 
