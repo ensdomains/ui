@@ -215,7 +215,7 @@ const getPermanentEntry = async (Registrar, RegistrarController, label) => {
 
 const isDNSRegistrar = async name => {
   // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
-  return name === 'xyz'
+  return name === 'xyz' || name === 'art'
   // const { registrar } = await getDnsRegistrarContract(name)
   // let isDNSSECSupported = false
   // try {
