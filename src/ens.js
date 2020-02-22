@@ -29,6 +29,10 @@ var contracts = {
 
 let ENS
 
+const clearENSCache = () => {
+  ENS = undefined
+}
+
 function getNamehash(unsanitizedName) {
   return namehash(unsanitizedName)
 }
@@ -175,5 +179,6 @@ export {
   getOldResolverContract,
   getDnsRegistrarContract,
   getFifsRegistrarContract,
-  normalize
+  normalize,
+  clearENSCache
 }

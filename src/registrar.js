@@ -37,6 +37,15 @@ let permanentRegistrarController
 let migrationLockPeriod
 let gracePeriod
 
+const clearRegistrarCache = () => {
+  ethRegistrar = undefined
+  dnsRegistrar = undefined
+  permanentRegistrar = undefined
+  permanentRegistrarController = undefined
+  migrationLockPeriod = undefined
+  gracePeriod = undefined
+}
+
 const getEthResolver = async () => {
   const ENS = await getENS()
   const resolverAddr = await ENS.resolver(getNamehash('eth'))
@@ -517,5 +526,6 @@ export {
   register,
   renew,
   releaseDeed,
-  submitProof
+  submitProof,
+  clearRegistrarCache
 }
