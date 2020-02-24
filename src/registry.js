@@ -227,6 +227,8 @@ export async function setOwner(name, newOwner) {
   return ENS.setOwner(namehash, newOwner)
 }
 
+//
+
 export async function setSubnodeOwner(name, newOwner) {
   const ENSWithoutSigner = await getENS()
   const signer = await getSigner()
@@ -238,6 +240,8 @@ export async function setSubnodeOwner(name, newOwner) {
   const parentNamehash = getNamehash(node)
   return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
 }
+
+//
 
 export async function setSubnodeRecord(name, newOwner, resolver) {
   const ENSWithoutSigner = await getENS()
@@ -258,6 +262,8 @@ export async function setSubnodeRecord(name, newOwner, resolver) {
   )
 }
 
+//
+
 export async function setResolver(name, resolver) {
   const namehash = getNamehash(name)
   const ENSWithoutSigner = await getENS()
@@ -266,10 +272,14 @@ export async function setResolver(name, resolver) {
   return ENS.setResolver(namehash, resolver)
 }
 
+//
+
 export async function setAddress(name, address) {
   const resolverAddr = await getResolver(name)
   return setAddressWithResolver(name, address, resolverAddr)
 }
+
+//
 
 export async function setAddressWithResolver(name, address, resolverAddr) {
   const namehash = getNamehash(name)
@@ -279,10 +289,14 @@ export async function setAddressWithResolver(name, address, resolverAddr) {
   return Resolver['setAddr(bytes32,address)'](namehash, address)
 }
 
+//
+
 export async function setAddr(name, key, address) {
   const resolverAddr = await getResolver(name)
   return setAddrWithResolver(name, key, address, resolverAddr)
 }
+
+//
 
 export async function setAddrWithResolver(name, key, address, resolverAddr) {
   const namehash = getNamehash(name)
@@ -303,10 +317,14 @@ export async function setAddrWithResolver(name, key, address, resolverAddr) {
   )
 }
 
+//
+
 export async function setContent(name, content) {
   const resolverAddr = await getResolver(name)
   return setContentWithResolver(name, content, resolverAddr)
 }
+
+//
 
 export async function setContentWithResolver(name, content, resolverAddr) {
   const namehash = getNamehash(name)
@@ -316,10 +334,14 @@ export async function setContentWithResolver(name, content, resolverAddr) {
   return Resolver.setContent(namehash, content)
 }
 
+//
+
 export async function setContenthash(name, content) {
   const resolverAddr = await getResolver(name)
   return setContenthashWithResolver(name, content, resolverAddr)
 }
+
+//
 
 export async function setContenthashWithResolver(name, content, resolverAddr) {
   const encodedContenthash = encodeContenthash(content)
@@ -330,10 +352,14 @@ export async function setContenthashWithResolver(name, content, resolverAddr) {
   return Resolver.setContenthash(namehash, encodedContenthash)
 }
 
+//
+
 export async function setText(name, key, recordValue) {
   const resolverAddr = await getResolver(name)
   return setTextWithResolver(name, key, recordValue, resolverAddr)
 }
+
+//
 
 export async function setTextWithResolver(
   name,
@@ -348,10 +374,14 @@ export async function setTextWithResolver(
   return Resolver.setText(namehash, key, recordValue)
 }
 
+//
+
 export async function checkSubdomain(subdomain, domain) {
   const ENS = await getENS()
   return ENS.owner(subdomain + '.' + domain)
 }
+
+// wasn't added
 
 export async function createSubdomain(domain) {
   const account = await getAccount()
@@ -361,6 +391,8 @@ export async function createSubdomain(domain) {
     console.log('error creating subdomain', e)
   }
 }
+
+//
 
 export async function deleteSubdomain(name) {
   const resolver = await getResolver(name)
@@ -377,6 +409,8 @@ export async function deleteSubdomain(name) {
     console.log('error deleting subdomain', e)
   }
 }
+
+//
 
 export async function getResolverDetails(node) {
   try {
@@ -398,6 +432,8 @@ export async function getResolverDetails(node) {
     }
   }
 }
+
+//
 
 export async function claimAndSetReverseRecordName(name, overrides = {}) {
   const {
@@ -463,6 +499,8 @@ export const isMigrated = async name => {
   return await ENS.recordExists(namehash)
 }
 
+//
+
 export const getSubdomains = async name => {
   const startBlock = await ensStartBlock()
   const namehash = getNamehash(name)
@@ -492,6 +530,7 @@ export const getSubdomains = async name => {
     })
   )
 }
+//
 
 export async function registerTestdomain(label) {
   const { registrar: registrarWithoutSigner } = await getTestRegistrarContract()
@@ -501,6 +540,7 @@ export async function registerTestdomain(label) {
   const registrar = registrarWithoutSigner.connect(signer)
   return registrar.register(labelhash, account)
 }
+// not added to ens2
 
 export async function expiryTimes(label, owner) {
   const { registrar } = await getTestRegistrarContract()
@@ -510,3 +550,5 @@ export async function expiryTimes(label, owner) {
     return new Date(result * 1000)
   }
 }
+
+// not added to ens2

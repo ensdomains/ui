@@ -43,7 +43,7 @@ async function getEtherScanAddr() {
   }
 }
 
-async function ensStartBlock() {
+async function getEnsStartBlock() {
   const networkId = await getNetworkId()
   switch (networkId) {
     case 1:
@@ -128,7 +128,7 @@ export {
   uniq,
   emptyAddress,
   getEtherScanAddr,
-  ensStartBlock,
+  getEnsStartBlock,
   checkLabels,
   mergeLabels,
   // name validation

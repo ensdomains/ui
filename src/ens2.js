@@ -1,18 +1,32 @@
 import has from 'lodash/has'
 import { Contract, utils } from 'ethers'
-import { getWeb3, getNetworkId, getProvider } from './web3'
+import {
+  getWeb3,
+  getNetworkId,
+  getProvider,
+  getAccount,
+  getSigner
+} from './web3'
 import { normalize } from 'eth-ens-namehash'
-import { namehash } from './utils'
-import { labelhash } from './utils'
+import { formatsByName } from '@ensdomains/address-encoder'
+
+import {
+  uniq,
+  getEnsStartBlock,
+  checkLabels,
+  mergeLabels,
+  emptyAddress,
+  isDecrypted,
+  namehash,
+  labelhash
+} from './utils'
 
 import {
   getTestRegistrarContract,
   getReverseRegistrarContract,
   getENSContract,
   getResolverContract,
-  getOldResolverContract,
-  getDnsRegistrarContract,
-  getFifsRegistrarContract
+  getOldResolverContract
 } from './contracts'
 
 /* Utils */
@@ -232,6 +246,269 @@ export default class ENS {
     }
   }
 
+  async isMigrated(name) {
+    const ENS = await getENS()
+    const namehash = getNamehash(name)
+    return await ENS.recordExists(namehash)
+  }
+
+  async getResolverDetails(node) {
+    try {
+      const addrPromise = this.getAddress(node.name)
+      const contentPromise = this.getContent(node.name)
+      const [addr, content] = await Promise.all([addrPromise, contentPromise])
+      return {
+        ...node,
+        addr,
+        content: content.value,
+        contentType: content.contentType
+      }
+    } catch (e) {
+      return {
+        ...node,
+        addr: '0x0',
+        content: '0x0',
+        contentType: 'error'
+      }
+    }
+  }
+
+  async getSubdomains(name) {
+    const startBlock = await getEnsStartBlock()
+    const namehash = getNamehash(name)
+    const rawLogs = await this.getENSEvent('NewOwner', {
+      topics: [namehash],
+      fromBlock: startBlock
+    })
+    const flattenedLogs = rawLogs.map(log => log.values)
+    flattenedLogs.reverse()
+    const logs = uniq(flattenedLogs, 'label')
+    const labelhashes = logs.map(log => log.label)
+    const remoteLabels = await decryptHashes(...labelhashes)
+    const localLabels = checkLabels(...labelhashes)
+    const labels = mergeLabels(localLabels, remoteLabels)
+    const ownerPromises = labels.map(label => getOwner(`${label}.${name}`))
+
+    return Promise.all(ownerPromises).then(owners =>
+      owners.map((owner, index) => {
+        return {
+          label: labels[index],
+          labelhash: logs[index].label,
+          decrypted: labels[index] !== null,
+          node: name,
+          name: `${labels[index] ||
+            encodeLabelhash(logs[index].label)}.${name}`,
+          owner
+        }
+      })
+    )
+  }
+
+  async getDomainDetails(name) {
+    const nameArray = name.split('.')
+    const labelhash = getLabelhash(nameArray[0])
+    const [owner, resolver] = await Promise.all([
+      getOwner(name),
+      getResolver(name)
+    ])
+    const node = {
+      name,
+      label: nameArray[0],
+      labelhash,
+      owner,
+      resolver
+    }
+
+    const hasResolver = parseInt(node.resolver, 16) !== 0
+
+    if (hasResolver) {
+      return this.getResolverDetails(node)
+    }
+
+    return {
+      ...node,
+      addr: null,
+      content: null
+    }
+  }
+
+  /* non-constant functions */
+
+  async setOwner(name, newOwner) {
+    const ENSWithoutSigner = this.ENS
+    const signer = await getSigner()
+    const ENS = ENSWithoutSigner.connect(signer)
+    const namehash = getNamehash(name)
+    return ENS.setOwner(namehash, newOwner)
+  }
+
+  async setSubnodeOwner(name, newOwner) {
+    const ENSWithoutSigner = this.ENS
+    const signer = await getSigner()
+    const ENS = ENSWithoutSigner.connect(signer)
+    const nameArray = name.split('.')
+    const label = nameArray[0]
+    const node = nameArray.slice(1).join('.')
+    const labelhash = getLabelhash(label)
+    const parentNamehash = getNamehash(node)
+    return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
+  }
+
+  async setSubnodeRecord(name, newOwner, resolver) {
+    const ENSWithoutSigner = this.ENS
+    const signer = await getSigner()
+    const ENS = ENSWithoutSigner.connect(signer)
+    const nameArray = name.split('.')
+    const label = nameArray[0]
+    const node = nameArray.slice(1).join('.')
+    const labelhash = getLabelhash(label)
+    const parentNamehash = getNamehash(node)
+    const ttl = await this.getTTL(name)
+    return ENS.setSubnodeRecord(
+      parentNamehash,
+      labelhash,
+      newOwner,
+      resolver,
+      ttl
+    )
+  }
+
+  async setResolver(name, resolver) {
+    const namehash = getNamehash(name)
+    const ENSWithoutSigner = this.ENS
+    const signer = await getSigner()
+    const ENS = ENSWithoutSigner.connect(signer)
+    return ENS.setResolver(namehash, resolver)
+  }
+
+  async setAddress(name, address) {
+    const resolverAddr = await getResolver(name)
+    return this.setAddressWithResolver(name, address, resolverAddr)
+  }
+
+  async setAddressWithResolver(name, address, resolverAddr) {
+    const namehash = getNamehash(name)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    return Resolver['setAddr(bytes32,address)'](namehash, address)
+  }
+
+  async setAddr(name, key, address) {
+    const resolverAddr = await getResolver(name)
+    return this.setAddrWithResolver(name, key, address, resolverAddr)
+  }
+
+  async setAddrWithResolver(name, key, address, resolverAddr) {
+    const namehash = getNamehash(name)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    const { decoder, coinType } = formatsByName[key]
+    let addressAsBytes
+    if (!address || address === '') {
+      addressAsBytes = Buffer.from('')
+    } else {
+      addressAsBytes = decoder(address)
+    }
+    return Resolver['setAddr(bytes32,uint256,bytes)'](
+      namehash,
+      coinType,
+      addressAsBytes
+    )
+  }
+
+  async setContent(name, content) {
+    const resolverAddr = await getResolver(name)
+    return this.setContentWithResolver(name, content, resolverAddr)
+  }
+
+  async setContentWithResolver(name, content, resolverAddr) {
+    const namehash = getNamehash(name)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    return Resolver.setContent(namehash, content)
+  }
+
+  async setContenthash(name, content) {
+    const resolverAddr = await getResolver(name)
+    return this.setContenthashWithResolver(name, content, resolverAddr)
+  }
+
+  async setContenthashWithResolver(name, content, resolverAddr) {
+    const encodedContenthash = encodeContenthash(content)
+    const namehash = getNamehash(name)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    return Resolver.setContenthash(namehash, encodedContenthash)
+  }
+
+  async setText(name, key, recordValue) {
+    const resolverAddr = await getResolver(name)
+    return this.setTextWithResolver(name, key, recordValue, resolverAddr)
+  }
+
+  async setTextWithResolver(name, key, recordValue, resolverAddr) {
+    const namehash = getNamehash(name)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddr)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    return Resolver.setText(namehash, key, recordValue)
+  }
+
+  async createSubdomain(domain) {
+    const account = await getAccount()
+    try {
+      return setSubnodeOwner(domain, account)
+    } catch (e) {
+      console.log('error creating subdomain', e)
+    }
+  }
+
+  async deleteSubdomain(name) {
+    const resolver = await getResolver(name)
+    try {
+      if (parseInt(resolver, 16) !== 0) {
+        return setSubnodeRecord(name, emptyAddress, 0)
+      }
+      return setSubnodeRecord(name, emptyAddress, 0)
+    } catch (e) {
+      console.log('error deleting subdomain', e)
+    }
+  }
+
+  async claimAndSetReverseRecordName(name, overrides = {}) {
+    const {
+      reverseRegistrar: reverseRegistrarWithoutSigner
+    } = await getReverseRegistrarContract()
+    const signer = await getSigner()
+    const reverseRegistrar = reverseRegistrarWithoutSigner.connect(signer)
+    const networkId = await getNetworkId()
+
+    if (parseInt(networkId) > 1000) {
+      const gasLimit = await reverseRegistrar.estimate.setName(name)
+      overrides = {
+        gasLimit: gasLimit.toNumber() * 2,
+        ...overrides
+      }
+    }
+
+    return reverseRegistrar.setName(name, overrides)
+  }
+
+  async setReverseRecordName(name) {
+    const account = await getAccount()
+    const reverseNode = `${account.slice(2)}.addr.reverse`
+    const resolverAddress = await getResolver(reverseNode)
+    const ResolverWithoutSigner = await getResolverContract(resolverAddress)
+    const signer = await getSigner()
+    const Resolver = ResolverWithoutSigner.connect(signer)
+    let namehash = getNamehash(reverseNode)
+    return Resolver.setName(namehash, name)
+  }
+
   // Events
 
   async getENSEvent(event, { topics, fromBlock }) {
@@ -256,14 +533,4 @@ export default class ENS {
 
     return parsed
   }
-}
-
-export {
-  getENS,
-  getENSContract,
-  getENSEvent,
-  getLabelhash,
-  getNamehash,
-  getNamehashWithLabelHash,
-  normalize
 }
