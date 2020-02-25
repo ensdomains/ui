@@ -1,9 +1,11 @@
+import { getENS, getNamehash } from './ensOld'
+
 import {
-  getENS,
-  getNamehash,
   getResolverContract,
-  getDnsRegistrarContract
-} from './ens'
+  getDnsRegistrarContract,
+  getENSContract
+} from './contracts'
+
 import {
   getWeb3Read,
   getAccount,
@@ -23,7 +25,6 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
-
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
@@ -73,7 +74,7 @@ export const getLegacyAuctionRegistrar = async () => {
   } catch (e) {}
 }
 
-export const getPermanentRegistrar = async () => {
+export const getPermanentRegistrar = async ensAddress => {
   if (permanentRegistrar) {
     return {
       permanentRegistrar

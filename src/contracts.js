@@ -7,57 +7,28 @@ import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Re
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
 import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/contracts/DNSRegistrar.json'
 
-async function getReverseRegistrarContract(reverseRegistrarAddr) {
-  const provider = await getProvider()
-  const reverseRegistrar = new Contract(
-    reverseRegistrarAddr,
-    reverseRegistrarContract,
-    provider
-  )
-  return {
-    reverseRegistrar
-  }
+function getReverseRegistrarContract({ address, provider }) {
+  return new Contract(address, reverseRegistrarContract, provider)
 }
 
-async function getResolverContract(addr) {
-  const provider = await getProvider()
-  const resolver = new Contract(addr, resolverContract, provider)
-  return resolver
+function getResolverContract({ address, provider }) {
+  return new Contract(address, resolverContract, provider)
 }
 
-async function getOldResolverContract(addr) {
-  const provider = await getProvider()
-  const resolver = new Contract(addr, oldResolverContract, provider)
-  return resolver
+function getOldResolverContract({ address, provider }) {
+  return new Contract(address, oldResolverContract, provider)
 }
 
 function getENSContract({ address, provider }) {
   return new Contract(address, ensContract, provider)
 }
 
-async function getTestRegistrarContract(testRegistrarAddr) {
-  // const ENS = await getENS()
-  // const provider = await getProvider()
-  // const namehash = getNamehash('test')
-  //const testRegistrarAddr = await ENS.owner(namehash)
-  const registrar = new Contract(
-    testRegistrarAddr,
-    testRegistrarContract,
-    provider
-  )
-
-  return {
-    registrar
-  }
+function getTestRegistrarContract({ address, provider }) {
+  return new Contract(address, testRegistrarContract, provider)
 }
 
-async function getDnsRegistrarContract(parentOwner) {
-  const provider = await getProvider()
-  const registrar = new Contract(parentOwner, dnsRegistrarContract, provider)
-  return {
-    registrar: registrar,
-    web3
-  }
+function getDnsRegistrarContract({ address, provider }) {
+  return new Contract(parentOwner, dnsRegistrarContract, provider)
 }
 
 export {

@@ -1,5 +1,5 @@
 import { getProvider, setupWeb3, getNetworkId } from './web3'
-import ENS from './ens2'
+import ENS from './ens'
 
 export async function setupENS({
   customProvider,
@@ -15,7 +15,7 @@ export async function setupENS({
   return { ens }
 }
 
-export * from './ens'
+export * from './ensOld'
 export * from './registrar'
 export * from './registry'
 export * from './web3'
