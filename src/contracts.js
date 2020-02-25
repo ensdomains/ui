@@ -8,10 +8,6 @@ import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/Te
 import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/contracts/DNSRegistrar.json'
 
 async function getReverseRegistrarContract(reverseRegistrarAddr) {
-  //const ENS = await getENS()
-  //  const namehash = getNamehash('addr.reverse')
-  //const reverseRegistrarAddr = await ENS.owner(namehash)
-
   const provider = await getProvider()
   const reverseRegistrar = new Contract(
     reverseRegistrarAddr,
@@ -35,14 +31,8 @@ async function getOldResolverContract(addr) {
   return resolver
 }
 
-async function getENSContract() {
-  const networkId = await getNetworkId()
-  const provider = await getProvider()
-
-  const ENS = new Contract(contracts[networkId].registry, ensContract, provider)
-  return {
-    ENS: ENS
-  }
+function getENSContract({ address, provider }) {
+  return new Contract(address, ensContract, provider)
 }
 
 async function getTestRegistrarContract(testRegistrarAddr) {
@@ -76,6 +66,5 @@ export {
   getENSContract,
   getResolverContract,
   getOldResolverContract,
-  getDnsRegistrarContract,
-  getFifsRegistrarContract
+  getDnsRegistrarContract
 }

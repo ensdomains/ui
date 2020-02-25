@@ -12,7 +12,7 @@ import {
 import { decryptHashes } from './preimage'
 import {
   uniq,
-  ensStartBlock,
+  getEnsStartBlock,
   checkLabels,
   mergeLabels,
   emptyAddress,
@@ -502,7 +502,7 @@ export const isMigrated = async name => {
 //
 
 export const getSubdomains = async name => {
-  const startBlock = await ensStartBlock()
+  const startBlock = await getEnsStartBlock()
   const namehash = getNamehash(name)
   const rawLogs = await getENSEvent('NewOwner', {
     topics: [namehash],

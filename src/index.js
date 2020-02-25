@@ -1,14 +1,18 @@
-import { setupWeb3 } from './web3'
-import { getENS } from './ens'
+import { getProvider, setupWeb3, getNetworkId } from './web3'
+import ENS from './ens2'
 
 export async function setupENS({
   customProvider,
   ensAddress,
   reloadOnAccountsChange
 } = {}) {
-  await setupWeb3({ customProvider, reloadOnAccountsChange })
-  const ENS = await getENS(ensAddress)
-  return { ENS }
+  const { provider } = await setupWeb3({
+    customProvider,
+    reloadOnAccountsChange
+  })
+  const networkId = await getNetworkId()
+  const ens = new ENS({ provider, networkId, ensAddress })
+  return { ens }
 }
 
 export * from './ens'

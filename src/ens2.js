@@ -9,6 +9,9 @@ import {
 } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { formatsByName } from '@ensdomains/address-encoder'
+import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
+
+import { decryptHashes } from './preimage'
 
 import {
   uniq,
@@ -20,6 +23,7 @@ import {
   namehash,
   labelhash
 } from './utils'
+import { encodeLabelhash } from './utils/labelhash'
 
 import {
   getTestRegistrarContract,
@@ -29,10 +33,16 @@ import {
   getOldResolverContract
 } from './contracts'
 
+import {
+  isValidContenthash,
+  encodeContenthash,
+  decodeContenthash
+} from './utils/contents'
+
 /* Utils */
 
-function getNamehash(name) {
-  return namehash
+export function getNamehash(name) {
+  return namehash(name)
 }
 
 async function getNamehashWithLabelHash(labelHash, nodeHash) {
@@ -60,8 +70,7 @@ export default class ENS {
     }
   }
 
-  async constructor({ networkId, ensAddress }) {
-    const networkId = await getNetworkId()
+  constructor({ networkId, ensAddress, provider }) {
     const hasRegistry = has(this.contracts[networkId], 'registry')
 
     if (!hasRegistry && !ensAddress) {
@@ -69,10 +78,14 @@ export default class ENS {
     } else if (this.contracts[networkId] && !ensAddress) {
       ensAddress = contracts[networkId].registry
     }
-    this.contracts[networkId].registry = ensAddress
 
-    const { ENS: ENSContract } = await getENSContract()
+    const ENSContract = getENSContract({ address: ensAddress, provider })
     this.ENS = ENSContract
+  }
+
+  /* Get the raw Ethers contract object */
+  getENSContract() {
+    return this.ENS
   }
 
   /* Main methods */
@@ -128,7 +141,7 @@ export default class ENS {
   async getAddr(name, key) {
     const resolverAddr = await this.getResolver(name)
     if (parseInt(resolverAddr, 16) === 0) return emptyAddress
-    return getAddrWithResolver(name, key, resolverAddr)
+    return this.getAddrWithResolver(name, key, resolverAddr)
   }
 
   async getAddrWithResolver(name, key, resolverAddr) {
@@ -287,7 +300,7 @@ export default class ENS {
     const remoteLabels = await decryptHashes(...labelhashes)
     const localLabels = checkLabels(...labelhashes)
     const labels = mergeLabels(localLabels, remoteLabels)
-    const ownerPromises = labels.map(label => getOwner(`${label}.${name}`))
+    const ownerPromises = labels.map(label => this.getOwner(`${label}.${name}`))
 
     return Promise.all(ownerPromises).then(owners =>
       owners.map((owner, index) => {
@@ -308,8 +321,8 @@ export default class ENS {
     const nameArray = name.split('.')
     const labelhash = getLabelhash(nameArray[0])
     const [owner, resolver] = await Promise.all([
-      getOwner(name),
-      getResolver(name)
+      this.getOwner(name),
+      this.getResolver(name)
     ])
     const node = {
       name,
@@ -382,7 +395,7 @@ export default class ENS {
   }
 
   async setAddress(name, address) {
-    const resolverAddr = await getResolver(name)
+    const resolverAddr = await this.getResolver(name)
     return this.setAddressWithResolver(name, address, resolverAddr)
   }
 
@@ -395,7 +408,7 @@ export default class ENS {
   }
 
   async setAddr(name, key, address) {
-    const resolverAddr = await getResolver(name)
+    const resolverAddr = await this.getResolver(name)
     return this.setAddrWithResolver(name, key, address, resolverAddr)
   }
 
@@ -419,7 +432,7 @@ export default class ENS {
   }
 
   async setContent(name, content) {
-    const resolverAddr = await getResolver(name)
+    const resolverAddr = await this.getResolver(name)
     return this.setContentWithResolver(name, content, resolverAddr)
   }
 
@@ -432,7 +445,7 @@ export default class ENS {
   }
 
   async setContenthash(name, content) {
-    const resolverAddr = await getResolver(name)
+    const resolverAddr = await this.getResolver(name)
     return this.setContenthashWithResolver(name, content, resolverAddr)
   }
 
@@ -446,7 +459,7 @@ export default class ENS {
   }
 
   async setText(name, key, recordValue) {
-    const resolverAddr = await getResolver(name)
+    const resolverAddr = await this.getResolver(name)
     return this.setTextWithResolver(name, key, recordValue, resolverAddr)
   }
 
@@ -458,31 +471,29 @@ export default class ENS {
     return Resolver.setText(namehash, key, recordValue)
   }
 
-  async createSubdomain(domain) {
+  async createSubdomain(name) {
     const account = await getAccount()
+    const resolver = await this.getResolver('resolver.eth')
     try {
-      return setSubnodeOwner(domain, account)
+      return this.setSubnodeRecord(name, account, resolver)
     } catch (e) {
       console.log('error creating subdomain', e)
     }
   }
 
   async deleteSubdomain(name) {
-    const resolver = await getResolver(name)
     try {
-      if (parseInt(resolver, 16) !== 0) {
-        return setSubnodeRecord(name, emptyAddress, 0)
-      }
-      return setSubnodeRecord(name, emptyAddress, 0)
+      return this.setSubnodeRecord(name, emptyAddress, emptyAddress)
     } catch (e) {
       console.log('error deleting subdomain', e)
     }
   }
 
   async claimAndSetReverseRecordName(name, overrides = {}) {
+    const reverseRegistrarAddr = await this.getOwner('addr.reverse')
     const {
       reverseRegistrar: reverseRegistrarWithoutSigner
-    } = await getReverseRegistrarContract()
+    } = await getReverseRegistrarContract(reverseRegistrarAddr)
     const signer = await getSigner()
     const reverseRegistrar = reverseRegistrarWithoutSigner.connect(signer)
     const networkId = await getNetworkId()
@@ -501,7 +512,7 @@ export default class ENS {
   async setReverseRecordName(name) {
     const account = await getAccount()
     const reverseNode = `${account.slice(2)}.addr.reverse`
-    const resolverAddress = await getResolver(reverseNode)
+    const resolverAddress = await this.getResolver(reverseNode)
     const ResolverWithoutSigner = await getResolverContract(resolverAddress)
     const signer = await getSigner()
     const Resolver = ResolverWithoutSigner.connect(signer)

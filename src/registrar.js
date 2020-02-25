@@ -13,9 +13,7 @@ import {
   getNetworkId
 } from './web3'
 
-import {
-  getAddress
-} from './registry'
+import { getAddress } from './registry'
 
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
@@ -25,7 +23,7 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
-import { getAddress } from './registry'
+
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
