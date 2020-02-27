@@ -1,11 +1,9 @@
-import { getENS, getNamehash } from './ensOld'
-
 import {
+  getENS,
+  getNamehash,
   getResolverContract,
-  getDnsRegistrarContract,
-  getENSContract
-} from './contracts'
-
+  getDnsRegistrarContract
+} from './ens'
 import {
   getWeb3Read,
   getAccount,
@@ -25,6 +23,7 @@ import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregi
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import DNSRegistrarJS from '@ensdomains/dnsregistrar'
+
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId
@@ -43,10 +42,14 @@ const getEthResolver = async () => {
   return getResolverContract(resolverAddr)
 }
 
+//
+
 const getDeed = async address => {
   const provider = await getProvider()
   return new Contract(address, deedContract, provider)
 }
+
+//
 
 export const getLegacyAuctionRegistrar = async () => {
   if (ethRegistrar) {
@@ -74,7 +77,9 @@ export const getLegacyAuctionRegistrar = async () => {
   } catch (e) {}
 }
 
-export const getPermanentRegistrar = async ensAddress => {
+//
+
+export const getPermanentRegistrar = async () => {
   if (permanentRegistrar) {
     return {
       permanentRegistrar
@@ -95,6 +100,8 @@ export const getPermanentRegistrar = async ensAddress => {
     }
   } catch (e) {}
 }
+
+//
 
 export const getPermanentRegistrarController = async () => {
   if (permanentRegistrarController) {
@@ -122,6 +129,7 @@ export const getPermanentRegistrarController = async () => {
     console.log('error getting permanent registrar controller', e)
   }
 }
+//
 
 const getLegacyEntry = async (Registrar, name) => {
   let obj
@@ -329,6 +337,7 @@ const getEntry = async name => {
     ...ret
   }
 }
+//
 
 const transferOwner = async (name, to, overrides = {}) => {
   try {
@@ -357,6 +366,8 @@ const transferOwner = async (name, to, overrides = {}) => {
     console.log('Error calling transferOwner', e)
   }
 }
+
+//
 
 const reclaim = async (name, address, overrides = {}) => {
   try {
@@ -390,6 +401,7 @@ const getRentPrice = async (name, duration) => {
   } = await getPermanentRegistrarController()
   return permanentRegistrarController.rentPrice(name, duration)
 }
+//
 
 const getMinimumCommitmentAge = async () => {
   const {
@@ -397,6 +409,7 @@ const getMinimumCommitmentAge = async () => {
   } = await getPermanentRegistrarController()
   return permanentRegistrarController.minCommitmentAge()
 }
+//
 
 const makeCommitment = async (name, owner, secret = '') => {
   const {
@@ -421,6 +434,8 @@ const makeCommitment = async (name, owner, secret = '') => {
   }
 }
 
+//
+
 const commit = async (label, secret = '') => {
   const {
     permanentRegistrarController: permanentRegistrarControllerWithoutSigner
@@ -434,6 +449,8 @@ const commit = async (label, secret = '') => {
 
   return permanentRegistrarController.commit(commitment)
 }
+
+//
 
 const register = async (label, duration, secret) => {
   const {
@@ -467,6 +484,8 @@ const register = async (label, duration, secret) => {
   }
 }
 
+//
+
 const renew = async (label, duration) => {
   const {
     permanentRegistrarController: permanentRegistrarControllerWithoutSigner
@@ -479,6 +498,7 @@ const renew = async (label, duration) => {
 
   return permanentRegistrarController.renew(label, duration, { value: price })
 }
+//
 
 const releaseDeed = async label => {
   const { ethRegistrar } = await getLegacyAuctionRegistrar()
@@ -487,6 +507,8 @@ const releaseDeed = async label => {
   const hash = labelhash(label)
   return ethRegistrarWithSigner.releaseDeed(hash)
 }
+
+//
 
 const submitProof = async (name, parentOwner) => {
   const { claim, result } = await getDNSEntry(name, parentOwner)

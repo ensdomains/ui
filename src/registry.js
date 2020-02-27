@@ -8,7 +8,7 @@ import {
   getTestRegistrarContract,
   getNamehashWithLabelHash,
   normalize
-} from './ens'
+} from './ensOld'
 import { decryptHashes } from './preimage'
 import {
   uniq,

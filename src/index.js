@@ -1,5 +1,6 @@
 import { getProvider, setupWeb3, getNetworkId } from './web3'
 import ENS from './ens'
+import Registrar from './registrar'
 
 export async function setupENS({
   customProvider,
@@ -11,8 +12,9 @@ export async function setupENS({
     reloadOnAccountsChange
   })
   const networkId = await getNetworkId()
-  const ens = new ENS({ provider, networkId, ensAddress })
-  return { ens }
+  const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
+  const registrar = new Registrar({ provider, networkId, registryAddress: ensAddress })
+  return { ens, registrar }
 }
 
 export * from './ensOld'

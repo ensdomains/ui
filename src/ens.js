@@ -70,16 +70,16 @@ export default class ENS {
     }
   }
 
-  constructor({ networkId, ensAddress, provider }) {
+  constructor({ networkId, registryAddress, provider }) {
     const hasRegistry = has(this.contracts[networkId], 'registry')
 
-    if (!hasRegistry && !ensAddress) {
+    if (!hasRegistry && !registryAddress) {
       throw new Error(`Unsupported network ${networkId}`)
-    } else if (this.contracts[networkId] && !ensAddress) {
-      ensAddress = contracts[networkId].registry
+    } else if (this.contracts[networkId] && !registryAddress) {
+      registryAddress = contracts[networkId].registry
     }
 
-    const ENSContract = getENSContract({ address: ensAddress, provider })
+    const ENSContract = getENSContract({ address: registryAddress, provider })
     this.ENS = ENSContract
   }
 
