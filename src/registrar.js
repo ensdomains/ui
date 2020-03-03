@@ -15,7 +15,7 @@ import {
   getNetworkId
 } from './web3'
 
-import namehash from './utils/namehash'
+import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
@@ -25,24 +25,54 @@ const {
   permanentRegistrar: permanentRegistrarInterfaceId
 } = interfaces
 
+function checkArguments({
+  registryAddress,
+  ethAddress,
+  legacyAuctionRegistrarAddress,
+  provider
+}) {
+  if (!registryAddress) throw 'No registry address given to Registrar class'
+
+  if (!legacyAuctionRegistrarAddress)
+    throw 'No legacy auction address given to Registrar class'
+
+  if (!ethAddress) throw 'No .eth address given to Registrar class'
+
+  if (!provider) throw 'Provider is required for Registrar'
+
+  return
+}
+
 export default class Registrar {
   constructor({
     registryAddress,
     ethAddress,
     legacyAuctionRegistrarAddress,
+    controllerAddress,
     provider
   }) {
+    checkArguments({
+      registryAddress,
+      ethAddress,
+      legacyAuctionRegistrarAddress,
+      provider
+    })
+
     const permanentRegistrar = getPermanentRegistrarContract({
-      address: ethAddr,
+      address: ethAddress,
       provider
     })
     const permanentRegistrarController = getPermanentRegistrarControllerContract(
-      { address: ethAddress, provider }
+      { address: controllerAddress, provider }
     )
+
+    console.log()
     const legacyAuctionRegistrar = getLegacyAuctionContract({
       address: legacyAuctionRegistrarAddress,
       provider
     })
+
+    console.log('legacyAuctionRegistrarAddress', legacyAuctionRegistrarAddress)
 
     const ENS = getENSContract({ address: registryAddress, provider })
 
@@ -104,6 +134,7 @@ export default class Registrar {
       permanentRegistrar: Registrar,
       permanentRegistrarController: RegistrarController
     } = this
+
     let getAvailable
     let ret = {
       available: null,
@@ -122,7 +153,7 @@ export default class Registrar {
       const [available, nameExpires, gracePeriod] = await Promise.all([
         getAvailable,
         Registrar.nameExpires(labelHash),
-        getGracePeriod(Registrar)
+        this.getGracePeriod(Registrar)
       ])
 
       ret = {
@@ -182,6 +213,14 @@ export default class Registrar {
       ...legacyEntry,
       ...ret
     }
+  }
+
+  async getGracePeriod(Registrar) {
+    if (!this.gracePeriod) {
+      this.gracePeriod = await Registrar.GRACE_PERIOD()
+      return this.gracePeriod
+    }
+    return this.gracePeriod
   }
 
   async transferOwner(name, to, overrides = {}) {
@@ -335,11 +374,107 @@ export default class Registrar {
     const hash = labelhash(label)
     return legacyAuctionRegistrarWithSigner.releaseDeed(hash)
   }
+
+  async isDNSRegistrar(name) {
+    // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
+    return name === 'xyz'
+    // const { registrar } = await getDnsRegistrarContract(name)
+    // let isDNSSECSupported = false
+    // try {
+    //   isDNSSECSupported = await registrar
+    //     .supportsInterface(dnsRegistrarInterfaceId)
+    // } catch (e) {
+    //   console.log({e})
+    // }
+    // return isDNSSECSupported
+  }
+
+  async getDNSEntry(name, parentOwner, owner) {
+    // Do not cache as it needs to be refetched on "Refresh"
+    dnsRegistrar = {}
+    const web3 = await getWeb3Read()
+    const provider = web3._web3Provider
+    const registrarjs = new DNSRegistrarJS(provider, parentOwner)
+    try {
+      const claim = await registrarjs.claim(name)
+      const result = claim.getResult()
+      dnsRegistrar.claim = claim
+      dnsRegistrar.result = result
+      if (result.found) {
+        const proofs = result.proofs
+        dnsRegistrar.dnsOwner = claim.getOwner()
+        if (!dnsRegistrar.dnsOwner) {
+          // DNS Record is invalid
+          dnsRegistrar.state = 4
+        } else {
+          // Valid reacord is found
+          if (
+            !owner ||
+            dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
+          ) {
+            dnsRegistrar.state = 5
+            // Out of sync
+          } else {
+            dnsRegistrar.state = 6
+          }
+        }
+      } else {
+        if (result.nsec) {
+          if (result.results.length === 4) {
+            // DNS entry does not exist
+            dnsRegistrar.state = 1
+          } else if (result.results.length === 6) {
+            // DNS entry exists but _ens subdomain does not exist
+            dnsRegistrar.state = 3
+          } else {
+            throw `DNSSEC results cannot be ${result.results.length}`
+          }
+        } else {
+          // DNSSEC is not enabled
+          dnsRegistrar.state = 2
+        }
+      }
+    } catch (e) {
+      console.log('Problem fetching data from DNS', e)
+      // Problem fetching data from DNS
+      dnsRegistrar.state = 0
+    }
+    return dnsRegistrar
+  }
+
+  async registerTestdomain(label) {
+    const provider = await getProvider()
+    const testAddress = await this.ENS.owner('test')
+    const registrarWithoutSigner = getTestRegistrarContract({
+      address: testAddress,
+      provider
+    })
+    const signer = await getSigner()
+    const hash = labelhash(label)
+    const account = await getAccount()
+    const registrar = registrarWithoutSigner.connect(signer)
+    return registrar.register(hash, account)
+  }
+
+  async expiryTimes(label, owner) {
+    const provider = await getProvider()
+    const testAddress = await this.ENS.owner('test')
+    const { registrar } = await getTestRegistrarContract({
+      address: testAddress,
+      provider
+    })
+    const hash = labelhash(label)
+    const result = await registrar.expiryTimes(hash)
+    if (result > 0) {
+      return new Date(result * 1000)
+    }
+  }
 }
 
 async function getEthResolver(ENS) {
-  const resolverAddr = await ENS.resolver(getNamehash('eth'))
-  return getResolverContract(resolverAddr)
+  const resolverAddr = await ENS.resolver(namehash('eth'))
+  const provider = await getProvider()
+  return getResolverContract({ address: resolverAddr, provider })
 }
 
 export async function setupRegistrar(registryAddress) {
