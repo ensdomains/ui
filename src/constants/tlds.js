@@ -13,5 +13,8 @@ export const tlds = {
   },
   luxe: {
     supported: true
+  },
+  art: {
+    supported: true
   }
 }

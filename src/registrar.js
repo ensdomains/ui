@@ -1,3 +1,4 @@
+import DNSRegistrarJS from '@ensdomains/dnsregistrar'
 import {
   getENSContract,
   getResolverContract,
