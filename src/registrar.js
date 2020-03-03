@@ -4,7 +4,8 @@ import {
   getPermanentRegistrarContract,
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
-  getDeedContract
+  getDeedContract,
+  getTestRegistrarContract
 } from './contracts'
 
 import {
@@ -317,7 +318,7 @@ export default class Registrar {
       signer
     )
     const account = await getAccount()
-    const commitment = await makeCommitment(label, account, secret)
+    const commitment = await this.makeCommitment(label, account, secret)
 
     return permanentRegistrarController.commit(commitment)
   }
@@ -444,7 +445,7 @@ export default class Registrar {
 
   async registerTestdomain(label) {
     const provider = await getProvider()
-    const testAddress = await this.ENS.owner('test')
+    const testAddress = await this.ENS.owner(namehash('test'))
     const registrarWithoutSigner = getTestRegistrarContract({
       address: testAddress,
       provider
@@ -456,15 +457,15 @@ export default class Registrar {
     return registrar.register(hash, account)
   }
 
-  async expiryTimes(label, owner) {
+  async expiryTimes(label) {
     const provider = await getProvider()
-    const testAddress = await this.ENS.owner('test')
-    const { registrar } = await getTestRegistrarContract({
+    const testAddress = await this.ENS.owner(namehash('test'))
+    const TestRegistrar = await getTestRegistrarContract({
       address: testAddress,
       provider
     })
     const hash = labelhash(label)
-    const result = await registrar.expiryTimes(hash)
+    const result = await TestRegistrar.expiryTimes(hash)
     if (result > 0) {
       return new Date(result * 1000)
     }

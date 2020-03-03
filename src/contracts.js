@@ -1,5 +1,4 @@
 import { Contract } from 'ethers'
-import { getWeb3, getNetworkId, getProvider } from './web3'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
 import { abi as oldResolverContract } from '@ensdomains/ens-022/build/contracts/PublicResolver.json'
