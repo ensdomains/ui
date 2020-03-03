@@ -33,11 +33,15 @@ Most functions in this library are async functions and therefore return promises
 
 Setup for the library is done by calling the `setupENS` function. It can be optionally provided with a customProvider and an ENS address. Generally you won't need this unless you are running ganache.
 
+It will return an object with the registrar and ens object. The ens object will deal with name resolution, reverse records and dealing with the registry. The registrar object has functions to interact the permanent registrar, legacy auction registrar and test registrar (just on test net)
+
 ```js
 import { setupENS } from '@ensdomains/ui'
 
 window.addEventListener('load', async () => {
-  await setupENS() // will instantiate with window.web3/window.ethereum if found, read-only if not.
+  const { registrar, ens } = await setupENS()
+  const owner = await ens.getOwner('resolver.eth')
+  // will instantiate with window.web3/window.ethereum if found, read-only if not.
   // Once setup has finished you can now call functions off the library
 })
 ```
@@ -63,7 +67,7 @@ options (object): {
 import { setupENS } from '@ensdomains/ui'
 
 window.addEventListener('load', async () => {
-  await setupENS()
+  const { ens, registrar } = await setupENS()
 })
 ```
 
@@ -80,9 +84,8 @@ owner (address): Ethereum address of the owner on the registry
 #### Example
 
 ```js
-import { getOwner } from '@ensdomains/ui'
 const name = 'vitalik.eth'
-const owner = await getOwner('vitalik.eth')
+const owner = await ens.getOwner(name)
 // 0x123...
 ```
 
@@ -99,8 +102,8 @@ owner (address): Ethereum address of the resolver contract
 #### Example
 
 ```js
-import { getResolver } from '@ensdomains/ui'
-const owner = await getResolver('vitalik.eth')
+import ens from 'ens'
+const owner = await ens.getResolver('vitalik.eth')
 // 0x123...
 ```
 
@@ -118,8 +121,8 @@ owner (address): Ethereum address of the resolver contract
 #### Example
 
 ```js
-import { getOwnerWithLabelHash } from '@ensdomains/ui'
-const owner = await getOwnerWithLabelHash(labelHash, nodeHash)
+import ens from 'ens'
+const owner = await ens.getOwnerWithLabelHash(labelHash, nodeHash)
 // 0x123...
 ```
 
@@ -137,8 +140,7 @@ resolver (address): Ethereum address of the resolver contract
 #### Example
 
 ```js
-import { getResolverWithLabelHash } from '@ensdomains/ui'
-const resolver = await getResolver(labelHash, nodeHash)
+const resolver = await ens.getResolverWithLabelHash(labelHash, nodeHash)
 // 0x123...
 ```
 
@@ -157,8 +159,7 @@ address (address): An Ethereum address that was set on the resolver
 #### Example
 
 ```js
-import { getAddress } from '@ensdomains/ui'
-const addr = await getAddress('vitalik.eth')
+const addr = await ens.getAddress('vitalik.eth')
 // 0x123...
 ```
 
@@ -177,8 +178,7 @@ contentHash (String): A content hash String for IPFS or swarm
 #### Example
 
 ```js
-import { getContent } from '@ensdomains/ui'
-const content = await getContent('vitalik.eth')
+const content = await ens.getContent('vitalik.eth')
 // ipfs://Qsxz...
 ```
 
@@ -197,8 +197,7 @@ name (String): An ENS name
 #### Example
 
 ```js
-import { getName } from '@ensdomains/ui'
-const name = await getName('0x123abc...')
+const name = await ens.getName('0x123abc...')
 // vitalik.eth
 ```
 
@@ -216,9 +215,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setOwner } from '@ensdomains/ui'
-
-const tx = await setOwner('vitalik.eth', '0x123abc...')
+const tx = await ens.setOwner('vitalik.eth', '0x123abc...')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -241,9 +238,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setSubnodeOwner } from '@ensdomains/ui'
-
-const tx = await setSubnodeOwner('sub.vitalik.eth', '0x123abc')
+const tx = await ens.setSubnodeOwner('sub.vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -266,9 +261,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setResolver } from '@ensdomains/ui'
-
-const tx = await setResolver('vitalik.eth', '0x123abc')
+const tx = await ens.setResolver('vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -291,9 +284,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setAddress } from '@ensdomains/ui'
-
-const tx = await setAddress('vitalik.eth', '0x123abc')
+const tx = await ens.setAddress('vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -318,9 +309,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setContent } from '@ensdomains/ui'
-
-const tx = await setContent('vitalik.eth', '0x123abc')
+const tx = await ens.setContent('vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -343,34 +332,11 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setContent } from '@ensdomains/ui'
-
-const tx = await setContent('vitalik.eth', '0x123abc')
+const tx = await ens.setContent('vitalik.eth', '0x123abc')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
-```
-
-### `async function checkSubdomain(label, name): Boolean`
-
-#### Arguments
-
-label (String): The label of the subdomain you want you check
-name (String): An ENS name
-
-#### Returns
-
-subdomainExists (Boolean): Whether or not the subdomain exists
-
-#### Example
-
-```js
-import { setContent } from '@ensdomains/ui'
-
-const subDomainExists = await checkSubDomain('sub', 'vitalik.eth')
-console.log(subDomainExists)
-// true/false
 ```
 
 ### `async function createSubdomain(name): TransactionResponse`
@@ -388,9 +354,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { deleteSubdomain } from '@ensdomains/ui'
-
-const tx = await createSubdomain('sub', 'vitalik.eth')
+const tx = await ens.createSubdomain('sub', 'vitalik.eth')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -413,9 +377,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { deleteSubdomain } from '@ensdomains/ui'
-
-const tx = await deleteSubdomain('sub', 'vitalik.eth')
+const tx = await ens.deleteSubdomain('sub', 'vitalik.eth')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -437,9 +399,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { claimAndSetReverseRecordName } from '@ensdomains/ui'
-
-const tx = await claimAndSetReverseRecordName('vitalik.eth')
+const tx = await ens.claimAndSetReverseRecordName('vitalik.eth')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -461,9 +421,7 @@ transaction (object): [Transaction Response Object](#transaction-response)
 #### Example
 
 ```js
-import { setReverseRecordName } from '@ensdomains/ui'
-
-const tx = await setReverseRecordName('vitalik.eth')
+const tx = await ens.setReverseRecordName('vitalik.eth')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -495,9 +453,7 @@ DomainDetails (object): {
 #### Example
 
 ```js
-import { getDomainDetails } from '@ensdomains/ui'
-
-const domainDetails = await getDomainDetails('vitalik.eth')
+const domainDetails = await ens.getDomainDetails('vitalik.eth')
 console.log(domainDetails)
 /* 
   {
@@ -535,9 +491,7 @@ Subdomains (Array<Subdomain>): {
 #### Example
 
 ```js
-import { getSubdomains } from '@ensdomains/ui'
-
-const subdomains = await getSubdomains('vitalik.eth')
+const subdomains = await ens.getSubdomains('vitalik.eth')
 console.log(subdomains)
 /* 
   [{
