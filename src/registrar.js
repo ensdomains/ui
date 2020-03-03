@@ -104,7 +104,7 @@ export default class Registrar {
       let deedOwner = '0x0'
       const entry = await Registrar.entries(labelhash(label))
       if (parseInt(entry[1], 16) !== 0) {
-        const deed = await getDeed(entry[1])
+        const deed = await this.getDeed(entry[1])
         deedOwner = await deed.owner()
       }
       legacyEntry = {
