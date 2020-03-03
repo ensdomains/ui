@@ -1,19 +1,26 @@
-import { setupWeb3 } from './web3'
-import { getENS } from './ens'
+import { getProvider, setupWeb3, getNetworkId } from './web3'
+import { ENS } from './ens.js'
+import { setupRegistrar } from './registrar'
 
 export async function setupENS({
   customProvider,
   ensAddress,
   reloadOnAccountsChange
 } = {}) {
-  await setupWeb3({ customProvider, reloadOnAccountsChange })
-  await getENS(ensAddress)
+  const { provider } = await setupWeb3({
+    customProvider,
+    reloadOnAccountsChange
+  })
+  const networkId = await getNetworkId()
+  const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
+  const registrar = await setupRegistrar(ensAddress)
+  return { ens, registrar }
 }
 
 export * from './ens'
 export * from './registrar'
-export * from './registry'
 export * from './web3'
 export * from './constants/interfaces'
 export * from './constants/tlds'
 export * from './utils'
+export * from './contracts'
