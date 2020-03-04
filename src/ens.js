@@ -80,6 +80,8 @@ export class ENS {
       registryAddress = contracts[networkId].registry
     }
 
+    this.registryAddress = registryAddress
+
     const ENSContract = getENSContract({ address: registryAddress, provider })
     this.ENS = ENSContract
   }

@@ -13,7 +13,7 @@ export async function setupENS({
   })
   const networkId = await getNetworkId()
   const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
-  const registrar = await setupRegistrar(ensAddress)
+  const registrar = await setupRegistrar(ens.registryAddress)
   return { ens, registrar }
 }
 
