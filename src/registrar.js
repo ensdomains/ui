@@ -68,13 +68,10 @@ export default class Registrar {
       { address: controllerAddress, provider }
     )
 
-    console.log()
     const legacyAuctionRegistrar = getLegacyAuctionContract({
       address: legacyAuctionRegistrarAddress,
       provider
     })
-
-    console.log('legacyAuctionRegistrarAddress', legacyAuctionRegistrarAddress)
 
     const ENS = getENSContract({ address: registryAddress, provider })
 
