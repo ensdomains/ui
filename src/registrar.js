@@ -14,7 +14,8 @@ import {
   getBlock,
   getProvider,
   getSigner,
-  getNetworkId
+  getNetworkId,
+  getWeb3Read
 } from './web3'
 
 import { namehash } from './utils/namehash'
@@ -390,7 +391,7 @@ export default class Registrar {
 
   async getDNSEntry(name, parentOwner, owner) {
     // Do not cache as it needs to be refetched on "Refresh"
-    dnsRegistrar = {}
+    const dnsRegistrar = {}
     const web3 = await getWeb3Read()
     const provider = web3._web3Provider
     const registrarjs = new DNSRegistrarJS(provider, parentOwner)
