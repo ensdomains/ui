@@ -484,7 +484,10 @@ export class ENS {
   }
 
   async setContenthashWithResolver(name, content, resolverAddr) {
-    const encodedContenthash = encodeContenthash(content)
+    let encodedContenthash = content
+    if (parseInt(content, 16) !== 0) {
+      encodedContenthash = encodeContenthash(content)
+    }
     const namehash = getNamehash(name)
     const provider = await getProvider()
     const ResolverWithoutSigner = getResolverContract({
