@@ -3,6 +3,7 @@ import {
   getENSContract,
   getResolverContract,
   getPermanentRegistrarContract,
+  getDnsRegistrarContract,
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
   getDeedContract,
@@ -440,6 +441,23 @@ export default class Registrar {
       dnsRegistrar.state = 0
     }
     return dnsRegistrar
+  }
+
+  async submitProof(name, parentOwner) {
+    const provider = await getProvider()
+    const { claim, result } = await this.getDNSEntry(name, parentOwner)
+    const registrarWithoutSigner = await getDnsRegistrarContract({
+      parentOwner, provider 
+    })
+    const signer = await getSigner()
+    const registrar = registrarWithoutSigner.connect(signer)
+    const data = await claim.oracle.getAllProofs(result, {})
+    const allProven = await claim.oracle.allProven(result)
+    if (allProven) {
+      return registrar.claim(claim.encodedName, data[1])
+    } else {
+      return registrar.proveAndClaim(claim.encodedName, data[0], data[1])
+    }
   }
 
   async registerTestdomain(label) {

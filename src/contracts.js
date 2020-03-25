@@ -30,7 +30,7 @@ function getTestRegistrarContract({ address, provider }) {
   return new Contract(address, testRegistrarContract, provider)
 }
 
-function getDnsRegistrarContract({ address, provider }) {
+function getDnsRegistrarContract({ parentOwner, provider }) {
   return new Contract(parentOwner, dnsRegistrarContract, provider)
 }
 
