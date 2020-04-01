@@ -19,6 +19,7 @@ import {
   getWeb3Read
 } from './web3'
 
+import { emptyAddress } from './utils'
 import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
@@ -364,6 +365,26 @@ export default class Registrar {
     const price = await this.getRentPrice(label, duration)
 
     return permanentRegistrarController.renew(label, duration, { value: price })
+  }
+
+  async renewAll(labels, duration) {
+    const permanentRegistrarControllerWithoutSigner = this
+      .permanentRegistrarController
+    const signer = await getSigner()
+    const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+      signer
+    )
+    let prices
+    for (let index = 0; index < labels.length; index++) {
+      const label = labels[index];
+      const price = await this.getRentPrice(label, duration)
+      if(prices){
+        prices = prices.add(price)
+      }else{
+        prices = price
+      }
+    }
+    return permanentRegistrarController.renewAll(labels, duration, emptyAddress, { value: prices })
   }
 
   async releaseDeed(label) {
