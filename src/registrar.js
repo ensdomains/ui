@@ -284,6 +284,15 @@ export default class Registrar {
     return permanentRegistrarController.rentPrice(name, duration)
   }
 
+  async getRentPrices(labels, duration) {
+    const pricesArray = Promise.all(
+      labels.map(label => {
+        return this.getRentPrice(label, duration)
+      })
+    )
+    return pricesArray.reduce((a, c) => a + c)
+  }
+
   async getMinimumCommitmentAge() {
     const permanentRegistrarController = this.permanentRegistrarController
     return permanentRegistrarController.minCommitmentAge()
@@ -374,17 +383,13 @@ export default class Registrar {
     const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
       signer
     )
-    let prices
-    for (let index = 0; index < labels.length; index++) {
-      const label = labels[index];
-      const price = await this.getRentPrice(label, duration)
-      if(prices){
-        prices = prices.add(price)
-      }else{
-        prices = price
-      }
-    }
-    return permanentRegistrarController.renewAll(labels, duration, emptyAddress, { value: prices })
+    const prices = await this.getRentPrices(labels, duration)
+    return permanentRegistrarController.renewAll(
+      labels,
+      duration,
+      emptyAddress,
+      { value: prices }
+    )
   }
 
   async releaseDeed(label) {
@@ -468,7 +473,8 @@ export default class Registrar {
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const registrarWithoutSigner = await getDnsRegistrarContract({
-      parentOwner, provider 
+      parentOwner,
+      provider
     })
     const signer = await getSigner()
     const registrar = registrarWithoutSigner.connect(signer)
