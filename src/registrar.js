@@ -285,12 +285,12 @@ export default class Registrar {
   }
 
   async getRentPrices(labels, duration) {
-    const pricesArray = Promise.all(
+    const pricesArray = await Promise.all(
       labels.map(label => {
         return this.getRentPrice(label, duration)
       })
     )
-    return pricesArray.reduce((a, c) => a + c)
+    return pricesArray.reduce((a, c) => a.add(c))
   }
 
   async getMinimumCommitmentAge() {
