@@ -1036,7 +1036,7 @@
     testrpc "0.0.1"
     web3-utils "^1.0.0-beta.31"
 
-"@ensdomains/ethregistrar@^2.0.0":
+"@ensdomains/ethregistrar-200@npm:@ensdomains/ethregistrar@2.0.0", "@ensdomains/ethregistrar@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@ensdomains/ethregistrar/-/ethregistrar-2.0.0.tgz#b8cdfd3f2c12942c2b86f0f61185b08083e7cf66"
   integrity sha512-qi2ENMgsMgG7ScKhOpv9pE6FmWew6uyJud+aYoFzCpENsQ6aYXZyzXWaFVS3EaWsZfERDjnMj32XO7JVZkRLMw==
@@ -1074,10 +1074,10 @@
     truffle-flattener "^1.4.2"
     web3-utils "^1.0.0-beta.48"
 
-"@ensdomains/mock@2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.0.6.tgz#af8bc795c6d313efe4d8145b29d9c185f833b4e9"
-  integrity sha512-a74vfJHCWsTmal2dOAEiS7Mb1gZvob/7EmdpZjWXk+8XwFVIHsz2rXf8d//p/FN1T/Tct8XdJQrd1vXl9GEyTw==
+"@ensdomains/mock@2.0.12":
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.0.12.tgz#9d633714c92561361c69a7704e5ebee2bef93e8e"
+  integrity sha512-xeMkA4V/zM5EBZH5mX7kg/dNlzVshyUBkp3xHGU5eQ2W3cvp3E63qqKOv5wL8V/HH2DwACVtRBj3AIKJQ8Imlg==
   dependencies:
     "@0xproject/utils" "^2.0.2"
     "@babel/runtime" "^7.4.4"
@@ -1086,7 +1086,8 @@
     "@ensdomains/dnssec-oracle" "^0.1.2"
     "@ensdomains/ens" "^0.4.4"
     "@ensdomains/ens-022" "npm:@ensdomains/ens@0.2.2"
-    "@ensdomains/ethregistrar" "^2.0.0"
+    "@ensdomains/ethregistrar" "^2.0.1"
+    "@ensdomains/ethregistrar-200" "npm:@ensdomains/ethregistrar@2.0.0"
     "@ensdomains/resolver" "0.2.4"
     "@ensdomains/subdomain-registrar" "^0.2.3"
     chalk "^3.0.0"
