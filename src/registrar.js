@@ -7,7 +7,8 @@ import {
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
   getDeedContract,
-  getTestRegistrarContract
+  getTestRegistrarContract,
+  getBulkRenewalContract
 } from './contracts'
 
 import {
@@ -19,7 +20,6 @@ import {
   getWeb3Read
 } from './web3'
 
-import { emptyAddress } from './utils'
 import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
@@ -27,7 +27,8 @@ import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
-  permanentRegistrar: permanentRegistrarInterfaceId
+  permanentRegistrar: permanentRegistrarInterfaceId,
+  bulkRenewal: bulkRenewalInterfaceId
 } = interfaces
 
 function checkArguments({
@@ -54,6 +55,7 @@ export default class Registrar {
     ethAddress,
     legacyAuctionRegistrarAddress,
     controllerAddress,
+    bulkRenewalAddress,
     provider
   }) {
     checkArguments({
@@ -76,12 +78,18 @@ export default class Registrar {
       provider
     })
 
+    const bulkRenewal = getBulkRenewalContract({
+      address: bulkRenewalAddress,
+      provider
+    })
+
     const ENS = getENSContract({ address: registryAddress, provider })
 
     this.permanentRegistrar = permanentRegistrar
     this.permanentRegistrarController = permanentRegistrarController
     this.legacyAuctionRegistrar = legacyAuctionRegistrar
     this.registryAddress = registryAddress
+    this.bulkRenewal = bulkRenewal
     this.ENS = ENS
   }
 
@@ -377,17 +385,16 @@ export default class Registrar {
   }
 
   async renewAll(labels, duration) {
-    const permanentRegistrarControllerWithoutSigner = this
-      .permanentRegistrarController
+    const bulkRenewalWithoutSigner = this
+      .bulkRenewal
     const signer = await getSigner()
-    const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+    const bulkRenewal = bulkRenewalWithoutSigner.connect(
       signer
     )
     const prices = await this.getRentPrices(labels, duration)
-    return permanentRegistrarController.renewAll(
+    return bulkRenewal.renewAll(
       labels,
       duration,
-      emptyAddress,
       { value: prices }
     )
   }
@@ -538,11 +545,17 @@ export async function setupRegistrar(registryAddress) {
     legacyRegistrarInterfaceId
   )
 
+  let bulkRenewalAddress = await Resolver.interfaceImplementer(
+    namehash('eth'),
+    bulkRenewalInterfaceId
+  )
+
   return new Registrar({
     registryAddress,
     legacyAuctionRegistrarAddress,
     ethAddress,
     controllerAddress,
+    bulkRenewalAddress,
     provider
   })
 }

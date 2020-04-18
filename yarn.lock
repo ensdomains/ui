@@ -1074,6 +1074,25 @@
     truffle-flattener "^1.4.2"
     web3-utils "^1.0.0-beta.48"
 
+"@ensdomains/ethregistrar@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ethregistrar/-/ethregistrar-2.0.2.tgz#764cd2ea6026e313d912b9aac6e4db3c1479e26e"
+  integrity sha512-f3siHvDyw8XQuQdHgOWS66bzDhz4dMvtSEINkbTK+WLhFiNTivlQMAcvW4WNfWoOpzlgTjMs8Q1xCmkEBhbL4A==
+  dependencies:
+    "@ensdomains/buffer" "0.0.10"
+    "@ensdomains/dnsregistrar" "^0.3.5"
+    "@ensdomains/dnssec-oracle" "^0.1.2"
+    "@ensdomains/ens" "^0.4.0"
+    "@ensdomains/resolver" "^0.1.13"
+    "@ensdomains/subdomain-registrar" "^0.2.0"
+    bluebird "^3.5.3"
+    eth-ens-namehash "^2.0.8"
+    openzeppelin-solidity "2.1.3"
+    solium "^1.2.3"
+    truffle "^5.1.17"
+    truffle-flattener "^1.4.2"
+    web3-utils "^1.0.0-beta.48"
+
 "@ensdomains/mock@2.0.12":
   version "2.0.12"
   resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.0.12.tgz#9d633714c92561361c69a7704e5ebee2bef93e8e"
@@ -12683,6 +12702,15 @@ truffle@^5.0.5:
     mocha "^4.1.0"
     original-require "1.0.1"
     solc "0.5.0"
+
+truffle@^5.1.17:
+  version "5.1.22"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.22.tgz#564e3e245b9b5ceb53ad1075e00ec68682bd3509"
+  integrity sha512-E1Kz7b2y1ApxytKmEDL04Xdmz+zEjTqWNTbp0DLFh928yzxL47xzDmuZyinx4pPNrt9vnnhoHMHqeh36IFkK1Q==
+  dependencies:
+    app-module-path "^2.2.0"
+    mocha "5.2.0"
+    original-require "1.0.1"
 
 truffle@^5.1.19:
   version "5.1.20"
