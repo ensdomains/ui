@@ -7,7 +7,8 @@ import {
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
   getDeedContract,
-  getTestRegistrarContract
+  getTestRegistrarContract,
+  getBulkRenewalContract
 } from './contracts'
 
 import {
@@ -26,7 +27,8 @@ import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
-  permanentRegistrar: permanentRegistrarInterfaceId
+  permanentRegistrar: permanentRegistrarInterfaceId,
+  bulkRenewal: bulkRenewalInterfaceId
 } = interfaces
 
 function checkArguments({
@@ -53,6 +55,7 @@ export default class Registrar {
     ethAddress,
     legacyAuctionRegistrarAddress,
     controllerAddress,
+    bulkRenewalAddress,
     provider
   }) {
     checkArguments({
@@ -75,12 +78,18 @@ export default class Registrar {
       provider
     })
 
+    const bulkRenewal = getBulkRenewalContract({
+      address: bulkRenewalAddress,
+      provider
+    })
+
     const ENS = getENSContract({ address: registryAddress, provider })
 
     this.permanentRegistrar = permanentRegistrar
     this.permanentRegistrarController = permanentRegistrarController
     this.legacyAuctionRegistrar = legacyAuctionRegistrar
     this.registryAddress = registryAddress
+    this.bulkRenewal = bulkRenewal
     this.ENS = ENS
   }
 
@@ -283,6 +292,15 @@ export default class Registrar {
     return permanentRegistrarController.rentPrice(name, duration)
   }
 
+  async getRentPrices(labels, duration) {
+    const pricesArray = await Promise.all(
+      labels.map(label => {
+        return this.getRentPrice(label, duration)
+      })
+    )
+    return pricesArray.reduce((a, c) => a.add(c))
+  }
+
   async getMinimumCommitmentAge() {
     const permanentRegistrarController = this.permanentRegistrarController
     return permanentRegistrarController.minCommitmentAge()
@@ -366,6 +384,21 @@ export default class Registrar {
     return permanentRegistrarController.renew(label, duration, { value: price })
   }
 
+  async renewAll(labels, duration) {
+    const bulkRenewalWithoutSigner = this
+      .bulkRenewal
+    const signer = await getSigner()
+    const bulkRenewal = bulkRenewalWithoutSigner.connect(
+      signer
+    )
+    const prices = await this.getRentPrices(labels, duration)
+    return bulkRenewal.renewAll(
+      labels,
+      duration,
+      { value: prices }
+    )
+  }
+
   async releaseDeed(label) {
     const legacyAuctionRegistrar = this.legacyAuctionRegistrar
     const signer = await getSigner()
@@ -447,7 +480,8 @@ export default class Registrar {
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const registrarWithoutSigner = await getDnsRegistrarContract({
-      parentOwner, provider 
+      parentOwner,
+      provider
     })
     const signer = await getSigner()
     const registrar = registrarWithoutSigner.connect(signer)
@@ -511,11 +545,17 @@ export async function setupRegistrar(registryAddress) {
     legacyRegistrarInterfaceId
   )
 
+  let bulkRenewalAddress = await Resolver.interfaceImplementer(
+    namehash('eth'),
+    bulkRenewalInterfaceId
+  )
+
   return new Registrar({
     registryAddress,
     legacyAuctionRegistrarAddress,
     ethAddress,
     controllerAddress,
+    bulkRenewalAddress,
     provider
   })
 }
