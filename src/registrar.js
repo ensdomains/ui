@@ -209,7 +209,7 @@ export default class Registrar {
       } else if (permEntry.nameExpires) {
         const currentTime = new Date(ret.currentBlockDate)
         const gracePeriodEndDate = new Date(
-          currentTime.getTime() + permEntry.gracePeriod * 1000
+          permEntry.nameExpires.getTime() + permEntry.gracePeriod * 1000
         )
         // It is within grace period
         if (permEntry.nameExpires < currentTime < gracePeriodEndDate) {
