@@ -63,5 +63,11 @@
     "ethers": "4.0.44",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.11"
+  },
+  "prettier": {
+    "semi": false,
+    "editor.formatOnSave": true,
+    "singleQuote": true,
+    "trailingComma": "none"
   }
 }

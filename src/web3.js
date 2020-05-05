@@ -8,7 +8,7 @@ let requested = false
 
 export async function setupWeb3({
   customProvider,
-  reloadOnAccountsChange = false
+  reloadOnAccountsChange = false,
 }) {
   if (provider) {
     return { provider, signer }
@@ -29,7 +29,7 @@ export async function setupWeb3({
   if (window && window.parent && window.self && window.self !== window.parent) {
     try {
       const iframeProvider = new IFrameEthereumProvider({
-        targetOrigin: 'https://myethvault.com'
+        targetOrigin: 'https://myethvault.com',
       })
 
       await Promise.race([
@@ -37,7 +37,7 @@ export async function setupWeb3({
         // Race the enable with a promise that rejects after 1 second
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timed out after 1 second')), 1000)
-        )
+        ),
       ])
 
       window.web3 = iframeProvider
@@ -51,7 +51,7 @@ export async function setupWeb3({
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
-      window.ethereum.on('accountsChanged', async function(accounts) {
+      window.ethereum.on('accountsChanged', async function (accounts) {
         const address = await signer.getAddress()
         if (accounts[0] !== address) {
           window.location.reload()
@@ -199,13 +199,13 @@ export async function getBlock() {
     const blockDetails = await provider.getBlock(block)
     return {
       number: blockDetails.number,
-      timestamp: blockDetails.timestamp
+      timestamp: blockDetails.timestamp,
     }
   } catch (e) {
     console.log('error getting block details', e)
     return {
       number: 0,
-      timestamp: 0
+      timestamp: 0,
     }
   }
 }
