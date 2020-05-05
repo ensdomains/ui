@@ -13,7 +13,6 @@ import {
   decodeContenthash,
   isValidContenthash
 } from './contents'
-import { tlds } from '../constants/tlds'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './namehash'
 
@@ -89,7 +88,7 @@ function isLabelValid(name) {
   }
 }
 
-const parseSearchTerm = term => {
+const parseSearchTerm = (term, validTld) => {
   let regex = /[^.]+$/
 
   try {
@@ -101,8 +100,7 @@ const parseSearchTerm = term => {
   if (term.indexOf('.') !== -1) {
     const termArray = term.split('.')
     const tld = term.match(regex) ? term.match(regex)[0] : ''
-
-    if (tlds[tld] && tlds[tld].supported) {
+    if (validTld) {
       if (tld === 'eth' && termArray[termArray.length - 2].length < 3) {
         return 'short'
       }
@@ -114,7 +112,7 @@ const parseSearchTerm = term => {
     return 'address'
   } else {
     //check if the search term is actually a tld
-    if (Object.keys(tlds).filter(tld => term === tld).length > 0) {
+    if (validTld) {
       return 'tld'
     }
     return 'search'
