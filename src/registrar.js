@@ -28,7 +28,8 @@ import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId,
-  bulkRenewal: bulkRenewalInterfaceId
+  bulkRenewal: bulkRenewalInterfaceId,
+  dnsRegistrar: dnsRegistrarInterfaceId
 } = interfaces
 
 function checkArguments({
@@ -409,18 +410,16 @@ export default class Registrar {
     return legacyAuctionRegistrarWithSigner.releaseDeed(hash)
   }
 
-  async isDNSRegistrar(name) {
-    // Keep it until new registrar contract with supportsInterface function is deployed into mainnet
-    return name === 'xyz'
-    // const { registrar } = await getDnsRegistrarContract(name)
-    // let isDNSSECSupported = false
-    // try {
-    //   isDNSSECSupported = await registrar
-    //     .supportsInterface(dnsRegistrarInterfaceId)
-    // } catch (e) {
-    //   console.log({e})
-    // }
-    // return isDNSSECSupported
+  async isDNSRegistrar(parentOwner) {
+    const provider = await getProvider()
+    const registrar = await getDnsRegistrarContract({ parentOwner, provider })
+    let isDNSSECSupported = false
+    try {
+      isDNSSECSupported = await registrar['supportsInterface(bytes4)'](dnsRegistrarInterfaceId)
+    } catch (e) {
+      console.log({e})
+    }
+    return isDNSSECSupported
   }
 
   async getDNSEntry(name, parentOwner, owner) {
