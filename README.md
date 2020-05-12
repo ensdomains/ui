@@ -9,16 +9,23 @@ Most functions in this library are async functions and therefore return promises
   - [setupENS()](#async-function-setupensoptions-void)
   - [getOwner()](#async-function-getownername-address)
   - [getResolver()](#async-function-getresolvername-address)
+  - [getTTL()](#async-function-getttlname-number)
   - [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
   - [getResolverWithLabelhash()](#async-function-getresolverwithlabelhashlabelhash-nodehash-address)
   - [getAddress()](#async-function-getaddressname-address)
+  - [getAddr()](#async-function-getaddrnamekey-address)
   - [getContent()](#async-function-getcontentname-contenthash)
+  - [getText()](#async-function-gettextnamekey-value)
   - [getName()](#async-function-getnameaddress-name)
+  - [getSubdomains()](#async-function-getsubdomains-address)
   - [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-transactionresponse)
+  - [setSubnodeRecord()](#async-function-setsubnoderecordname-newowner-resolver-transactionresponse)
   - [setResolver()](#async-function-setresolvername-resolver-transactionresponse)
   - [setAddress()](#async-function-setaddressname-address-transactionresponse)
+  - [setAddr()](#async-function-setaddrname-key-address-transactionresponse)
   - [setContent() DEPRECATED](#async-function-setcontentname-content-transactionresponse-deprecated)
   - [setContenthash()](#async-function-setcontenthashname-content-transactionresponse)
+  - [setText()](#async-function-settext-content-transactionresponse)
   - [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
   - [createSubdomain()](#async-function-createsubdomainlabel-name-transactionresponse)
   - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-transactionresponse)
@@ -107,6 +114,24 @@ const owner = await ens.getResolver('vitalik.eth')
 // 0x123...
 ```
 
+### `async function getTTL(name): Number`
+
+#### Arguments
+
+name (String): An ENS name (e.g: vitalik.eth)
+
+#### Returns
+
+ttl (number): Returns the caching time-to-live of the name specified by node. Systems that wish to cache information about a name, including ownership, resolver address, and records, should respect this value. If TTL is zero, new data should be fetched on each query.
+
+#### Example
+
+```js
+import ens from 'ens'
+const ttl = await ens.getTTL('resolver.eth')
+// 12345
+```
+
 ### `async function getOwnerWithLabelHash(labelHash, nodeHash): Address`
 
 #### Arguments
@@ -163,6 +188,26 @@ const addr = await ens.getAddress('vitalik.eth')
 // 0x123...
 ```
 
+### `async function getAddr(name, key): Address`
+
+This function will call the resolver to get the address based on name and coin type of various blockchains, if it cannot find a resolver, it will return `0x000...` as a fallback
+
+#### Arguments
+
+name (String): An ENS name (e.g: vitalik.eth)
+key (String): CoinType (e.g: ETH, EOS, ETC, specified in [address-encoder](https://github.com/ensdomains/address-encoder#supported-cryptocurrencies))
+
+#### Returns
+
+address (address): A blockchain address that was set on the resolver
+
+#### Example
+
+```js
+const addr = await ens.getAddress('vitalik.eth', 'ETC')
+// 0x123...
+```
+
 ### `async function getContent(name): Contenthash`
 
 This function will call the resolver to get the contentHash, if it cannot find a resolver, it will return `0x000...` as a fallback. Otherwise it will return a contenthash in text format, as defined by [EIP1577](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1577.md).
@@ -182,6 +227,26 @@ const content = await ens.getContent('vitalik.eth')
 // ipfs://Qsxz...
 ```
 
+### `async function getText(name, key): Value`
+
+This function gets the reverse record of an address.
+
+#### Arguments
+
+name (String): ENS name
+key (String): Any keys. Standard values for key
+
+#### Returns
+
+value (String): A value
+
+#### Example
+
+```js
+const name = await ens.getText('vitalik.eth', 'url')
+// https://vitalik.ca/
+```
+
 ### `async function getName(address): Name`
 
 This function gets the reverse record of an address.
@@ -199,6 +264,25 @@ name (String): An ENS name
 ```js
 const name = await ens.getName('0x123abc...')
 // vitalik.eth
+```
+
+### `async function getSubfomains(): [Address]`
+
+This function gets the reverse record of an address.
+
+#### Arguments
+
+name (String): An ENS name
+
+#### Returns
+
+addresses (Array): An ENS name
+
+#### Example
+
+```js
+const name = await ens.getSubdomains('vitalik.eth')
+// ['0x123','0x123']
 ```
 
 ### `async function setOwner(name, newOwner): TransactionResponse`
@@ -239,6 +323,35 @@ transaction (object): [Transaction Response Object](#transaction-response)
 
 ```js
 const tx = await ens.setSubnodeOwner('sub.vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+### `async function setSubnodeRecord(name, newOwner, resolver): TransactionResponse`
+
+Sets the record for a subnode. Can only be called by the controller of the parent name.
+
+#### Arguments
+
+name (String): An ENS name
+newOwner (String): An Ethereum address or contract
+resolver (Address): Resolver 
+
+#### Returns
+
+transaction (object): [Transaction Response Object](#transaction-response)
+
+#### Example
+
+```js
+const tx = await ens.setSubnodeRecord(
+  'subnode.resolver.eth',
+  '0x134',
+  '0x123'
+)
+
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
@@ -291,6 +404,35 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 // Transaction has been mined
 ```
 
+### `async function setAddr(name, key, address): TransactionResponse`
+
+Can only be called by the controller of the name.
+
+#### Arguments
+
+name (String): An ENS name
+key (String): CoinType (e.g: ETH, EOS, ETC, specified in [address-encoder](https://github.com/ensdomains/address-encoder#supported-cryptocurrencies))
+address (String): An Ethereum address
+
+#### Returns
+
+transaction (object): [Transaction Response Object](#transaction-response)
+
+#### Example
+
+```js
+const tx = await ens.setAddr(
+  'vitalik.eth',
+  'ETH',
+  '0x0000000000000000000000000000000000012345'
+)
+
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
 ### `async function setContent(name, content): TransactionResponse (DEPRECATED)`
 
 Can only be called by the controller of the name.
@@ -333,6 +475,30 @@ transaction (object): [Transaction Response Object](#transaction-response)
 
 ```js
 const tx = await ens.setContent('vitalik.eth', '0x123abc')
+console.log(tx.hash)
+// 0x123456...
+const receipt = await tx.wait() // Wait for transaction to be mined
+// Transaction has been mined
+```
+
+
+### `async function setText(name, content): TransactionResponse`
+
+Sets text metadata for node with the unique key key to value, overwriting anything previously stored for node and key. To clear a text field, set it to the empty string.
+
+#### Arguments
+
+name (String): An ENS name
+key  (String): key
+value (String): Value
+#### Returns
+
+transaction (object): [Transaction Response Object](#transaction-response)
+
+#### Example
+
+```js
+const tx = await ens.setText('vitalik.eth', 'url', 'vitalik.ca')
 console.log(tx.hash)
 // 0x123456...
 const receipt = await tx.wait() // Wait for transaction to be mined
