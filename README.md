@@ -13,11 +13,11 @@ Most functions in this library are async functions and therefore return promises
   - [getOwnerWithLabelhash()](#async-function-getownerwithlabelhashlabelhash-nodehash-address)
   - [getResolverWithLabelhash()](#async-function-getresolverwithlabelhashlabelhash-nodehash-address)
   - [getAddress()](#async-function-getaddressname-address)
-  - [getAddr()](#async-function-getaddrnamekey-address)
+  - [getAddr()](#async-function-getaddrname-key-address)
   - [getContent()](#async-function-getcontentname-contenthash)
-  - [getText()](#async-function-gettextnamekey-value)
+  - [getText()](#async-function-gettextname-key-value)
   - [getName()](#async-function-getnameaddress-name)
-  - [getSubdomains()](#async-function-getsubdomains-address)
+  - [getSubdomains()](#async-function-getsubfomains-address)
   - [setSubnodeOwner()](#async-function-setsubnodeownername-newowner-transactionresponse)
   - [setSubnodeRecord()](#async-function-setsubnoderecordname-newowner-resolver-transactionresponse)
   - [setResolver()](#async-function-setresolvername-resolver-transactionresponse)
@@ -25,14 +25,14 @@ Most functions in this library are async functions and therefore return promises
   - [setAddr()](#async-function-setaddrname-key-address-transactionresponse)
   - [setContent() DEPRECATED](#async-function-setcontentname-content-transactionresponse-deprecated)
   - [setContenthash()](#async-function-setcontenthashname-content-transactionresponse)
-  - [setText()](#async-function-settext-content-transactionresponse)
+  - [setText()](#async-function-settextname-key-value-transactionresponse)
   - [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
   - [createSubdomain()](#async-function-createsubdomainlabel-name-transactionresponse)
   - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-transactionresponse)
   - [claimAndSetReverseRecord()](#async-function-claimandsetreverserecordnamename-transactionresponse)
   - [setReverseRecord](#async-function-setreverserecordnamename-transactionresponse)
   - [getDomainDetails](#async-function-getdomaindetailsname-transactionresponse)
-  - [getSubdomains](#async-function-getsubdomainsname-transactionresponse)
+  - [getSubdomains](#async-function-getsubdomainsname-arraysubdomain)
 
 - [Transaction Response](#transaction-response)
 
@@ -266,7 +266,7 @@ const name = await ens.getName('0x123abc...')
 // vitalik.eth
 ```
 
-### `async function getSubfomains(): [Address]`
+### `async function getSubdomains(): [Address]`
 
 This function gets the reverse record of an address.
 
@@ -482,7 +482,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 ```
 
 
-### `async function setText(name, content): TransactionResponse`
+### `async function setText(name, key, value): TransactionResponse`
 
 Sets text metadata for node with the unique key key to value, overwriting anything previously stored for node and key. To clear a text field, set it to the empty string.
 
