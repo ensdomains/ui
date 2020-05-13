@@ -25,7 +25,7 @@ Most functions in this library are async functions and therefore return promises
   - [setAddr()](#async-function-setaddrname-key-address-transactionresponse)
   - [setContent() DEPRECATED](#async-function-setcontentname-content-transactionresponse-deprecated)
   - [setContenthash()](#async-function-setcontenthashname-content-transactionresponse)
-  - [setText()](#async-function-settextname-content-transactionresponse)
+  - [setText()](#async-function-settextname-key-value-transactionresponse)
   - [checkSubdomain()](#async-function-checksubdomainlabel-name-boolean)
   - [createSubdomain()](#async-function-createsubdomainlabel-name-transactionresponse)
   - [deleteSubdomain()](#async-function-deletesubdomainlabel-name-transactionresponse)
@@ -266,7 +266,11 @@ const name = await ens.getName('0x123abc...')
 // vitalik.eth
 ```
 
+<<<<<<< HEAD
 ### `async function getSubdomains(): [Address]`
+=======
+### `async function getSubfomains(): [Address]`
+>>>>>>> master
 
 This function gets the reverse record of an address.
 
@@ -482,7 +486,7 @@ const receipt = await tx.wait() // Wait for transaction to be mined
 ```
 
 
-### `async function setText(name, content): TransactionResponse`
+### `async function setText(name, key, value): TransactionResponse`
 
 Sets text metadata for node with the unique key key to value, overwriting anything previously stored for node and key. To clear a text field, set it to the empty string.
 
