@@ -266,11 +266,7 @@ const name = await ens.getName('0x123abc...')
 // vitalik.eth
 ```
 
-<<<<<<< HEAD
 ### `async function getSubdomains(): [Address]`
-=======
-### `async function getSubfomains(): [Address]`
->>>>>>> master
 
 This function gets the reverse record of an address.
 
