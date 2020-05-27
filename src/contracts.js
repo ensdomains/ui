@@ -10,6 +10,7 @@ import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
 import { abi as permanentRegistrarControllerContract } from '@ensdomains/ethregistrar/build/contracts/ETHRegistrarController'
 import { abi as bulkRenewalContract } from '@ensdomains/ethregistrar/build/contracts/BulkRenewal'
+import { abi as priceOracleContract } from '@ensdomains/ethregistrar/build/contracts/LinearPremiumPriceOracle'
 
 function getReverseRegistrarContract({ address, provider }) {
   return new Contract(address, reverseRegistrarContract, provider)
@@ -55,6 +56,10 @@ function getBulkRenewalContract({ address, provider }) {
   return new Contract(address, bulkRenewalContract, provider)
 }
 
+function getPriceOracleContract({ address, provider}) {
+  return new Contract(address, priceOracleContract, provider)
+}
+
 export {
   getTestRegistrarContract,
   getReverseRegistrarContract,
@@ -66,5 +71,6 @@ export {
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
   getDeedContract,
-  getBulkRenewalContract
+  getBulkRenewalContract,
+  getPriceOracleContract
 }

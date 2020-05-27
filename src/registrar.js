@@ -8,7 +8,8 @@ import {
   getLegacyAuctionContract,
   getDeedContract,
   getTestRegistrarContract,
-  getBulkRenewalContract
+  getBulkRenewalContract,
+  getPriceOracleContract
 } from './contracts'
 
 import {
@@ -84,6 +85,12 @@ export default class Registrar {
       provider
     })
 
+    // TODO: Fetch oracle contract address dynamically
+    const priceOracle = getPriceOracleContract({
+      address: '0x216697551042Bd6788CF6c3da278e1F7D3056a25',
+      provider
+    })
+
     const ENS = getENSContract({ address: registryAddress, provider })
 
     this.permanentRegistrar = permanentRegistrar
@@ -91,6 +98,7 @@ export default class Registrar {
     this.legacyAuctionRegistrar = legacyAuctionRegistrar
     this.registryAddress = registryAddress
     this.bulkRenewal = bulkRenewal
+    this.priceOracle = priceOracle
     this.ENS = ENS
   }
 
@@ -291,6 +299,16 @@ export default class Registrar {
   async getRentPrice(name, duration) {
     const permanentRegistrarController = this.permanentRegistrarController
     return permanentRegistrarController.rentPrice(name, duration)
+  }
+
+  async getPremium(name, expires, duration) {
+    const priceOracle = this.priceOracle
+    return priceOracle.premium(name, expires, duration)
+  }
+
+  async getTimeUntilPremium(expires, amount){
+    const priceOracle = this.priceOracle
+    return priceOracle.timeUntilPremium(expires, amount)
   }
 
   async getRentPrices(labels, duration) {
