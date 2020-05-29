@@ -1,6 +1,7 @@
 import { getProvider, setupWeb3, getNetworkId } from './web3'
 import { ENS } from './ens.js'
 import { setupRegistrar } from './registrar'
+import ethers from 'ethers'
 export { utils } from 'ethers'
 
 export async function setupENS({
@@ -24,3 +25,4 @@ export * from './web3'
 export * from './constants/interfaces'
 export * from './utils'
 export * from './contracts'
+export { ethers }
