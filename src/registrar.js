@@ -304,8 +304,7 @@ export default class Registrar {
 
   async getPremium(name, expires, duration) {
     const priceOracle = this.priceOracle
-    return 1
-    // return priceOracle.premium(name, expires, duration)
+    return priceOracle.premium(name, expires, duration)
   }
 
   async getTimeUntilPremium(expires, amount){
