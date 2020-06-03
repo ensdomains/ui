@@ -30,7 +30,8 @@ const {
   legacyRegistrar: legacyRegistrarInterfaceId,
   permanentRegistrar: permanentRegistrarInterfaceId,
   bulkRenewal: bulkRenewalInterfaceId,
-  dnsRegistrar: dnsRegistrarInterfaceId
+  dnsRegistrar: dnsRegistrarInterfaceId,
+  linearPriceOracle: linearPriceOracleInterfaceId
 } = interfaces
 
 function checkArguments({
@@ -58,6 +59,7 @@ export default class Registrar {
     legacyAuctionRegistrarAddress,
     controllerAddress,
     bulkRenewalAddress,
+    linearPriceOracleAddress,
     provider
   }) {
     checkArguments({
@@ -85,9 +87,8 @@ export default class Registrar {
       provider
     })
 
-    // TODO: Fetch oracle contract address dynamically
     const priceOracle = getPriceOracleContract({
-      address: '0x216697551042Bd6788CF6c3da278e1F7D3056a25',
+      address: linearPriceOracleAddress,
       provider
     })
 
@@ -303,7 +304,8 @@ export default class Registrar {
 
   async getPremium(name, expires, duration) {
     const priceOracle = this.priceOracle
-    return priceOracle.premium(name, expires, duration)
+    return 1
+    // return priceOracle.premium(name, expires, duration)
   }
 
   async getTimeUntilPremium(expires, amount){
@@ -567,12 +569,18 @@ export async function setupRegistrar(registryAddress) {
     bulkRenewalInterfaceId
   )
 
+  let linearPriceOracleAddress = await Resolver.interfaceImplementer(
+    namehash('eth'),
+    linearPriceOracleInterfaceId
+  )
+  console.log('*** linearPriceOracleAddress', {linearPriceOracleAddress, linearPriceOracleInterfaceId})
   return new Registrar({
     registryAddress,
     legacyAuctionRegistrarAddress,
     ethAddress,
     controllerAddress,
     bulkRenewalAddress,
+    linearPriceOracleAddress,
     provider
   })
 }
