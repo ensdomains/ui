@@ -1,7 +1,7 @@
 import { getProvider, setupWeb3, getNetworkId } from './web3'
 import { ENS } from './ens.js'
 import { setupRegistrar } from './registrar'
-export { utils } from 'ethers'
+export { utils, ethers } from 'ethers'
 
 export async function setupENS({
   customProvider,

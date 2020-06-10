@@ -8,7 +8,7 @@ let requested = false
 
 export async function setupWeb3({
   customProvider,
-  reloadOnAccountsChange = false,
+  reloadOnAccountsChange = false
 }) {
   if (provider) {
     return { provider, signer }
@@ -29,7 +29,7 @@ export async function setupWeb3({
   if (window && window.parent && window.self && window.self !== window.parent) {
     try {
       const iframeProvider = new IFrameEthereumProvider({
-        targetOrigin: 'https://myethvault.com',
+        targetOrigin: 'https://myethvault.com'
       })
 
       await Promise.race([
@@ -37,7 +37,7 @@ export async function setupWeb3({
         // Race the enable with a promise that rejects after 1 second
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timed out after 1 second')), 1000)
-        ),
+        )
       ])
 
       window.web3 = iframeProvider
@@ -111,7 +111,7 @@ export function isReadOnly() {
   return readOnly
 }
 
-function getNetworkProviderUrl(id) {
+export function getNetworkProviderUrl(id) {
   switch (id) {
     case '1':
       return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
@@ -122,7 +122,7 @@ function getNetworkProviderUrl(id) {
     case '5':
       return `https://goerli.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
     default:
-      return 'private'
+      return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
   }
 }
 
@@ -199,13 +199,13 @@ export async function getBlock() {
     const blockDetails = await provider.getBlock(block)
     return {
       number: blockDetails.number,
-      timestamp: blockDetails.timestamp,
+      timestamp: blockDetails.timestamp
     }
   } catch (e) {
     console.log('error getting block details', e)
     return {
       number: 0,
-      timestamp: 0,
+      timestamp: 0
     }
   }
 }
