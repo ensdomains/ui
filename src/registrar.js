@@ -9,7 +9,8 @@ import {
   getDeedContract,
   getTestRegistrarContract,
   getBulkRenewalContract,
-  getPriceOracleContract
+  getPriceOracleContract,
+  getUsdOracleContract
 } from './contracts'
 
 import {
@@ -312,6 +313,17 @@ export default class Registrar {
     return priceOracle.timeUntilPremium(expires, amount)
   }
 
+  async getUSDRate(){
+    const priceOracle = this.priceOracle
+    const usdOracleAddress = await priceOracle.usdOracle()
+    const provider = await getProvider()
+    const usdOracle = getUsdOracleContract({
+      address: usdOracleAddress,
+      provider
+    })
+    return usdOracle.latestAnswer()
+  }
+
   async getRentPrices(labels, duration) {
     const pricesArray = await Promise.all(
       labels.map(label => {
@@ -572,7 +584,7 @@ export async function setupRegistrar(registryAddress) {
     namehash('eth'),
     linearPriceOracleInterfaceId
   )
-  console.log('*** linearPriceOracleAddress', {linearPriceOracleAddress, linearPriceOracleInterfaceId})
+
   return new Registrar({
     registryAddress,
     legacyAuctionRegistrarAddress,
