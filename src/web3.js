@@ -8,11 +8,25 @@ let requested = false
 
 export async function setupWeb3({
   customProvider,
-  reloadOnAccountsChange = false
+  reloadOnAccountsChange = false,
+  enforceReadOnly
 }) {
+
+  console.log('*** setupWeb3', {
+    customProvider,
+    reloadOnAccountsChange,
+    enforceReadOnly
+  })
+  if (enforceReadOnly){
+    readOnly = true
+    provider = new ethers.getDefaultProvider('homestead')
+    return { provider, signer }
+  }
+
   if (provider) {
     return { provider, signer }
   }
+
   if (customProvider) {
     if (typeof customProvider === 'string') {
       // handle raw RPC endpoint URL
