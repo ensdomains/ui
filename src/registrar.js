@@ -313,7 +313,7 @@ export default class Registrar {
     return priceOracle.timeUntilPremium(expires, amount)
   }
 
-  async getUSDRate(){
+  async getEthPrice(){
     const priceOracle = this.priceOracle
     const usdOracleAddress = await priceOracle.usdOracle()
     const provider = await getProvider()
@@ -321,7 +321,8 @@ export default class Registrar {
       address: usdOracleAddress,
       provider
     })
-    return usdOracle.latestAnswer()
+    const answer = await usdOracle.latestAnswer()
+    return answer / Math.pow(10,8)
   }
 
   async getRentPrices(labels, duration) {
