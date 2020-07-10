@@ -54,15 +54,14 @@ export function encodeContenthash(text) {
       contentType = matched[1]
       content = matched[2]
     }
-
     try {
       if (contentType === 'ipfs') {
         if(content.length >= 4) {
-          encoded = '0x' + contentHash.encode('ipfs-ns', ipfs);
+          encoded = '0x' + contentHash.encode('ipfs-ns', content);
         }
       } else if (contentType === 'ipns') {
         if(content.length >= 4) {
-          encoded = '0x' + contentHash.encode('ipns-ns', ipfs);
+          encoded = '0x' + contentHash.encode('ipns-ns', content);
         }
       } else if (contentType === 'bzz') {
         if(content.length >= 4) {
