@@ -13,7 +13,7 @@ export function decodeContenthash(encoded) {
       decoded = contentHash.decode(encoded)
       const codec = contentHash.getCodec(encoded)
       if (codec === 'ipfs-ns') {
-        protocolType = 'ipns'
+        protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
         protocolType = 'ipns'
       } else if (codec === 'swarm-ns') {
