@@ -1,7 +1,7 @@
 import contentHash from 'content-hash'
 import { utils } from 'ethers'
 
-const supportedCodecs = ['ipfs-ns', 'swarm-ns', 'onion', 'onion3']
+const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
 
 export function decodeContenthash(encoded) {
   let decoded, protocolType, error
@@ -14,6 +14,8 @@ export function decodeContenthash(encoded) {
       const codec = contentHash.getCodec(encoded)
       if (codec === 'ipfs-ns') {
         protocolType = 'ipfs'
+      } else if (codec === 'ipns-ns') {
+        protocolType = 'ipns'
       } else if (codec === 'swarm-ns') {
         protocolType = 'bzz'
       } else if (codec === 'onion') {
@@ -47,16 +49,19 @@ export function encodeContenthash(text) {
   let content, contentType
   let encoded = false
   if (!!text) {
-    let matched = text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/) || text.match(/\/(ipfs)\/(.*)/)
+    let matched = text.match(/^(ipfs|ipns|bzz|onion|onion3):\/\/(.*)/) || text.match(/\/(ipfs)\/(.*)/) || text.match(/\/(ipns)\/(.*)/)
     if (matched) {
       contentType = matched[1]
       content = matched[2]
     }
-
     try {
       if (contentType === 'ipfs') {
         if(content.length >= 4) {
-          encoded = '0x' + contentHash.fromIpfs(content)
+          encoded = '0x' + contentHash.encode('ipfs-ns', content);
+        }
+      } else if (contentType === 'ipns') {
+        if(content.length >= 4) {
+          encoded = '0x' + contentHash.encode('ipns-ns', content);
         }
       } else if (contentType === 'bzz') {
         if(content.length >= 4) {
