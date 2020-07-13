@@ -1,7 +1,7 @@
 import contentHash from 'content-hash'
 import { utils } from 'ethers'
 
-const supportedCodecs = ['ipfs-ns', 'ipfs-fs', 'swarm-ns', 'onion', 'onion3']
+const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
 
 export function decodeContenthash(encoded) {
   let decoded, protocolType, error
