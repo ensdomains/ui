@@ -1,6 +1,6 @@
 import contentHash from 'content-hash'
 import { utils } from 'ethers'
-
+import bs58 from 'bs58'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
 
 export function decodeContenthash(encoded) {
@@ -13,7 +13,8 @@ export function decodeContenthash(encoded) {
       decoded = contentHash.decode(encoded)
       const codec = contentHash.getCodec(encoded)
       if (codec === 'ipfs-ns') {
-        protocolType = 'ipfs'
+        protocolType = 'ipns'
+        decoded = bs58.decode(d).slice(2).toString('ascii')
       } else if (codec === 'ipns-ns') {
         protocolType = 'ipns'
       } else if (codec === 'swarm-ns') {
