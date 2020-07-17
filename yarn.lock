@@ -3677,6 +3677,16 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
+cids@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/cids/-/cids-0.6.0.tgz#0de7056a5246a7c7ebf3134eb4d83b3b8b841a06"
+  integrity sha512-34wuIeiBZOuvBwUuYR4XooVuXUQI2PYU9VmgM2eB3xkSmQYRlv2kh/dIbmGiLY2GuONlGR3lLtYdVkx1G9yXUg==
+  dependencies:
+    class-is "^1.1.0"
+    multibase "~0.6.0"
+    multicodec "~0.5.0"
+    multihashes "~0.4.14"
+
 cids@^0.7.1:
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/cids/-/cids-0.7.5.tgz#60a08138a99bfb69b6be4ceb63bfef7a396b28b2"
@@ -3966,6 +3976,15 @@ content-disposition@0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
   integrity sha1-DPaLud318r55YcOoUXjLhdunjLQ=
+
+"content-hash-241@npm:content-hash@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/content-hash/-/content-hash-2.4.1.tgz#76c81987adf6fb430eaa51ac6b746349cf74757c"
+  integrity sha512-1VnOmM2nJX8cTPi77Sue4LEohVfSvxyBhMGu8B3ATTLmDx3G/UxJTBRA9mv4dHtlynfBhlAffB3jqZ/yB0DEbA==
+  dependencies:
+    cids "^0.6.0"
+    multicodec "^0.5.3"
+    multihashes "^0.4.15"
 
 content-hash@^2.5.2:
   version "2.5.2"
@@ -9000,7 +9019,7 @@ multibase@~0.6.0:
   dependencies:
     base-x "3.0.4"
 
-multicodec@^0.5.5:
+multicodec@^0.5.3, multicodec@^0.5.5, multicodec@~0.5.0:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/multicodec/-/multicodec-0.5.7.tgz#1fb3f9dd866a10a55d226e194abba2dcc1ee9ffd"
   integrity sha512-PscoRxm3f+88fAtELwUnZxGDkduE2HD9Q6GHUOywQLjOGT/HAdhjLDYNZ1e7VR0s0TP0EwZ16LNUTFpoBGivOA==
@@ -9023,7 +9042,7 @@ multihashes@^0.4.15:
     bs58 "^4.0.1"
     varint "^5.0.0"
 
-multihashes@~0.4.15:
+multihashes@~0.4.14, multihashes@~0.4.15:
   version "0.4.21"
   resolved "https://registry.yarnpkg.com/multihashes/-/multihashes-0.4.21.tgz#dc02d525579f334a7909ade8a122dabb58ccfcb5"
   integrity sha512-uVSvmeCWf36pU2nB4/1kzYZjsXD9vofZKpgudqkceYY5g2aZZXJ5r9lxuzoRLl1OAp28XljXsEJ/X/85ZsKmKw==

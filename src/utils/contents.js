@@ -1,4 +1,5 @@
 import contentHash from 'content-hash'
+import oldContentHash from 'content-hash-241'
 import { utils } from 'ethers'
 
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
@@ -8,10 +9,14 @@ export function decodeContenthash(encoded) {
   if (encoded.error) {
     return { protocolType: null, decoded: encoded.error }
   }
+  
   if (encoded) {
     try {
       decoded = contentHash.decode(encoded)
+      const oldDecoded = oldContentHash.decode(encoded)
+      const oldCodec = oldContentHash.getCodec(encoded)
       const codec = contentHash.getCodec(encoded)
+      console.log('*** decodeContenthash', {encoded, decoded, codec, oldDecoded, oldCodec})
       if (codec === 'ipfs-ns') {
         protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
@@ -54,6 +59,7 @@ export function encodeContenthash(text) {
       contentType = matched[1]
       content = matched[2]
     }
+    console.log('*** encodeContenthash', {text, contentType, content})
     try {
       if (contentType === 'ipfs') {
         if(content.length >= 4) {
