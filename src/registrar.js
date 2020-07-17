@@ -351,6 +351,9 @@ export default class Registrar {
     )
     const account = await getAccount()
     const price = await this.getRentPrice(label, duration)
+    // Add 5% markup to handle price fructuation.
+    // Any unused value will be sent back by the smart contract.
+    const priceWithMarkup = price.mul(105).div(100)
     const resolverAddr = await this.getAddress('resolver.eth')
     if (parseInt(resolverAddr, 16) === 0) {
       return permanentRegistrarController.register(
@@ -358,7 +361,7 @@ export default class Registrar {
         account,
         duration,
         secret,
-        { value: price }
+        { value: priceWithMarkup }
       )
     } else {
       return permanentRegistrarController.registerWithConfig(
@@ -368,7 +371,7 @@ export default class Registrar {
         secret,
         resolverAddr,
         account,
-        { value: price }
+        { value: priceWithMarkup }
       )
     }
   }
