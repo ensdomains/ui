@@ -6,16 +6,20 @@ export { utils, ethers } from 'ethers'
 export async function setupENS({
   customProvider,
   ensAddress,
-  reloadOnAccountsChange
+  reloadOnAccountsChange,
+  enforceReadOnly,
+  enforceReload
 } = {}) {
   const { provider } = await setupWeb3({
     customProvider,
-    reloadOnAccountsChange
+    reloadOnAccountsChange,
+    enforceReadOnly,
+    enforceReload
   })
   const networkId = await getNetworkId()
   const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
   const registrar = await setupRegistrar(ens.registryAddress)
-  return { ens, registrar }
+  return { ens, registrar, provider:customProvider }
 }
 
 export * from './ens'
