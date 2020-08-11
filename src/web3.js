@@ -209,6 +209,12 @@ export async function getNetworkId() {
   return network.chainId
 }
 
+export async function getNetwork() {
+  const provider = await getWeb3()
+  const network = await provider.getNetwork()
+  return network
+}
+
 export async function getBlock() {
   try {
     const provider = await getWeb3()

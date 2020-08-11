@@ -1,4 +1,4 @@
-import { getProvider, setupWeb3, getNetworkId } from './web3'
+import { getProvider, setupWeb3, getNetworkId, getNetwork } from './web3'
 import { ENS } from './ens.js'
 import { setupRegistrar } from './registrar'
 export { utils, ethers } from 'ethers'
@@ -19,7 +19,8 @@ export async function setupENS({
   const networkId = await getNetworkId()
   const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
   const registrar = await setupRegistrar(ens.registryAddress)
-  return { ens, registrar, provider:customProvider }
+  const network = await getNetwork()
+  return { ens, registrar, provider:customProvider, network }
 }
 
 export * from './ens'
