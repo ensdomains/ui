@@ -1,6 +1,6 @@
 import contentHash from 'content-hash'
 import { utils } from 'ethers'
-
+import bs58 from 'bs58'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
 
 export function decodeContenthash(encoded) {
@@ -15,6 +15,7 @@ export function decodeContenthash(encoded) {
       if (codec === 'ipfs-ns') {
         protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
+        decoded = bs58.decode(decoded).slice(2).toString()
         protocolType = 'ipns'
       } else if (codec === 'swarm-ns') {
         protocolType = 'bzz'
@@ -60,9 +61,13 @@ export function encodeContenthash(text) {
           encoded = '0x' + contentHash.encode('ipfs-ns', content);
         }
       } else if (contentType === 'ipns') {
-        if(content.length >= 4) {
-          encoded = '0x' + contentHash.encode('ipns-ns', content);
-        }
+        let bs58content = bs58.encode(
+          Buffer.concat([
+            Buffer.from([0,content.length]),
+            Buffer.from(content)
+          ])
+        )
+        encoded = '0x' + contentHash.encode('ipns-ns', bs58content);
       } else if (contentType === 'bzz') {
         if(content.length >= 4) {
           encoded = '0x' + contentHash.fromSwarm(content)
