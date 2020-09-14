@@ -51,7 +51,7 @@ export async function setupWeb3({
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
-      window.ethereum.on('accountsChanged', async function(accounts) {
+      window.ethereum.on('accountsChanged', async function (accounts) {
         const address = await signer.getAddress()
         if (accounts[0] !== address) {
           window.location.reload()
@@ -111,7 +111,7 @@ export function isReadOnly() {
   return readOnly
 }
 
-function getNetworkProviderUrl(id) {
+export function getNetworkProviderUrl(id) {
   switch (id) {
     case '1':
       return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
@@ -122,7 +122,7 @@ function getNetworkProviderUrl(id) {
     case '5':
       return `https://goerli.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
     default:
-      return 'private'
+      return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
   }
 }
 

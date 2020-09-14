@@ -1,0 +1,28 @@
+sudo: required
+
+dist: trusty
+
+language: node_js
+
+node_js:
+  - '8.11.4'
+
+cache:
+  yarn: true
+
+matrix:
+  allow_failures:
+    #
+jobs:
+  include:
+    - stage: test
+      name: 'Test'
+      install:
+        - yarn
+      script: 'yarn test'
+
+stages:
+  - name: test
+
+notifications:
+  email: false
