@@ -1,4 +1,4 @@
-import contentHash from 'content-hash'
+import contentHash from '@ensdomains/content-hash'
 import { utils } from 'ethers'
 import bs58 from 'bs58'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
