@@ -307,6 +307,11 @@ export default class Registrar {
     return permanentRegistrarController.minCommitmentAge()
   }
 
+  async getMaximumCommitmentAge(){
+    const permanentRegistrarController = this.permanentRegistrarController
+    return  permanentRegistrarController.maxCommitmentAge()
+  }
+
   async makeCommitment(name, owner, secret = '') {
     const permanentRegistrarControllerWithoutSigner = this
       .permanentRegistrarController
