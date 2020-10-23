@@ -5,6 +5,7 @@ import { abi as oldResolverContract } from '@ensdomains/ens-022/build/contracts/
 import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
 import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/contracts/DNSRegistrar.json'
+import { abi as dnssecOracleContract } from '@ensdomains/dnssec-oracle/build/contracts/DNSSECImpl.json'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
 import { abi as permanentRegistrarContract } from '@ensdomains/ethregistrar/build/contracts/BaseRegistrarImplementation'
@@ -55,6 +56,10 @@ function getBulkRenewalContract({ address, provider }) {
   return new Contract(address, bulkRenewalContract, provider)
 }
 
+function getDnssecOracleContract({ address, provider }) {
+  return new Contract(address, dnssecOracleContract, provider)
+}
+
 export {
   getTestRegistrarContract,
   getReverseRegistrarContract,
@@ -66,5 +71,6 @@ export {
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
   getDeedContract,
-  getBulkRenewalContract
+  getBulkRenewalContract,
+  getDnssecOracleContract
 }

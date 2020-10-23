@@ -8,7 +8,8 @@ import {
   getLegacyAuctionContract,
   getDeedContract,
   getTestRegistrarContract,
-  getBulkRenewalContract
+  getBulkRenewalContract,
+  getDnssecOracleContract
 } from './contracts'
 
 import {
@@ -21,9 +22,15 @@ import {
 } from './web3'
 
 import { namehash } from './utils/namehash'
+import { emptyAddress } from './utils'
 
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
+const packet = require('dns-packet');
+
+function hexEncodeName(name) {
+  return '0x' + packet.name.encode(name).toString('hex');
+}
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
@@ -70,6 +77,7 @@ export default class Registrar {
       address: ethAddress,
       provider
     })
+
     const permanentRegistrarController = getPermanentRegistrarControllerContract(
       { address: controllerAddress, provider }
     )
@@ -293,6 +301,7 @@ export default class Registrar {
     return permanentRegistrarController.rentPrice(name, duration)
   }
 
+
   async getRentPrices(labels, duration) {
     const pricesArray = await Promise.all(
       labels.map(label => {
@@ -429,13 +438,19 @@ export default class Registrar {
     // Do not cache as it needs to be refetched on "Refresh"
     const dnsRegistrar = {}
     const web3 = await getWeb3Read()
-    const provider = web3._web3Provider
+    const provider = web3._web3Provider || window.ethereum
+    // const provider = await getProvider()
+    console.log('***getDNSEntry1', {provider, parentOwner})
     const registrarjs = new DNSRegistrarJS(provider, parentOwner)
     try {
+      console.log('***getDNSEntry2')
       const claim = await registrarjs.claim(name)
+      console.log('***getDNSEntry3')
       const result = claim.getResult()
+      console.log('***getDNSEntry4')
       dnsRegistrar.claim = claim
       dnsRegistrar.result = result
+      console.log('***getDNSEntry5')
       if (result.found) {
         const proofs = result.proofs
         dnsRegistrar.dnsOwner = claim.getOwner()
@@ -460,8 +475,21 @@ export default class Registrar {
             // DNS entry does not exist
             dnsRegistrar.state = 1
           } else if (result.results.length === 6) {
+            console.log('***getDNSEntry3', {result})
             // DNS entry exists but _ens subdomain does not exist
-            dnsRegistrar.state = 3
+            if(owner === emptyAddress){
+              console.log('***getDNSEntry4')
+              dnsRegistrar.state = 3
+            }else{
+              console.log('***getDNSEntry5')
+              let knownProof = await claim.oracle.knownProof({name:`_ens.${name}`, type:'TXT'})
+              console.log('***getDNSEntry6', {knownProofHash:knownProof.hash, emptyAddress})
+              if(knownProof.hash !== emptyAddress){
+                dnsRegistrar.state = 8
+              }else{
+                dnsRegistrar.state = 9
+              }
+            }
           } else {
             throw `DNSSEC results cannot be ${result.results.length}`
           }
@@ -487,12 +515,60 @@ export default class Registrar {
     })
     const signer = await getSigner()
     const registrar = registrarWithoutSigner.connect(signer)
-    const data = await claim.oracle.getAllProofs(result, {})
-    const allProven = await claim.oracle.allProven(result)
-    if (allProven) {
-      return registrar.claim(claim.encodedName, data[1])
-    } else {
-      return registrar.proveAndClaim(claim.encodedName, data[0], data[1])
+    const account = await getAccount()
+
+    if(result.nsec){
+      var lastProof = result.proofs[result.proofs.length -1]
+      var prevProof = result.proofs[result.proofs.length -2]
+      var i = 0
+      result.proofs.map((p) => {
+        console.log('****', {i, proof:'0x' + p.rrdata.toString('hex')})
+        i = i+1;
+      })
+      console.log('***nsec2', {
+        claim,
+        textDomain:claim.textDomain,
+        lastProof,
+        prevProof
+      })
+
+      let knownProof = await claim.oracle.knownProof({name:claim.textDomain, type:'TXT'})
+      console.log('***nsec2.1', {knownProofHash:knownProof.hash, emptyAddress, canDelete:knownProof.hash !== emptyAddress})
+      if(knownProof.hash === emptyAddress){
+        return await registrar.claim(hexEncodeName(name), '0x')
+      }else{
+        let rrdata = lastProof.toSubmit(lastProof);
+        let proofdata = '0x' + prevProof.rrdata.toString('hex');
+  
+        const dnssecOracleWithoutSigner = getDnssecOracleContract({
+          address: claim.oracle.address,
+          provider
+        })
+        const dnssecOracle = dnssecOracleWithoutSigner.connect(signer)
+        console.log('***nsec3', {
+          lastProof,
+          prevProof
+        })
+        let res = await dnssecOracle
+          .deleteRRSet(
+            16,
+            hexEncodeName(claim.textDomain),
+            rrdata[0],
+            rrdata[1],
+            proofdata
+          )
+        console.log('***nsec4', {res})
+        return res
+      }
+    }else{
+      const data = await claim.oracle.getAllProofs(result, {})
+      console.log('**submitProof4', {data})
+      const allProven = await claim.oracle.allProven(result)
+      if (allProven) {
+        return registrar.claim(claim.encodedName, data[1])
+      } else {
+        return registrar.proveAndClaim(claim.encodedName, data[0], data[1])
+      }  
     }
   }
 
