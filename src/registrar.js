@@ -334,6 +334,18 @@ export default class Registrar {
     }
   }
 
+  async checkCommitment(label, secret = '') {
+    const permanentRegistrarControllerWithoutSigner = this
+      .permanentRegistrarController
+    const signer = await getSigner()
+    const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+      signer
+    )
+    const account = await getAccount()
+    const commitment = await this.makeCommitment(label, account, secret)
+    return await permanentRegistrarController.commitments(commitment)
+  }
+
   async commit(label, secret = '') {
     const permanentRegistrarControllerWithoutSigner = this
       .permanentRegistrarController
