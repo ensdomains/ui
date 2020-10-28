@@ -1,4 +1,4 @@
-import contentHash from 'content-hash'
+import contentHash from '@ensdomains/content-hash'
 import { utils } from 'ethers'
 import bs58 from 'bs58'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
@@ -13,6 +13,11 @@ export function decodeContenthash(encoded) {
       decoded = contentHash.decode(encoded)
       const codec = contentHash.getCodec(encoded)
       if (codec === 'ipfs-ns') {
+
+        // convert the ipfs from base58 to base32 (url host compatible)
+        // if needed the hash can now be resolved through a secured origin gateway (<hash>.gateway.com)
+        decoded = contentHash.helpers.cidV0ToV1Base32(decoded)
+        
         protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
         decoded = bs58.decode(decoded).slice(2).toString()

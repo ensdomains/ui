@@ -307,6 +307,11 @@ export default class Registrar {
     return permanentRegistrarController.minCommitmentAge()
   }
 
+  async getMaximumCommitmentAge(){
+    const permanentRegistrarController = this.permanentRegistrarController
+    return  permanentRegistrarController.maxCommitmentAge()
+  }
+
   async makeCommitment(name, owner, secret = '') {
     const permanentRegistrarControllerWithoutSigner = this
       .permanentRegistrarController
@@ -327,6 +332,18 @@ export default class Registrar {
         account
       )
     }
+  }
+
+  async checkCommitment(label, secret = '') {
+    const permanentRegistrarControllerWithoutSigner = this
+      .permanentRegistrarController
+    const signer = await getSigner()
+    const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
+      signer
+    )
+    const account = await getAccount()
+    const commitment = await this.makeCommitment(label, account, secret)
+    return await permanentRegistrarController.commitments(commitment)
   }
 
   async commit(label, secret = '') {

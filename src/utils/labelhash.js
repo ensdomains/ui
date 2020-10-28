@@ -42,6 +42,9 @@ export function isDecrypted(name) {
 }
 
 export function labelhash(unnormalisedLabelOrLabelhash) {
+  if(unnormalisedLabelOrLabelhash === '[root]'){
+    return ''
+  }
   return isEncodedLabelhash(unnormalisedLabelOrLabelhash)
     ? '0x' + decodeLabelhash(unnormalisedLabelOrLabelhash)
     : '0x' + sha3(normalize(unnormalisedLabelOrLabelhash))

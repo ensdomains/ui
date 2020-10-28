@@ -291,7 +291,7 @@ describe('Blockchain tests', () => {
       const content = await ens.getContent('abittooawesome.eth')
       expect(content.contentType).toBe('contenthash')
       expect(content.value).toBe(
-        'ipfs://QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB'
+        'ipfs://bafybeico3uuyj3vphxpvbowchdwjlrlrh62awxscrnii7w7flu5z6fk77y'
       )
     })
 
