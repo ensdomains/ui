@@ -11,7 +11,8 @@ export async function setupWeb3({
   customProvider,
   reloadOnAccountsChange = false,
   enforceReadOnly = false,
-  enforceReload = false
+  enforceReload = false,
+  infura = false
 }) {
   if(enforceReload){
     provider = null
@@ -22,7 +23,11 @@ export async function setupWeb3({
   if(enforceReadOnly){
     readOnly = true
     address = null
-    provider = new ethers.getDefaultProvider('homestead')
+    if(infura){
+      provider = new ethers.providers.InfuraProvider('homestead', infura)
+    }else{
+      provider = new ethers.getDefaultProvider('homestead')
+    }
     return { provider, signer:undefined }
   }
 
