@@ -5,11 +5,32 @@ let provider
 let signer
 let readOnly = false
 let requested = false
+let address
 
 export async function setupWeb3({
   customProvider,
-  reloadOnAccountsChange = false
+  reloadOnAccountsChange = false,
+  enforceReadOnly = false,
+  enforceReload = false,
+  infura = false
 }) {
+  if(enforceReload){
+    provider = null
+    readOnly = false
+    address = null
+  }
+
+  if(enforceReadOnly){
+    readOnly = true
+    address = null
+    if(infura){
+      provider = new ethers.providers.InfuraProvider('homestead', infura)
+    }else{
+      provider = new ethers.getDefaultProvider('homestead')
+    }
+    return { provider, signer:undefined }
+  }
+
   if (provider) {
     return { provider, signer }
   }
@@ -51,8 +72,9 @@ export async function setupWeb3({
     provider = new ethers.providers.Web3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
+      address = await signer.getAddress()
       window.ethereum.on('accountsChanged', async function (accounts) {
-        const address = await signer.getAddress()
+        address = await signer.getAddress()
         if (accounts[0] !== address) {
           window.location.reload()
         }
@@ -190,6 +212,12 @@ export async function getNetworkId() {
   const provider = await getWeb3()
   const network = await provider.getNetwork()
   return network.chainId
+}
+
+export async function getNetwork() {
+  const provider = await getWeb3()
+  const network = await provider.getNetwork()
+  return network
 }
 
 export async function getBlock() {
