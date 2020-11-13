@@ -1,6 +1,6 @@
 {
-  "name": "makoto-ensdomains-ui",
-  "version": "3.0.46",
+  "name": "@ensdomains/ui",
+  "version": "3.0.40",
   "description": "UI components and reusable code",
   "main": "src/index.js",
   "files": [
