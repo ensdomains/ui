@@ -1,6 +1,6 @@
 {
   "name": "makoto-ensdomains-ui",
-  "version": "3.0.45",
+  "version": "3.0.46",
   "description": "UI components and reusable code",
   "main": "src/index.js",
   "files": [
@@ -47,7 +47,6 @@
     "@ensdomains/address-encoder": "^0.1.7",
     "@ensdomains/content-hash": "^2.5.3",
     "@ensdomains/contracts": "^0.0.1",
-    "@ensdomains/dnsprovejs": "^0.1.9",
     "@ensdomains/mock": "^2.0.33",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
@@ -55,7 +54,7 @@
     "bs58": "^4.0.1",
     "cross-fetch": "^3.0.2",
     "dns-packet": "^5.2.1",
-    "ensdomains-dnsprovejs": "^0.2.2",
+    "ensdomains-dnsprovejs": "^0.2.3",
     "eth-ens-namehash": "^2.0.8",
     "ethers": "4.0.44",
     "js-sha3": "^0.8.0",

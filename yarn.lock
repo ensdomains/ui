@@ -927,24 +927,12 @@
     multicodec "^1.0.4"
     multihashes "^2.0.0"
 
-"@ensdomains/contracts@^0.0.1":
+"@ensdomains/contracts@0.0.1", "@ensdomains/contracts@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@ensdomains/contracts/-/contracts-0.0.1.tgz#edb841955adbd6f86bddaf9d05f6d239d25d5ab7"
   integrity sha512-MfcOfE3JqDetwbSHXLNSBtgJjpsdhzuHP70yAKrhmW2VwEFaEpJwKioB6GIGGRTy6e9QYnrj6e0FUhd2C9DdRQ==
 
-"@ensdomains/dnsprovejs@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.1.9.tgz#e29de6a0f72ddd88362e246da855f7eedea51646"
-  integrity sha512-xFNdgz+SY+/jCRS9laMFn+ebs/IjN/aKOrWKrYPSU766oOYQoetc+4UD9g9xjUUK8HpE0BRqf41+rn9hYfyCHA==
-  dependencies:
-    dns-packet "^5.0.4"
-    es6-promise "^4.2.4"
-    eth-ens-namehash "^2.0.8"
-    ethereumjs-util "^5.2.0"
-    idempotent-babel-polyfill "^7.4.4"
-    isomorphic-fetch "^2.2.1"
-
-"@ensdomains/dnssec-oracle-anchors@^0.0.1":
+"@ensdomains/dnssec-oracle-anchors@0.0.1", "@ensdomains/dnssec-oracle-anchors@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@ensdomains/dnssec-oracle-anchors/-/dnssec-oracle-anchors-0.0.1.tgz#53c9100fe95f7c7102d66d8a69208bc6be39a049"
   integrity sha512-0I2TcOMwM83YpLkBaI/RLxu7kkic3/nUehIFsgIv5jc84FqrIzeYDYPCG0q6OnbooSmAsC36BJQcMLmUjON8Fg==
@@ -3814,13 +3802,6 @@ dns-packet@^5.0.4, dns-packet@^5.2.1:
   dependencies:
     ip "^1.1.5"
 
-dnssec-oracle-anchors@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/dnssec-oracle-anchors/-/dnssec-oracle-anchors-0.0.1.tgz#2aa3e1509ea5f34e7a9612b064433d24774ca878"
-  integrity sha512-4XI2vkjUUPZBpRhMis5rIjn1knML0WhopMY6nQgwJyAJJJKrwkI+9BotIvmiJds6hCIRwfNFHdf3EAADPmg/pQ==
-  dependencies:
-    dns-packet "^5.2.1"
-
 doctrine@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
@@ -4009,16 +3990,17 @@ end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-ensdomains-dnsprovejs@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/ensdomains-dnsprovejs/-/ensdomains-dnsprovejs-0.2.2.tgz#54b5e27016bc15a0aa41bf423e3ec03b5bfab458"
-  integrity sha512-O0kuUgVeDlSfFJdNjsnmJW7LiQlUYTr09YRJkQUf1h/bySYXDiPDoD62NmfS4bP6l2gSKr2KYJ4kzDPIEzLPmA==
+ensdomains-dnsprovejs@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/ensdomains-dnsprovejs/-/ensdomains-dnsprovejs-0.2.3.tgz#871ab315ac1d1de3c1245468d0542e6a1f951d77"
+  integrity sha512-MAj/QRgiUnD4Cv6z3x/mk75DwuKo9vuGyM6ENR3Nb+pXq6kVfJBhLkAsQZbfHOzb3EOQJRdVE0k4F/pfYrah2w==
   dependencies:
-    "@ensdomains/contracts" "^0.0.1"
+    "@ensdomains/contracts" "0.0.1"
+    "@ensdomains/dnssec-oracle-anchors" "0.0.1"
     dns-packet "^5.0.4"
-    dnssec-oracle-anchors "0.0.1"
     es6-promise "^4.2.4"
     eth-ens-namehash "^2.0.8"
+    ethereumjs-util "^5.2.0"
     idempotent-babel-polyfill "^7.4.4"
     isomorphic-fetch "^2.2.1"
 
