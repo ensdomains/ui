@@ -1,4 +1,4 @@
-import DnsProve from 'ensdomains-dnsprovejs'
+import DnsProve from '@ensdomains/dnsprovejs'
 import dnsRegistrarContract from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
 import Web3 from 'web3'
 import packet from 'dns-packet'
