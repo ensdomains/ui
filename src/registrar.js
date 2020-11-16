@@ -33,6 +33,9 @@ const {
   dnsRegistrar: dnsRegistrarInterfaceId
 } = interfaces
 
+// Renewal seem failing as it's not correctly estimating gas to return when buffer exceeds the renewal cost
+const transferGasCost = 21000
+
 function checkArguments({
   registryAddress,
   ethAddress,
@@ -49,6 +52,12 @@ function checkArguments({
   if (!provider) throw 'Provider is required for Registrar'
 
   return
+}
+
+// Add 10% buffer to handle price fructuation.
+// Any unused value will be sent back by the smart contract.
+function getBufferedPrice(price){
+  return price.mul(110).div(100)
 }
 
 export default class Registrar {
@@ -291,7 +300,8 @@ export default class Registrar {
 
   async getRentPrice(name, duration) {
     const permanentRegistrarController = this.permanentRegistrarController
-    return permanentRegistrarController.rentPrice(name, duration)
+    let price = await permanentRegistrarController.rentPrice(name, duration)
+    return price
   }
 
   async getRentPrices(labels, duration) {
@@ -369,9 +379,7 @@ export default class Registrar {
     )
     const account = await getAccount()
     const price = await this.getRentPrice(label, duration)
-    // Add 5% markup to handle price fructuation.
-    // Any unused value will be sent back by the smart contract.
-    const priceWithMarkup = price.mul(105).div(100)
+    const priceWithBuffer = getBufferedPrice(price)
     const resolverAddr = await this.getAddress('resolver.eth')
     if (parseInt(resolverAddr, 16) === 0) {
       return permanentRegistrarController.register(
@@ -379,7 +387,7 @@ export default class Registrar {
         account,
         duration,
         secret,
-        { value: priceWithMarkup }
+        { value: priceWithBuffer }
       )
     } else {
       return permanentRegistrarController.registerWithConfig(
@@ -389,7 +397,7 @@ export default class Registrar {
         secret,
         resolverAddr,
         account,
-        { value: priceWithMarkup }
+        { value: priceWithBuffer }
       )
     }
   }
@@ -402,8 +410,10 @@ export default class Registrar {
       signer
     )
     const price = await this.getRentPrice(label, duration)
-
-    return permanentRegistrarController.renew(label, duration, { value: price })
+    const priceWithBuffer = getBufferedPrice(price)
+    const gas = await permanentRegistrarController.estimate.renew(label, duration, { value: priceWithBuffer})
+    const gasLimit = gas.toNumber() + transferGasCost
+    return permanentRegistrarController.renew(label, duration, { value: priceWithBuffer, gasLimit })
   }
 
   async renewAll(labels, duration) {
@@ -414,10 +424,13 @@ export default class Registrar {
       signer
     )
     const prices = await this.getRentPrices(labels, duration)
+    const pricesWithBuffer = getBufferedPrice(prices)
+    const gas = await bulkRenewal.estimate.renewAll(labels, duration, { value: pricesWithBuffer })
+    const gasLimit = gas.toNumber() + transferGasCost
     return bulkRenewal.renewAll(
       labels,
       duration,
-      { value: prices }
+      { value: pricesWithBuffer, gasLimit }
     )
   }
 
