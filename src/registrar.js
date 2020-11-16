@@ -1,4 +1,5 @@
-import DNSRegistrarJS from '@ensdomains/dnsregistrar'
+
+import DNSRegistrarJS from './dnsregistrar'
 import {
   getENSContract,
   getResolverContract,
@@ -446,6 +447,9 @@ export default class Registrar {
     // Do not cache as it needs to be refetched on "Refresh"
     const dnsRegistrar = {}
     const web3 = await getWeb3Read()
+
+    // This will probably only work if accessed via Metamask which holds its own web3.js provider.
+    // It needs refactoring to support local environment provided via ethers.js provider, potentially porting dnsprovejs from web3.js to ethers.js
     const provider = web3._web3Provider
     const registrarjs = new DNSRegistrarJS(provider, parentOwner)
     try {
