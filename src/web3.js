@@ -1,11 +1,33 @@
 import { ethers } from 'ethers'
+import Web3 from 'web3'
 import { IFrameEthereumProvider } from '@ethvault/iframe-provider'
 
 let provider
+let legacyProvider
 let signer
 let readOnly = false
 let requested = false
 let address
+
+function getDefaultProvider() {
+  legacyProvider = new Web3(getNetworkProviderUrl(1))
+  return new ethers.getDefaultProvider('homestead')
+}
+
+function getJsonRpcProvider(providerOrUrl) {
+  legacyProvider = new Web3(providerOrUrl)
+  return new ethers.providers.JsonRpcProvider(providerOrUrl)
+}
+
+function getWeb3Provider(providerOrUrl) {
+  legacyProvider = new Web3(providerOrUrl)
+  return new ethers.providers.Web3Provider(providerOrUrl)
+}
+
+function getInfuraProvider(infura) {
+  legacyProvider = new Web3(`https://mainnet.infura.io/v3/${infura}`)
+  return new ethers.providers.InfuraProvider('homestead', infura)
+}
 
 export async function setupWeb3({
   customProvider,
@@ -24,9 +46,9 @@ export async function setupWeb3({
     readOnly = true
     address = null
     if(infura){
-      provider = new ethers.providers.InfuraProvider('homestead', infura)
+      provider = getInfuraProvider(infura)
     }else{
-      provider = new ethers.getDefaultProvider('homestead')
+      provider = getDefaultProvider()
     }
     return { provider, signer:undefined }
   }
@@ -37,11 +59,11 @@ export async function setupWeb3({
   if (customProvider) {
     if (typeof customProvider === 'string') {
       // handle raw RPC endpoint URL
-      provider = new ethers.providers.JsonRpcProvider(customProvider)
+      provider = getJsonRpcProvider(customProvider)
       signer = provider.getSigner()
     } else {
       // handle EIP 1193 provider
-      provider = new ethers.providers.Web3Provider(customProvider)
+      provider = getWeb3Provider(customProvider)
     }
     return { provider, signer }
   }
@@ -69,7 +91,7 @@ export async function setupWeb3({
   }
 
   if (window && window.ethereum) {
-    provider = new ethers.providers.Web3Provider(window.ethereum)
+    provider = getWeb3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
       address = await signer.getAddress()
@@ -82,7 +104,7 @@ export async function setupWeb3({
     }
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
-    provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
+    provider = getWeb3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
     return { provider, signer }
@@ -91,7 +113,7 @@ export async function setupWeb3({
       const url = 'http://localhost:8545'
       await fetch(url)
       console.log('local node active')
-      provider = new ethers.providers.JsonRpcProvider(url)
+      provider = getJsonRpcProvider(url)
     } catch (error) {
       if (
         error.readyState === 4 &&
@@ -104,7 +126,7 @@ export async function setupWeb3({
           'No web3 instance injected. Falling back to cloud provider.'
         )
         readOnly = true
-        provider = new ethers.getDefaultProvider('homestead')
+        provider = getDefaultProvider()
         return { provider, signer }
       }
     }
@@ -236,4 +258,9 @@ export async function getBlock() {
       timestamp: 0
     }
   }
+}
+
+// This provider is used to pass to dnsprovejs which only supports web3js provider
+export function getLegacyProvider(){
+  return legacyProvider
 }
