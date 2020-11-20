@@ -101,7 +101,7 @@ export class ENS {
     // TODO: This seems braking when user actually updates record (eg: register new name which updates controller address)
     // if(!this.ensCache[funcName][arg]){
     //   console.log(`*** params:${funcName}.${arg}:fetch`)
-    //   this.ensCache[funcName][arg] = this.ENS[funcName](arg)
+      this.ensCache[funcName][arg] = this.ENS[funcName](arg)
     // }else{
     //   console.log(`*** params:${funcName}.${arg}:cached`)
     // }
