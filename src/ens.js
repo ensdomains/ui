@@ -97,13 +97,14 @@ export class ENS {
   async fetchOrCache(funcName, arg){
     if(!this.ensCache[funcName]){
       this.ensCache[funcName] = {}
-    }    
-    if(!this.ensCache[funcName][arg]){
-      console.log(`*** params:${funcName}.${arg}:fetch`)
-      this.ensCache[funcName][arg] = this.ENS[funcName](arg)
-    }else{
-      console.log(`*** params:${funcName}.${arg}:cached`)
     }
+    // TODO: This seems braking when user actually updates record (eg: register new name which updates controller address)
+    // if(!this.ensCache[funcName][arg]){
+    //   console.log(`*** params:${funcName}.${arg}:fetch`)
+    //   this.ensCache[funcName][arg] = this.ENS[funcName](arg)
+    // }else{
+    //   console.log(`*** params:${funcName}.${arg}:cached`)
+    // }
     return this.ensCache[funcName][arg]
   }
 
