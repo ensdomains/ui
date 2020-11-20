@@ -71,6 +71,7 @@ const contracts = {
 
 export class ENS {
   constructor({ networkId, registryAddress, provider }) {
+    console.log('*** params:ENS:constructor', {networkId, registryAddress})
     this.contracts = contracts
     const hasRegistry = has(this.contracts[networkId], 'registry')
 
@@ -79,7 +80,7 @@ export class ENS {
     } else if (this.contracts[networkId] && !registryAddress) {
       registryAddress = contracts[networkId].registry
     }
-
+    this.ensCache = {}
     this.registryAddress = registryAddress
 
     const ENSContract = getENSContract({ address: registryAddress, provider })
@@ -93,30 +94,42 @@ export class ENS {
 
   /* Main methods */
 
+  async fetchOrCache(funcName, arg){
+    if(!this.ensCache[funcName]){
+      this.ensCache[funcName] = {}
+    }    
+    if(!this.ensCache[funcName][arg]){
+      console.log(`*** params:${funcName}.${arg}:fetch`)
+      this.ensCache[funcName][arg] = this.ENS[funcName](arg)
+    }else{
+      console.log(`*** params:${funcName}.${arg}:cached`)
+    }
+    return this.ensCache[funcName][arg]
+  }
+
   async getOwner(name) {
     const namehash = getNamehash(name)
-    const owner = await this.ENS.owner(namehash)
-    return owner
+    return this.fetchOrCache('owner', namehash)
   }
 
   async getResolver(name) {
     const namehash = getNamehash(name)
-    return this.ENS.resolver(namehash)
+    return this.fetchOrCache('resolver', namehash)
   }
 
   async getTTL(name) {
     const namehash = getNamehash(name)
-    return this.ENS.ttl(namehash)
+    return this.fetchOrCache('ttl', namehash)
   }
 
   async getResolverWithLabelhash(labelhash, nodehash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
-    return this.ENS.resolver(namehash)
+    return this.fetchOrCache('resolver', namehash)
   }
 
   async getOwnerWithLabelHash(labelhash, nodeHash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
-    return this.ENS.owner(namehash)
+    return this.fetchOrCache('owner', namehash)
   }
 
   async getEthAddressWithResolver(name, resolverAddr) {
@@ -130,6 +143,7 @@ export class ENS {
         address: resolverAddr,
         provider
       })
+      console.log('*** params:getEthAddressWithResolver')
       const addr = await Resolver['addr(bytes32)'](namehash)
       return addr
     } catch (e) {
@@ -152,6 +166,7 @@ export class ENS {
   }
 
   async getAddrWithResolver(name, key, resolverAddr) {
+    console.log('*** params:getAddrWithResolver1', {namke, key, resolverAddr})
     const namehash = getNamehash(name)
     try {
       const provider = await getProvider()
@@ -179,6 +194,7 @@ export class ENS {
   }
 
   async getContentWithResolver(name, resolverAddr) {
+    console.log('*** params:getContentWithResolver', name, resolverAddr)
     if (parseInt(resolverAddr, 16) === 0) {
       return emptyAddress
     }
@@ -232,6 +248,7 @@ export class ENS {
   }
 
   async getTextWithResolver(name, key, resolverAddr) {
+    console.log('*** params:getTextWithResolver')
     if (parseInt(resolverAddr, 16) === 0) {
       return ''
     }
@@ -259,6 +276,7 @@ export class ENS {
   }
 
   async getNameWithResolver(address, resolverAddr) {
+    console.log('*** params:getNameWithResolver')
     const reverseNode = `${address.slice(2)}.addr.reverse`
     const reverseNamehash = getNamehash(reverseNode)
     if (parseInt(resolverAddr, 16) === 0) {
@@ -284,10 +302,11 @@ export class ENS {
 
   async isMigrated(name) {
     const namehash = getNamehash(name)
-    return this.ENS.recordExists(namehash)
+    return this.fetchOrCache('recordExists', namehash)
   }
 
   async getResolverDetails(node) {
+    console.log('*** params:getResolverDetails')
     try {
       const addrPromise = this.getAddress(node.name)
       const contentPromise = this.getContent(node.name)
@@ -309,6 +328,7 @@ export class ENS {
   }
 
   async getSubdomains(name) {
+    console.log('*** params:getSubdomains')
     const startBlock = await getEnsStartBlock()
     const namehash = getNamehash(name)
     const rawLogs = await this.getENSEvent('NewOwner', {
