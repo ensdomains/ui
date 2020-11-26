@@ -24,8 +24,10 @@ export async function setupWeb3({
     readOnly = true
     address = null
     if(infura){
+      console.log('** new ethers1')
       provider = new ethers.providers.InfuraProvider('homestead', infura)
     }else{
+      console.log('** new ethers2')
       provider = new ethers.getDefaultProvider('homestead')
     }
     return { provider, signer:undefined }
@@ -37,10 +39,12 @@ export async function setupWeb3({
   if (customProvider) {
     if (typeof customProvider === 'string') {
       // handle raw RPC endpoint URL
+      console.log('** new ethers3')
       provider = new ethers.providers.JsonRpcProvider(customProvider)
       signer = provider.getSigner()
     } else {
       // handle EIP 1193 provider
+      console.log('** new ethers4')
       provider = new ethers.providers.Web3Provider(customProvider)
     }
     return { provider, signer }
@@ -69,7 +73,11 @@ export async function setupWeb3({
   }
 
   if (window && window.ethereum) {
+    console.log('** new ethers5')
     provider = new ethers.providers.Web3Provider(window.ethereum)
+    provider.on('debug', (i) => {
+      console.log('*** new ethers debugger', i)
+    })
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
       address = await signer.getAddress()
@@ -82,6 +90,7 @@ export async function setupWeb3({
     }
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
+    console.log('** new ethers6')
     provider = new ethers.providers.Web3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
@@ -91,6 +100,7 @@ export async function setupWeb3({
       const url = 'http://localhost:8545'
       await fetch(url)
       console.log('local node active')
+      console.log('** new ethers7')
       provider = new ethers.providers.JsonRpcProvider(url)
     } catch (error) {
       if (
@@ -104,6 +114,7 @@ export async function setupWeb3({
           'No web3 instance injected. Falling back to cloud provider.'
         )
         readOnly = true
+        console.log('** new ethers8')
         provider = new ethers.getDefaultProvider('homestead')
         return { provider, signer }
       }
