@@ -72,7 +72,7 @@ describe('test contenthash utility functions for swarm', () => {
       )
 
       expect(decoded.decoded).toBe(
-        'QmaEBknbGT4bTQiQoe2VNgBJbRfygQGktnaW5TbuKixjYL'
+        'bafybeifqurebcya65zrw4b4idhozkx2tbxwtedl4rn7etc7abfmbapocne' // same hash but in cid v1 base32
       )
       expect(decoded.protocolType).toBe('ipfs')
       expect(decoded.error).toBe(undefined)

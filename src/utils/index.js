@@ -67,7 +67,11 @@ function validateName(name) {
   const hasEmptyLabels = nameArray.filter(e => e.length < 1).length > 0
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
   const normalizedArray = nameArray.map(label => {
-    return isEncodedLabelhash(label) ? label : normalize(label)
+    if(label === '[root]'){
+      return label
+    }else{
+      return isEncodedLabelhash(label) ? label : normalize(label)
+    }
   })
   try {
     return normalizedArray.join('.')

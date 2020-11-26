@@ -3,6 +3,9 @@ import { normalize } from 'eth-ens-namehash'
 const sha3 = require('js-sha3').keccak_256
 
 export function namehash(inputName) {
+  if (inputName === '[root]'){
+    return '0x0000000000000000000000000000000000000000000000000000000000000000'
+  }
   let node = ''
   for (let i = 0; i < 32; i++) {
     node += '00'
