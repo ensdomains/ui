@@ -18,7 +18,8 @@ import {
   getProvider,
   getSigner,
   getNetworkId,
-  getWeb3Read
+  getWeb3Read,
+  getLegacyProvider
 } from './web3'
 
 import { namehash } from './utils/namehash'
@@ -459,19 +460,17 @@ export default class Registrar {
   async getDNSEntry(name, parentOwner, owner) {
     // Do not cache as it needs to be refetched on "Refresh"
     const dnsRegistrar = {}
-    const web3 = await getWeb3Read()
-
-    // This will probably only work if accessed via Metamask which holds its own web3.js provider.
-    // It needs refactoring to support local environment provided via ethers.js provider, potentially porting dnsprovejs from web3.js to ethers.js
-    const provider = web3._web3Provider
-    const registrarjs = new DNSRegistrarJS(provider, parentOwner)
+    const web3Provider = getLegacyProvider()
+    const provider = await getProvider()
+    const registrarContract = await getDnsRegistrarContract({parentOwner, provider})
+    const oracleAddress = await registrarContract.oracle()
+    const registrarjs = new DNSRegistrarJS(web3Provider.givenProvider, oracleAddress)
     try {
       const claim = await registrarjs.claim(name)
       const result = claim.getResult()
       dnsRegistrar.claim = claim
       dnsRegistrar.result = result
       if (result.found) {
-        const proofs = result.proofs
         dnsRegistrar.dnsOwner = claim.getOwner()
         if (!dnsRegistrar.dnsOwner) {
           // DNS Record is invalid
