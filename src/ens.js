@@ -518,9 +518,9 @@ export class ENS {
 
   async createSubdomain(name) {
     const account = await getAccount()
-    const resolver = await this.getResolver('resolver.eth')
+    const publicResolverAddress = await this.getAddress('resolver.eth')
     try {
-      return this.setSubnodeRecord(name, account, resolver)
+      return this.setSubnodeRecord(name, account, publicResolverAddress)
     } catch (e) {
       console.log('error creating subdomain', e)
     }
