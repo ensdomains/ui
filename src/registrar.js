@@ -403,10 +403,10 @@ export default class Registrar {
     }
   }
 
-  async estimateGasLimit(contract, action, label, duration, value ){
+  async estimateGasLimit( cb ){
     let gas = 0
     try{
-      gas = (await contract.estimate[action](label, duration, { value })).toNumber()
+      gas = (await cb()).toNumber()
     }catch(e){
       let matched = e.message.match(/err: insufficient funds for transfer \(supplied gas (.*)\)/)
       if(matched){
@@ -426,7 +426,9 @@ export default class Registrar {
     )
     const price = await this.getRentPrice(label, duration)
     const priceWithBuffer = getBufferedPrice(price)
-    const gasLimit = await this.estimateGasLimit(permanentRegistrarController, 'renew', label, duration, priceWithBuffer)
+    const gasLimit = await this.estimateGasLimit(() => {
+      return permanentRegistrarController.estimate.renew(label, duration, { value:priceWithBuffer})
+    })
     return permanentRegistrarController.renew(label, duration, { value: priceWithBuffer, gasLimit })
   }
 
@@ -439,7 +441,9 @@ export default class Registrar {
     )
     const prices = await this.getRentPrices(labels, duration)
     const pricesWithBuffer = getBufferedPrice(prices)
-    const gasLimit = await this.estimateGasLimit(bulkRenewal, 'renewAll', labels, duration, pricesWithBuffer)
+    const gasLimit = await this.estimateGasLimit(() => {
+      return bulkRenewal.estimate.renewAll(labels, duration, { value:pricesWithBuffer})
+    })
     return bulkRenewal.renewAll(
       labels,
       duration,
