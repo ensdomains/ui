@@ -7,20 +7,16 @@ export function decodeContenthash(encoded) {
   let decoded, protocolType, error
   if (encoded.error) {
     return { protocolType: null, decoded: encoded.error }
+  }else if(encoded === false){
+    return { protocolType: null, decoded: 'invalid value' }
   }
   if (encoded) {
     try {
       decoded = contentHash.decode(encoded)
       const codec = contentHash.getCodec(encoded)
       if (codec === 'ipfs-ns') {
-
-        // convert the ipfs from base58 to base32 (url host compatible)
-        // if needed the hash can now be resolved through a secured origin gateway (<hash>.gateway.com)
-        decoded = contentHash.helpers.cidV0ToV1Base32(decoded)
-        
         protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
-        decoded = bs58.decode(decoded).slice(2).toString()
         protocolType = 'ipns'
       } else if (codec === 'swarm-ns') {
         protocolType = 'bzz'
@@ -66,13 +62,7 @@ export function encodeContenthash(text) {
           encoded = '0x' + contentHash.encode('ipfs-ns', content);
         }
       } else if (contentType === 'ipns') {
-        let bs58content = bs58.encode(
-          Buffer.concat([
-            Buffer.from([0,content.length]),
-            Buffer.from(content)
-          ])
-        )
-        encoded = '0x' + contentHash.encode('ipns-ns', bs58content);
+        encoded = '0x' + contentHash.encode('ipns-ns', content);
       } else if (contentType === 'bzz') {
         if(content.length >= 4) {
           encoded = '0x' + contentHash.fromSwarm(content)
