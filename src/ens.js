@@ -201,12 +201,6 @@ export class ENS {
         const { protocolType, decoded, error } = decodeContenthash(
           await Resolver.contenthash(namehash)
         )
-        if (error) {
-          return {
-            value: emptyAddress,
-            contentType: 'contenthash'
-          }
-        }
         return {
           value: `${protocolType}://${decoded}`,
           contentType: 'contenthash'
