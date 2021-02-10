@@ -198,9 +198,14 @@ export class ENS {
       )
 
       if (isContentHashSupported) {
-        const { protocolType, decoded, error } = decodeContenthash(
-          await Resolver.contenthash(namehash)
-        )
+        const encoded = await Resolver.contenthash(namehash)
+        const { protocolType, decoded, error } = decodeContenthash(encoded)
+        if (error) {
+          return {
+            value: error,
+            contentType: 'error'
+          }
+        }
         return {
           value: `${protocolType}://${decoded}`,
           contentType: 'contenthash'
