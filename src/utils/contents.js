@@ -3,8 +3,15 @@ import { utils } from 'ethers'
 import bs58 from 'bs58'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3']
 
+function matchProtocol(text){
+  return text.match(/^(ipfs|ipns|bzz|onion|onion3):\/\/(.*)/) || text.match(/\/(ipfs)\/(.*)/) || text.match(/\/(ipns)\/(.*)/)
+}
+
 export function decodeContenthash(encoded) {
-  let decoded, protocolType, error, reencoded, isReencoded
+  let decoded, protocolType, error
+  if(!encoded || encoded === '0x'){
+    return {}
+  }
   if (encoded.error) {
     return { protocolType: null, decoded: encoded.error }
   }else if(encoded === false){
@@ -17,13 +24,7 @@ export function decodeContenthash(encoded) {
       if (codec === 'ipfs-ns') {         
         protocolType = 'ipfs'
       } else if (codec === 'ipns-ns') {
-        reencoded = contentHash.encode('ipns-ns', decoded)
         protocolType = 'ipns'
-        isReencoded = (encoded === '0x' + reencoded)
-        if(!isReencoded){
-          error = 'for IPNS only CID with libp2p-key codec are allowed'
-          decoded = encoded  
-        }
       } else if (codec === 'swarm-ns') {
         protocolType = 'bzz'
       } else if (codec === 'onion') {
@@ -53,12 +54,30 @@ export function isValidContenthash(encoded) {
   }
 }
 
+export function getProtocolType(encoded) {
+  let protocolType, decoded
+  try {
+    let matched = matchProtocol(encoded)
+    if (matched) {
+      protocolType = matched[1]
+      decoded = matched[2]
+    }
+    return {
+      protocolType,
+      decoded
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export function encodeContenthash(text) {
+  console.log('***encodeContenthash')
   let content, contentType
   let encoded = false
   let error  
   if (!!text) {
-    let matched = text.match(/^(ipfs|ipns|bzz|onion|onion3):\/\/(.*)/) || text.match(/\/(ipfs)\/(.*)/) || text.match(/\/(ipns)\/(.*)/)
+    let matched = matchProtocol(text)
     if (matched) {
       contentType = matched[1]
       content = matched[2]
