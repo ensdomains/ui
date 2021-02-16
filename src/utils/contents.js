@@ -72,7 +72,6 @@ export function getProtocolType(encoded) {
 }
 
 export function encodeContenthash(text) {
-  console.log('***encodeContenthash')
   let content, contentType
   let encoded = false
   let error  
