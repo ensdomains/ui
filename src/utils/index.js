@@ -11,7 +11,8 @@ import {
 import {
   encodeContenthash,
   decodeContenthash,
-  isValidContenthash
+  isValidContenthash,
+  getProtocolType
 } from './contents'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './namehash'
@@ -148,5 +149,6 @@ export {
   // contents utils
   encodeContenthash,
   decodeContenthash,
-  isValidContenthash
+  isValidContenthash,
+  getProtocolType
 }
