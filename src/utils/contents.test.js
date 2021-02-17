@@ -7,7 +7,7 @@ import {
 describe('test contenthash utility functions for swarm', () => {
   describe('encodeContentHash', () => {
     test('encodeContentHash returns encoded hash for swarm protocol', () => {
-      const encodedContentHash = encodeContenthash(
+      const { encoded:encodedContentHash }  = encodeContenthash(
         'bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
       )
 
@@ -17,7 +17,7 @@ describe('test contenthash utility functions for swarm', () => {
     })
 
     test('encodeContentHash returns encoded hash for ipfs protocol', () => {
-      const encodedContentHash = encodeContenthash(
+      const { encoded:encodedContentHash }  = encodeContenthash(
         'ipfs://QmaEBknbGT4bTQiQoe2VNgBJbRfygQGktnaW5TbuKixjYL'
       )
 
@@ -27,7 +27,7 @@ describe('test contenthash utility functions for swarm', () => {
     })
 
     test('encodeContentHash returns encoded hash for ipfs protocol with /ipfs/ format', () => {
-      const encodedContentHash = encodeContenthash(
+      const { encoded:encodedContentHash }  = encodeContenthash(
         '/ipfs/QmaEBknbGT4bTQiQoe2VNgBJbRfygQGktnaW5TbuKixjYL'
       )
 
@@ -37,18 +37,28 @@ describe('test contenthash utility functions for swarm', () => {
     })
 
     test('encodeContentHash returns encoded hash for onion protocol', () => {
-      const encodedContentHash = encodeContenthash('onion://3g2upl4pq6kufc4m')
+      const { encoded:encodedContentHash }  = encodeContenthash('onion://3g2upl4pq6kufc4m')
 
       expect(encodedContentHash).toBe('0xbc0333673275706c347071366b756663346d')
     })
 
     test('encodeContentHash returns encoded hash for onion 3 protocol', () => {
-      const encodedContentHash = encodeContenthash(
+      const { encoded:encodedContentHash }  = encodeContenthash(
         'onion3://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd'
       )
 
       expect(encodedContentHash).toBe(
         '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
+      )
+    })
+
+    test('encodeContentHash returns encoded hash for sia skynet protocol', () => {
+      const { encoded:encodedContentHash }  = encodeContenthash(
+        'sia://CABAB_1Dt0FJsxqsu_J4TodNCbCGvtFf1Uys_3EgzOlTcg'
+      )
+
+      expect(encodedContentHash).toBe(
+        '0x90b2c60508004007fd43b74149b31aacbbf2784e874d09b086bed15fd54cacff7120cce95372'
       )
     })
   })
@@ -99,6 +109,18 @@ describe('test contenthash utility functions for swarm', () => {
       expect(decoded.protocolType).toBe('onion3')
       expect(decoded.error).toBe(undefined)
     })
+
+    test('decodeContentHash returns decoded contenthash for sia skynet protocol', () => {
+      const decoded = decodeContenthash(
+        '0x90b2c60508004007fd43b74149b31aacbbf2784e874d09b086bed15fd54cacff7120cce95372'
+      )
+
+      expect(decoded.decoded).toBe(
+        'CABAB_1Dt0FJsxqsu_J4TodNCbCGvtFf1Uys_3EgzOlTcg'
+      )
+      expect(decoded.protocolType).toBe('sia')
+      expect(decoded.error).toBe(undefined)
+    })
   })
 
   describe('isValidContent', () => {
@@ -127,6 +149,14 @@ describe('test contenthash utility functions for swarm', () => {
     test('isValidContent returns true for real contenthash for onion 3 protocol', () => {
       const valid = isValidContenthash(
         '0xbd037035336c663537716f7679757677736336786e72707079706c79337674716d376c3670636f626b6d797173696f6679657a6e667535757164'
+      )
+
+      expect(valid).toBe(true)
+    })
+
+    test('isValidContent returns true for real contenthash for sia skynet', () => {
+      const valid = isValidContenthash(
+        '0x90b2c60508004007fd43b74149b31aacbbf2784e874d09b086bed15fd54cacff7120cce95372'
       )
 
       expect(valid).toBe(true)
