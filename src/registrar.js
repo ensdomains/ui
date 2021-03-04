@@ -383,14 +383,36 @@ export default class Registrar {
     const priceWithBuffer = getBufferedPrice(price)
     const resolverAddr = await this.getAddress('resolver.eth')
     if (parseInt(resolverAddr, 16) === 0) {
+      const gasLimit = await this.estimateGasLimit(() => {
+        return permanentRegistrarController.estimate.register(
+          label,
+          account,
+          duration,
+          secret,
+          { value:priceWithBuffer}
+        )
+      })
+  
       return permanentRegistrarController.register(
         label,
         account,
         duration,
         secret,
-        { value: priceWithBuffer }
+        { value: priceWithBuffer, gasLimit }
       )
     } else {
+      const gasLimit = await this.estimateGasLimit(() => {
+        return permanentRegistrarController.estimate.registerWithConfig(
+          label,
+          account,
+          duration,
+          secret,
+          resolverAddr,
+          account,
+          { value:priceWithBuffer}
+        )
+      })
+
       return permanentRegistrarController.registerWithConfig(
         label,
         account,
@@ -398,7 +420,7 @@ export default class Registrar {
         secret,
         resolverAddr,
         account,
-        { value: priceWithBuffer }
+        { value: priceWithBuffer, gasLimit }
       )
     }
   }
@@ -408,7 +430,7 @@ export default class Registrar {
     try{
       gas = (await cb()).toNumber()
     }catch(e){
-      let matched = e.message.match(/err: insufficient funds for transfer \(supplied gas (.*)\)/)
+      let matched = e.message.match(/\(supplied gas (.*)\)/)
       if(matched){
         gas = parseInt(matched[1])
       }
