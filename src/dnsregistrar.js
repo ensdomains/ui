@@ -1,15 +1,21 @@
-import DnsProve from '@ensdomains/dnsprovejs'
-import dnsRegistrarContract from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
+import { getQueryData, makeProver } from '@ensdomains/dnsprovejs'
+import { Oracle } from '@ensdomains/dnssecoraclejs'
 import packet from 'dns-packet'
-const abi = dnsRegistrarContract.abi;
+import { getProvider, getSigner } from './web3'
+import { ethers } from 'ethers'
 
 class Claim {
-  constructor({ oracle, registrar, result, textDomain, encodedName }) {
+  constructor({ oracle, registrar, isFound, result, textDomain, encodedName }) {
     this.oracle = oracle;
     this.registrar = registrar;
     this.result = result;
+    this.isFound = isFound;
     this.textDomain = textDomain;
     this.encodedName = encodedName;
+  }
+
+  async getProofData(){
+    return await this.oracle.getProofData(this.result);
   }
 
   /**
@@ -30,8 +36,7 @@ class Claim {
    * returns owner ETH address from the DNS record.
    */
   getOwner() {
-    return this.result.results[this.result.results.length - 1].rrs[0].data[0]
-      .toString()
+    return this.result.answer.records[0].data.toString()
       .split('=')[1];
   }
 }
@@ -40,7 +45,6 @@ class DNSRegistrar {
   constructor(provider, oracleAddress) {
     this.provider = provider
     this.oracleAddress = oracleAddress
-    this.dnsprover = new DnsProve(provider);
   }
   /**
    * returns a claim object which allows you to claim
@@ -49,17 +53,33 @@ class DNSRegistrar {
    * @param {string} name - name of the domain you want to claim
    */
   async claim(name) {
-    let encodedName = '0x' + packet.name.encode(name).toString('hex');
-    let textDomain = '_ens.' + name;
-    let result = await this.dnsprover.lookup('TXT', textDomain);
-    let oracle = await this.dnsprover.getOracle(this.oracleAddress);
-    return new Claim({
-      oracle: oracle,
-      result: result,
-      registrar: this.registrar,
-      textDomain: textDomain,
-      encodedName: encodedName
-    });
+    const encodedName = '0x' + packet.name.encode(name).toString('hex');
+    const textDomain = '_ens.' + name;
+    let queryResult, oracle, isFound
+    try{
+      const responses = await getQueryData('TXT', textDomain);
+      const prover = makeProver(responses.queries);
+      queryResult = await prover.queryWithProof('TXT', textDomain);
+      const provider = await getProvider()
+      oracle = new Oracle(this.oracleAddress, provider);
+  
+      const {data, proof} = await oracle.getProofData(queryResult);
+      const decodedData = oracle.decodeProofs(data);
+      const proofrrset = oracle.decodeRrset(proof);
+      isFound = true
+    }catch(e){
+      isFound = false
+    }finally{
+      let c = new Claim({
+        oracle: oracle,
+        result: queryResult,
+        isFound,
+        registrar: this.registrar,
+        textDomain: textDomain,
+        encodedName: encodedName
+      });
+      return c
+    }
   }
 }
 export default DNSRegistrar

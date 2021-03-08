@@ -508,7 +508,7 @@ export default class Registrar {
       const result = claim.getResult()
       dnsRegistrar.claim = claim
       dnsRegistrar.result = result
-      if (result.found) {
+      if (claim && claim.isFound) {
         dnsRegistrar.dnsOwner = claim.getOwner()
         if (!dnsRegistrar.dnsOwner) {
           // DNS Record is invalid
@@ -516,8 +516,7 @@ export default class Registrar {
         } else {
           // Valid reacord is found
           if (
-            !owner ||
-            dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
+            !owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
           ) {
             dnsRegistrar.state = 5
             // Out of sync
@@ -526,7 +525,7 @@ export default class Registrar {
           }
         }
       } else {
-        if (result.nsec) {
+        if (claim && claim.nsec) {
           if (result.results.length === 4) {
             // DNS entry does not exist
             dnsRegistrar.state = 1
