@@ -1,8 +1,7 @@
-import { getQueryData, makeProver } from '@ensdomains/dnsprovejs'
+import { DNSProver } from '@ensdomains/dnsprovejs'
 import { Oracle } from '@ensdomains/dnssecoraclejs'
 import packet from 'dns-packet'
-import { getProvider, getSigner } from './web3'
-import { ethers } from 'ethers'
+import { getProvider } from './web3'
 
 class Claim {
   constructor({ oracle, registrar, isFound, result, textDomain, encodedName }) {
@@ -55,31 +54,16 @@ class DNSRegistrar {
   async claim(name) {
     const encodedName = '0x' + packet.name.encode(name).toString('hex');
     const textDomain = '_ens.' + name;
-    let queryResult, oracle, isFound
-    try{
-      const responses = await getQueryData('TXT', textDomain);
-      const prover = makeProver(responses.queries);
-      queryResult = await prover.queryWithProof('TXT', textDomain);
-      const provider = await getProvider()
-      oracle = new Oracle(this.oracleAddress, provider);
-  
-      const {data, proof} = await oracle.getProofData(queryResult);
-      const decodedData = oracle.decodeProofs(data);
-      const proofrrset = oracle.decodeRrset(proof);
-      isFound = true
-    }catch(e){
-      isFound = false
-    }finally{
-      let c = new Claim({
-        oracle: oracle,
-        result: queryResult,
-        isFound,
-        registrar: this.registrar,
-        textDomain: textDomain,
-        encodedName: encodedName
-      });
-      return c
-    }
+    const prover = DNSProver.create("https://cloudflare-dns.com/dns-query")
+    const provider = await getProvider()
+    return new Claim({
+      oracle: new Oracle(this.oracleAddress, provider),
+      result: (await prover.queryWithProof('TXT', textDomain)),
+      isFound:true,
+      registrar: this.registrar,
+      textDomain: textDomain,
+      encodedName: encodedName
+    });
   }
 }
 export default DNSRegistrar

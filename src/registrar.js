@@ -557,12 +557,8 @@ export default class Registrar {
     })
     const signer = await getSigner()
     const registrar = registrarWithoutSigner.connect(signer)
-    const { data, status, proof } = await claim.getProofData()
-    if (status != 0) {
-      return registrar.claim(claim.encodedName, proof, {gasLimit:1500000})
-    } else {
-      return registrar.proveAndClaim(claim.encodedName, data, proof, {gasLimit:1500000})
-    }
+    const { data, proof } = await claim.getProofData()
+    return registrar.proveAndClaim(claim.encodedName, data, proof)
   }
 
   async registerTestdomain(label) {
