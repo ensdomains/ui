@@ -48,7 +48,7 @@
     "@ensdomains/content-hash": "^2.5.6",
     "@ensdomains/contracts": "^0.0.1",
     "@ensdomains/dnsprovejs": "^0.3.0",
-    "@ensdomains/dnssecoraclejs": "^0.1.1",
+    "@ensdomains/dnssecoraclejs": "^0.1.2",
     "@ensdomains/mock": "^2.0.34",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
