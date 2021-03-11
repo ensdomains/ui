@@ -256,7 +256,7 @@ export default class Registrar {
       const networkId = await getNetworkId()
       if (parseInt(networkId) > 1000) {
         /* if private network */
-        const gas = await Registrar.estimate.safeTransferFrom(
+        const gas = await Registrar.estimateGas.safeTransferFrom(
           account,
           to,
           labelHash
@@ -283,7 +283,7 @@ export default class Registrar {
       const networkId = await getNetworkId()
       if (parseInt(networkId) > 1000) {
         /* if private network */
-        const gas = await Registrar.estimate.reclaim(labelHash, address)
+        const gas = await Registrar.estimateGas.reclaim(labelHash, address)
 
         overrides = {
           ...overrides,
@@ -384,7 +384,7 @@ export default class Registrar {
     const resolverAddr = await this.getAddress('resolver.eth')
     if (parseInt(resolverAddr, 16) === 0) {
       const gasLimit = await this.estimateGasLimit(() => {
-        return permanentRegistrarController.estimate.register(
+        return permanentRegistrarController.estimateGas.register(
           label,
           account,
           duration,
@@ -402,7 +402,7 @@ export default class Registrar {
       )
     } else {
       const gasLimit = await this.estimateGasLimit(() => {
-        return permanentRegistrarController.estimate.registerWithConfig(
+        return permanentRegistrarController.estimateGas.registerWithConfig(
           label,
           account,
           duration,
@@ -449,7 +449,7 @@ export default class Registrar {
     const price = await this.getRentPrice(label, duration)
     const priceWithBuffer = getBufferedPrice(price)
     const gasLimit = await this.estimateGasLimit(() => {
-      return permanentRegistrarController.estimate.renew(label, duration, { value:priceWithBuffer})
+      return permanentRegistrarController.estimateGas.renew(label, duration, { value:priceWithBuffer})
     })
     return permanentRegistrarController.renew(label, duration, { value: priceWithBuffer, gasLimit })
   }
@@ -464,7 +464,7 @@ export default class Registrar {
     const prices = await this.getRentPrices(labels, duration)
     const pricesWithBuffer = getBufferedPrice(prices)
     const gasLimit = await this.estimateGasLimit(() => {
-      return bulkRenewal.estimate.renewAll(labels, duration, { value:pricesWithBuffer})
+      return bulkRenewal.estimateGas.renewAll(labels, duration, { value:pricesWithBuffer})
     })
     return bulkRenewal.renewAll(
       labels,
