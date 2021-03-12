@@ -267,7 +267,7 @@ export default class Registrar {
           gasLimit: gas.toNumber() * 2
         }
       }
-      return Registrar.safeTransferFrom(account, to, labelHash, overrides)
+      return Registrar['safeTransferFrom(address,address,uint256)'](account, to, labelHash, overrides)
     } catch (e) {
       console.log('Error calling transferOwner', e)
     }
