@@ -545,7 +545,7 @@ export class ENS {
     const networkId = await getNetworkId()
 
     if (parseInt(networkId) > 1000) {
-      const gasLimit = await reverseRegistrar.estimate.setName(name)
+      const gasLimit = await reverseRegistrar.estimateGas.setName(name)
       overrides = {
         gasLimit: gasLimit.toNumber() * 2,
         ...overrides
