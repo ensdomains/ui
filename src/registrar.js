@@ -256,18 +256,17 @@ export default class Registrar {
       const networkId = await getNetworkId()
       if (parseInt(networkId) > 1000) {
         /* if private network */
-        const gas = await Registrar.estimateGas.safeTransferFrom(
+        const gas = await Registrar.estimateGas["safeTransferFrom(address,address,uint256)"](
           account,
           to,
           labelHash
         )
-
         overrides = {
           ...overrides,
           gasLimit: gas.toNumber() * 2
         }
       }
-      return Registrar.safeTransferFrom(account, to, labelHash, overrides)
+      return Registrar["safeTransferFrom(address,address,uint256)"](account, to, labelHash, overrides)
     } catch (e) {
       console.log('Error calling transferOwner', e)
     }
