@@ -1,3 +1,4 @@
+import { Contract } from 'ethers'
 import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/contracts/abis/ens/ReverseRegistrar.json'
 import { abi as oldResolverContract } from '@ensdomains/contracts/abis/ens-022/PublicResolver.json'
