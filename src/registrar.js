@@ -497,7 +497,7 @@ export default class Registrar {
 
   async getDNSEntry(name, parentOwner, owner) {
     // Do not cache as it needs to be refetched on "Refresh"
-    const dnsRegistrar = {}
+    const dnsRegistrar = {stateError:null}
     const web3Provider = getLegacyProvider()
     const provider = await getProvider()
     const registrarContract = await getDnsRegistrarContract({parentOwner, provider})
@@ -544,6 +544,7 @@ export default class Registrar {
     } catch (e) {
       console.log('Problem fetching data from DNS', e)
       // Problem fetching data from DNS
+      dnsRegistrar.stateError = e.message
       dnsRegistrar.state = 0
     }
     return dnsRegistrar
