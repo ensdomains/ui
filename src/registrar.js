@@ -26,6 +26,7 @@ import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
+import { utils } from 'ethers'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
@@ -256,18 +257,17 @@ export default class Registrar {
       const networkId = await getNetworkId()
       if (parseInt(networkId) > 1000) {
         /* if private network */
-        const gas = await Registrar.estimate.safeTransferFrom(
+        const gas = await Registrar.estimateGas["safeTransferFrom(address,address,uint256)"](
           account,
           to,
           labelHash
         )
-
         overrides = {
           ...overrides,
           gasLimit: gas.toNumber() * 2
         }
       }
-      return Registrar.safeTransferFrom(account, to, labelHash, overrides)
+      return Registrar["safeTransferFrom(address,address,uint256)"](account, to, labelHash, overrides)
     } catch (e) {
       console.log('Error calling transferOwner', e)
     }
@@ -283,7 +283,7 @@ export default class Registrar {
       const networkId = await getNetworkId()
       if (parseInt(networkId) > 1000) {
         /* if private network */
-        const gas = await Registrar.estimate.reclaim(labelHash, address)
+        const gas = await Registrar.estimateGas.reclaim(labelHash, address)
 
         overrides = {
           ...overrides,
@@ -384,7 +384,7 @@ export default class Registrar {
     const resolverAddr = await this.getAddress('resolver.eth')
     if (parseInt(resolverAddr, 16) === 0) {
       const gasLimit = await this.estimateGasLimit(() => {
-        return permanentRegistrarController.estimate.register(
+        return permanentRegistrarController.estimateGas.register(
           label,
           account,
           duration,
@@ -402,7 +402,7 @@ export default class Registrar {
       )
     } else {
       const gasLimit = await this.estimateGasLimit(() => {
-        return permanentRegistrarController.estimate.registerWithConfig(
+        return permanentRegistrarController.estimateGas.registerWithConfig(
           label,
           account,
           duration,
@@ -449,7 +449,7 @@ export default class Registrar {
     const price = await this.getRentPrice(label, duration)
     const priceWithBuffer = getBufferedPrice(price)
     const gasLimit = await this.estimateGasLimit(() => {
-      return permanentRegistrarController.estimate.renew(label, duration, { value:priceWithBuffer})
+      return permanentRegistrarController.estimateGas.renew(label, duration, { value:priceWithBuffer})
     })
     return permanentRegistrarController.renew(label, duration, { value: priceWithBuffer, gasLimit })
   }
@@ -464,7 +464,7 @@ export default class Registrar {
     const prices = await this.getRentPrices(labels, duration)
     const pricesWithBuffer = getBufferedPrice(prices)
     const gasLimit = await this.estimateGasLimit(() => {
-      return bulkRenewal.estimate.renewAll(labels, duration, { value:pricesWithBuffer})
+      return bulkRenewal.estimateGas.renewAll(labels, duration, { value:pricesWithBuffer})
     })
     return bulkRenewal.renewAll(
       labels,
@@ -497,7 +497,7 @@ export default class Registrar {
 
   async getDNSEntry(name, parentOwner, owner) {
     // Do not cache as it needs to be refetched on "Refresh"
-    const dnsRegistrar = {}
+    const dnsRegistrar = {stateError:null}
     const web3Provider = getLegacyProvider()
     const provider = await getProvider()
     const registrarContract = await getDnsRegistrarContract({parentOwner, provider})
@@ -508,25 +508,25 @@ export default class Registrar {
       const result = claim.getResult()
       dnsRegistrar.claim = claim
       dnsRegistrar.result = result
-      if (result.found) {
+      if (claim && claim.isFound) {
         dnsRegistrar.dnsOwner = claim.getOwner()
-        if (!dnsRegistrar.dnsOwner) {
-          // DNS Record is invalid
+        if (!dnsRegistrar.dnsOwner || parseInt(dnsRegistrar.dnsOwner) === 0) {
+          // Empty
+          dnsRegistrar.state = 8
+        } else if(!utils.isAddress(dnsRegistrar.dnsOwner)){
+          // Invalid record
           dnsRegistrar.state = 4
+        } else if (
+          !owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
+        ) {
+          // Ready to register
+          dnsRegistrar.state = 5
         } else {
-          // Valid reacord is found
-          if (
-            !owner ||
-            dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
-          ) {
-            dnsRegistrar.state = 5
-            // Out of sync
-          } else {
-            dnsRegistrar.state = 6
-          }
+          // Out of sync
+          dnsRegistrar.state = 6
         }
       } else {
-        if (result.nsec) {
+        if (claim && claim.nsec) {
           if (result.results.length === 4) {
             // DNS entry does not exist
             dnsRegistrar.state = 1
@@ -544,12 +544,14 @@ export default class Registrar {
     } catch (e) {
       console.log('Problem fetching data from DNS', e)
       // Problem fetching data from DNS
+      dnsRegistrar.stateError = e.message
       dnsRegistrar.state = 0
     }
     return dnsRegistrar
   }
 
   async submitProof(name, parentOwner) {
+    let gasLimit
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const registrarWithoutSigner = await getDnsRegistrarContract({
@@ -558,12 +560,15 @@ export default class Registrar {
     })
     const signer = await getSigner()
     const registrar = registrarWithoutSigner.connect(signer)
-    const data = await claim.oracle.getAllProofs(result, {})
-    const allProven = await claim.oracle.allProven(result)
-    if (allProven) {
-      return registrar.claim(claim.encodedName, data[1])
-    } else {
-      return registrar.proveAndClaim(claim.encodedName, data[0], data[1])
+    const { data, proof } = await claim.getProofData()
+
+    if(data.length === 0){
+      return registrar.claim(claim.encodedName, proof)
+    }else{
+      gasLimit = await registrar.estimateGas.proveAndClaim(
+        claim.encodedName, data, proof
+      )  
+      return registrar.proveAndClaim(claim.encodedName, data, proof)
     }
   }
 

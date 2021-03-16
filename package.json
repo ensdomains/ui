@@ -1,6 +1,6 @@
 {
   "name": "@ensdomains/ui",
-  "version": "3.0.63",
+  "version": "3.0.72",
   "description": "UI components and reusable code",
   "main": "src/index.js",
   "files": [
@@ -47,7 +47,8 @@
     "@ensdomains/address-encoder": "^0.2.5",
     "@ensdomains/content-hash": "^2.5.6",
     "@ensdomains/contracts": "^0.0.1",
-    "@ensdomains/dnsprovejs": "^0.2.0",
+    "@ensdomains/dnsprovejs": "^0.3.1",
+    "@ensdomains/dnssecoraclejs": "^0.1.5",
     "@ensdomains/mock": "^2.0.34",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
@@ -56,9 +57,10 @@
     "cross-fetch": "^3.0.2",
     "dns-packet": "^5.2.1",
     "eth-ens-namehash": "^2.0.8",
-    "ethers": "4.0.44",
+    "ethers": "^5.0.30",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.11",
+    "node-fetch": "^2.6.1",
     "web3": "^1.3.0"
   },
   "prettier": {
