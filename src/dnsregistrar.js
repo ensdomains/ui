@@ -35,8 +35,12 @@ class Claim {
    * returns owner ETH address from the DNS record.
    */
   getOwner() {
-    return this.result.answer.records[0].data.toString()
+    if(this.result && this.result.answer){
+      return this.result.answer.records[0].data.toString()
       .split('=')[1];
+    }else{
+      return null
+    }
   }
 }
 
