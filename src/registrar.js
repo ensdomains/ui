@@ -26,6 +26,7 @@ import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
+import { utils } from 'ethers'
 
 const {
   legacyRegistrar: legacyRegistrarInterfaceId,
@@ -509,19 +510,20 @@ export default class Registrar {
       dnsRegistrar.result = result
       if (claim && claim.isFound) {
         dnsRegistrar.dnsOwner = claim.getOwner()
-        if (!dnsRegistrar.dnsOwner) {
-          // DNS Record is invalid
+        if (!dnsRegistrar.dnsOwner || parseInt(dnsRegistrar.dnsOwner) === 0) {
+          // Empty
+          dnsRegistrar.state = 8
+        } else if(!utils.isAddress(dnsRegistrar.dnsOwner)){
+          // Invalid record
           dnsRegistrar.state = 4
+        } else if (
+          !owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
+        ) {
+          // Ready to register
+          dnsRegistrar.state = 5
         } else {
-          // Valid reacord is found
-          if (
-            !owner || dnsRegistrar.dnsOwner.toLowerCase() === owner.toLowerCase()
-          ) {
-            dnsRegistrar.state = 5
-            // Out of sync
-          } else {
-            dnsRegistrar.state = 6
-          }
+          // Out of sync
+          dnsRegistrar.state = 6
         }
       } else {
         if (claim && claim.nsec) {
