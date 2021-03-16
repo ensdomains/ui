@@ -16,8 +16,6 @@ function getReverseRegistrarContract({ address, provider }) {
 }
 
 function getResolverContract({ address, provider }) {
-  window.ethers = ethers
-  debugger
   return new Contract(address, resolverContract, provider)
 }
 
