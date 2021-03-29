@@ -932,19 +932,10 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/contracts/-/contracts-0.0.1.tgz#edb841955adbd6f86bddaf9d05f6d239d25d5ab7"
   integrity sha512-MfcOfE3JqDetwbSHXLNSBtgJjpsdhzuHP70yAKrhmW2VwEFaEpJwKioB6GIGGRTy6e9QYnrj6e0FUhd2C9DdRQ==
 
-"@ensdomains/dnsprovejs@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.0.tgz#776752bcb1c59ffc2c92fedfc045e5aad074f24f"
-  integrity sha512-ssNb4ZhRUeqQ8PyjfOoJXb0DgdZpPMTSlW6bMhOjiZSGm+uQXF4CJ8JOSlOTp8mL+kycYdlGIfvq9c8ITp2C9A==
-  dependencies:
-    dns-packet "^5.2.1"
-    ethereumjs-util "^7.0.7"
-    typescript-logging "^1.0.0"
-
-"@ensdomains/dnsprovejs@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.1.tgz#2eb09751f0d0d9ea95d7a790f6f9eb61e0ac691f"
-  integrity sha512-Ykcm3Pqc2rQjNX3XAEZfkmjSyzJQlbNFRri8ejae1r20Hu0M89O7Va1lNoF3V23FI7zp5hhnVguVdF9mHtccxA==
+"@ensdomains/dnsprovejs@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.3.tgz#284afed497c7469f97c8588e98bd2aa88c7089e8"
+  integrity sha512-aafek88Ze9SIUljBOSiTRfnD2zGUxiN46Ht6d4iFefTgQD3F+tIm0RQxKeO8vsYAM1QXiH4ISxNHgNSXDD5slg==
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
@@ -964,12 +955,12 @@
   dependencies:
     dns-packet "^5.0.4"
 
-"@ensdomains/dnssecoraclejs@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.1.5.tgz#9f00712f8a398759cfa142de2c01874fbf762701"
-  integrity sha512-ZdoD0dCzy4KKo4l9cruxolc00X8dqKZdB3A0oypIKnjhEiAxRXS3Zzml+2TvHzdLqrLjRpKIDQ6lFfeOngTWLQ==
+"@ensdomains/dnssecoraclejs@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.1.7.tgz#1ac4b9e18b97e7a1270faa8aa39efca504281cba"
+  integrity sha512-Y5WAWCN1etVkvaz3wt21kqiXl+9U0Xy0H8KwkLNJjP7w12uZXl/lbqjBM9kHsombBbV9R9AiiMOb5LNJXsy2Vw==
   dependencies:
-    "@ensdomains/dnsprovejs" "^0.3.0"
+    "@ensdomains/dnsprovejs" "^0.3.3"
     "@ensdomains/dnssec-oracle" "^0.2.0"
     dns-packet "^5.2.1"
     dotenv "^8.2.0"
