@@ -242,11 +242,10 @@ export async function getNetwork() {
   return network
 }
 
-export async function getBlock() {
+export async function getBlock(number = 'latest') {
   try {
     const provider = await getWeb3()
-    const block = await provider.getBlockNumber()
-    const blockDetails = await provider.getBlock(block)
+    const blockDetails = await provider.getBlock(number)
     return {
       number: blockDetails.number,
       timestamp: blockDetails.timestamp
