@@ -430,13 +430,17 @@ export default class Registrar {
     try{
       gas = (await cb()).toNumber()
     }catch(e){
-      let matched = e.message.match(/\(supplied gas (.*)\)/)
+      let matched = e.message.match(/\(supplied gas (.*)\)/) || e.message.match(/\(gas required exceeds allowance (.*)\)/)
       if(matched){
         gas = parseInt(matched[1])
       }
       console.log({gas, e, matched})
     }
-    return gas + transferGasCost
+    if(gas > 0){
+      return gas + transferGasCost
+    }else{
+      return gas
+    }
   }
 
   async renew(label, duration) {
