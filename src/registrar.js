@@ -551,7 +551,6 @@ export default class Registrar {
   }
 
   async submitProof(name, parentOwner) {
-    let gasLimit
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const registrarWithoutSigner = await getDnsRegistrarContract({
@@ -565,9 +564,6 @@ export default class Registrar {
     if(data.length === 0){
       return registrar.claim(claim.encodedName, proof)
     }else{
-      gasLimit = await registrar.estimateGas.proveAndClaim(
-        claim.encodedName, data, proof
-      )  
       return registrar.proveAndClaim(claim.encodedName, data, proof)
     }
   }
