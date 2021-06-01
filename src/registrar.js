@@ -430,13 +430,17 @@ export default class Registrar {
     try{
       gas = (await cb()).toNumber()
     }catch(e){
-      let matched = e.message.match(/\(supplied gas (.*)\)/)
+      let matched = e.message.match(/\(supplied gas (.*)\)/) || e.message.match(/\(gas required exceeds allowance (.*)\)/)
       if(matched){
         gas = parseInt(matched[1])
       }
       console.log({gas, e, matched})
     }
-    return gas + transferGasCost
+    if(gas > 0){
+      return gas + transferGasCost
+    }else{
+      return gas
+    }
   }
 
   async renew(label, duration) {
@@ -551,7 +555,6 @@ export default class Registrar {
   }
 
   async submitProof(name, parentOwner) {
-    let gasLimit
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const registrarWithoutSigner = await getDnsRegistrarContract({
@@ -565,9 +568,6 @@ export default class Registrar {
     if(data.length === 0){
       return registrar.claim(claim.encodedName, proof)
     }else{
-      gasLimit = await registrar.estimateGas.proveAndClaim(
-        claim.encodedName, data, proof
-      )  
       return registrar.proveAndClaim(claim.encodedName, data, proof)
     }
   }
