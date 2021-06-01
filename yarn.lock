@@ -967,6 +967,11 @@
     ethers "^5.0.30"
     typescript-logging "^1.0.0"
 
+"@ensdomains/ens-archived-contracts@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens-archived-contracts/-/ens-archived-contracts-0.0.2.tgz#2490898bb72beba16e5fd94917fcb27f4c06b3ba"
+  integrity sha512-yf0zqmSKm+KQuV0sWdRd1z6K1bcyEg902A+wXP3tDA1yUW6+Gtu5qLiOl7/j9Elk48BkBM212UrrxHRgqk5WVA==
+
 "@ensdomains/mock@^2.0.34":
   version "2.0.34"
   resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.0.34.tgz#a9426a397c2ea43afbbedda4ffc5c81c6acbd0c2"

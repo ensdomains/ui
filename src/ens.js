@@ -9,7 +9,7 @@ import {
 } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { formatsByName } from '@ensdomains/address-encoder'
-import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
+import { abi as ensContract } from '@ensdomains/ens-archived-contracts/abis/ens/ENS.json'
 
 import { decryptHashes } from './preimage'
 
