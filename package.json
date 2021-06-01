@@ -1,6 +1,6 @@
 {
   "name": "@ensdomains/ui",
-  "version": "3.0.79",
+  "version": "3.0.80",
   "description": "UI components and reusable code",
   "main": "src/index.js",
   "files": [
@@ -49,7 +49,7 @@
     "@ensdomains/dnsprovejs": "^0.3.3",
     "@ensdomains/dnssecoraclejs": "^0.1.7",
     "@ensdomains/ens-archived-contracts": "^0.0.2",
-    "@ensdomains/mock": "^2.0.34",
+    "@ensdomains/mock": "^2.0.40",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
     "bech32": "^1.1.3",
