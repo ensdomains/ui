@@ -594,10 +594,6 @@ export default class Registrar {
       // Only available for the new DNSRegistrar
       if(!isOld && (owner === user)){
         const resolverAddress = await this.getAddress('resolver.eth')
-        console.log('****proveAndClaimWithResolver', {
-          encodedName:claim.encodedName, data, proof, resolverAddress, owner
-        })
-        // return registrar.proveAndClaim(claim.encodedName, data, proof)
         return registrar.proveAndClaimWithResolver(claim.encodedName, data, proof, resolverAddress, owner);
       }else{
         return registrar.proveAndClaim(claim.encodedName, data, proof)
