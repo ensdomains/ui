@@ -988,10 +988,10 @@
     ethers "^5.0.30"
     typescript-logging "^1.0.0"
 
-"@ensdomains/dnssecoraclejs@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.0.tgz#019a3cc1cae1baf3caf69ed43c05f35f37143acb"
-  integrity sha512-2SDkzOhAvaoRClSx491Vr76L8Qn9Yc6S/PbYG/Jwg8IXor340Rrt//mqN84ns3i0AHX0h8g3bqCt4UjW9JNAGw==
+"@ensdomains/dnssecoraclejs@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.2.tgz#5621917dce2f32447e033acc0f65370ea63a6101"
+  integrity sha512-B6su+VmPfOlQLA7uHfZQQvcx3Q7y9jkYw4WzxM5AwkLjXLgIOSGUMIiCt442569VUf3gNhW2M3I1xTgYLmAFLA==
   dependencies:
     "@ensdomains/dnsprovejs" "^0.3.7"
     "@ensdomains/ens-contracts" "0.0.5"
@@ -1019,15 +1019,16 @@
     dns-packet "^5.2.4"
     name-wrapper "^1.0.0"
 
-"@ensdomains/ens-contracts@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.4.tgz#6ca7045c2d7b7e9605eebc0766445d3b743c4832"
-  integrity sha512-l5KfYaiRzm6Tx/4YEe+wW/Utmv4TBaOShiXrB0TTs1C8y2g3OjLmI24ymzJC78KvzexXokTrXj7ncLpxgCyHnQ==
+"@ensdomains/ens-contracts@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.6.tgz#252a54b5245c3b7583a9aace92d11f145f947b62"
+  integrity sha512-R1DxJ8f68NkxBN31bPR0MGu8xGJlbtHw20h3zbsr1p4UYszt0vCDl0I+jY+X4DaeekxCRcXXYfQd2Xl2NHpMpA==
   dependencies:
     "@ensdomains/buffer" "^0.0.13"
     "@ensdomains/solsha1" "0.0.3"
     "@openzeppelin/contracts" "^4.1.0"
     dns-packet "^5.2.4"
+    name-wrapper "^1.0.0"
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"

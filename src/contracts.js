@@ -40,7 +40,6 @@ function getOldDnsRegistrarContract({ parentOwner, provider }) {
 }
 
 function getDnsRegistrarContract({ parentOwner, provider }) {
-  console.log('***dnsRegistrarContract', {dnsRegistrarContract})
   return new Contract(parentOwner, dnsRegistrarContract, provider)
 }
 

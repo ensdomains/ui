@@ -516,7 +516,6 @@ export default class Registrar {
     } catch (e) {
       console.log({e})
     }
-    console.log('***', {dnssecClaimOldId, isOld, isNew})
     return({registrarContract, isOld})
   }
 
