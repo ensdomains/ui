@@ -1,15 +1,19 @@
 import { Contract } from 'ethers'
-import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
-import { abi as reverseRegistrarContract } from '@ensdomains/contracts/abis/ens/ReverseRegistrar.json'
+import {
+  BaseRegistrarImplementation as permanentRegistrarContract,
+  BulkRenewal as bulkRenewalContract,
+  ENS as ensContract,
+  ETHRegistrarController as permanentRegistrarControllerContract,
+  DNSRegistrar as dnsRegistrarContract,
+  Resolver as resolverContract,
+  ReverseRegistrar as reverseRegistrarContract,
+  TestRegistrar as testRegistrarContract
+} from '@ensdomains/ens-contracts'
+
 import { abi as oldResolverContract } from '@ensdomains/contracts/abis/ens-022/PublicResolver.json'
-import { abi as resolverContract } from '@ensdomains/contracts/abis/resolver/Resolver.json'
-import { abi as testRegistrarContract } from '@ensdomains/contracts/abis/ens/TestRegistrar.json'
-import { abi as dnsRegistrarContract } from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
+import { abi as dnsRegistrarContractOld } from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/contracts/abis/ens/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/contracts/abis/ens/Deed'
-import { abi as permanentRegistrarContract } from '@ensdomains/contracts/abis/ethregistrar/BaseRegistrarImplementation'
-import { abi as permanentRegistrarControllerContract } from '@ensdomains/contracts/abis/ethregistrar/ETHRegistrarController'
-import { abi as bulkRenewalContract } from '@ensdomains/contracts/abis/ethregistrar/BulkRenewal'
 
 function getReverseRegistrarContract({ address, provider }) {
   return new Contract(address, reverseRegistrarContract, provider)
@@ -29,6 +33,10 @@ function getENSContract({ address, provider }) {
 
 function getTestRegistrarContract({ address, provider }) {
   return new Contract(address, testRegistrarContract, provider)
+}
+
+function getOldDnsRegistrarContract({ parentOwner, provider }) {
+  return new Contract(parentOwner, dnsRegistrarContractOld, provider)
 }
 
 function getDnsRegistrarContract({ parentOwner, provider }) {
@@ -62,6 +70,7 @@ export {
   getResolverContract,
   getOldResolverContract,
   getDnsRegistrarContract,
+  getOldDnsRegistrarContract,
   getPermanentRegistrarContract,
   getPermanentRegistrarControllerContract,
   getLegacyAuctionContract,
