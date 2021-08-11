@@ -988,13 +988,13 @@
     ethers "^5.0.30"
     typescript-logging "^1.0.0"
 
-"@ensdomains/dnssecoraclejs@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.2.tgz#5621917dce2f32447e033acc0f65370ea63a6101"
-  integrity sha512-B6su+VmPfOlQLA7uHfZQQvcx3Q7y9jkYw4WzxM5AwkLjXLgIOSGUMIiCt442569VUf3gNhW2M3I1xTgYLmAFLA==
+"@ensdomains/dnssecoraclejs@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.3.tgz#ed8f936ffe5af044032c9fc22d80e972d594d7a7"
+  integrity sha512-OfCdf4BU6DaFE9cjgvjZy/gcjqxMMwbDqyWwN87H1oCk99Of/r1EzsbVPdsy+ujTAsuGkhUNTELcg2REtRMYIw==
   dependencies:
     "@ensdomains/dnsprovejs" "^0.3.7"
-    "@ensdomains/ens-contracts" "0.0.5"
+    "@ensdomains/ens-contracts" "0.0.7"
     dns-packet "^5.2.1"
     dotenv "^8.2.0"
     ethers "^5.0.30"
@@ -1008,26 +1008,15 @@
     "@ensdomains/buffer" "^0.0.10"
     "@openzeppelin/contracts" "^4.1.0"
 
-"@ensdomains/ens-contracts@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.5.tgz#9668828746cbc70df578da83ce27897a19f0d1da"
-  integrity sha512-p7U2ZzftSScYUvG26dOAynKb362s2SMz/G7hWnBziQekzh38irLHQ8vR8I0HxaRbDb0MS4rNYruq/rT5GGcwzA==
+"@ensdomains/ens-contracts@0.0.7", "@ensdomains/ens-contracts@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.7.tgz#a08dd7de3d927487c05a9c846b4834a124f053ce"
+  integrity sha512-adlWSrtBh85CNM1hsrsNxWrSx6g37DOCkWP5vBT/HtXnpNtvL49Z1Ueum55lN8YifTWo2Kqb1mgPojjLY99f5w==
   dependencies:
     "@ensdomains/buffer" "^0.0.13"
     "@ensdomains/solsha1" "0.0.3"
     "@openzeppelin/contracts" "^4.1.0"
-    dns-packet "^5.2.4"
-    name-wrapper "^1.0.0"
-
-"@ensdomains/ens-contracts@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.6.tgz#252a54b5245c3b7583a9aace92d11f145f947b62"
-  integrity sha512-R1DxJ8f68NkxBN31bPR0MGu8xGJlbtHw20h3zbsr1p4UYszt0vCDl0I+jY+X4DaeekxCRcXXYfQd2Xl2NHpMpA==
-  dependencies:
-    "@ensdomains/buffer" "^0.0.13"
-    "@ensdomains/solsha1" "0.0.3"
-    "@openzeppelin/contracts" "^4.1.0"
-    dns-packet "^5.2.4"
+    dns-packet "^5.3.0"
     name-wrapper "^1.0.0"
 
 "@ensdomains/ens@^0.4.4":
@@ -5535,7 +5524,7 @@ dns-packet@^5.0.4, dns-packet@^5.2.1:
   dependencies:
     ip "^1.1.5"
 
-dns-packet@^5.2.4:
+dns-packet@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.3.0.tgz#9a0f66118d3be176b828b911a842b0b1a4bdfd4f"
   integrity sha512-Nce7YLu6YCgWRvOmDBsJMo9M5/jV3lEZ5vUWnWXYmwURvPylHvq7nkDWhNmk1ZQoZZOP7oQh/S0lSxbisKOfHg==
@@ -11352,9 +11341,9 @@ path-key@^2.0.0, path-key@^2.0.1:
   integrity sha1-QRyttXTFoUDTpLGRDUDYDMn0C0A=
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
-  integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
+  integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
 path-root-regex@^0.1.0:
   version "0.1.2"
