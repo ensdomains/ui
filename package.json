@@ -2,9 +2,9 @@
   "name": "@ensdomains/ui",
   "version": "3.0.82",
   "description": "UI components and reusable code",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "files": [
-    "src"
+    "dist"
   ],
   "scripts": {
     "test": "node_modules/.bin/jest --verbose",
