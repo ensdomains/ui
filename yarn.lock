@@ -984,9 +984,10 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/contracts/-/contracts-0.0.1.tgz#edb841955adbd6f86bddaf9d05f6d239d25d5ab7"
   integrity sha512-MfcOfE3JqDetwbSHXLNSBtgJjpsdhzuHP70yAKrhmW2VwEFaEpJwKioB6GIGGRTy6e9QYnrj6e0FUhd2C9DdRQ==
 
-"@ensdomains/dnsprovejs@ensdomains/dnsprovejs#canonical-sort":
-  version "0.3.8"
-  resolved "https://codeload.github.com/ensdomains/dnsprovejs/tar.gz/a416283dce516f554e48351a74480721c0871aa4"
+"@ensdomains/dnsprovejs@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.9.tgz#4c06dd613f57be889f1031192356a451b3f1963b"
+  integrity sha512-e54bpUEkOsbRzH5Seh7VmRN+i82uZ+cp4HyVb8EvaH6/b6sbkGKzxIigXVOi8MvwLs44gCN9GBIzngQKJE6osQ==
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
@@ -999,11 +1000,12 @@
   dependencies:
     dns-packet "^5.2.1"
 
-"@ensdomains/dnssecoraclejs@ensdomains/dnssecoraclejs#canonical-sort":
-  version "0.2.3"
-  resolved "https://codeload.github.com/ensdomains/dnssecoraclejs/tar.gz/abd8a5f69a2e2595bc0ee50e7b8db832e34b9fdf"
+"@ensdomains/dnssecoraclejs@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.5.tgz#8d1124d604a111e58f52f4e4c0eeb92517e26318"
+  integrity sha512-9h2tECmfxAyksVZu3xIwGDWkIB3ifJ+XKFqmfvQEkQ8ju2evvaZZm9wHURWV1Kj88IXiDRfCVCprzzB2z9Lfyg==
   dependencies:
-    "@ensdomains/dnsprovejs" ensdomains/dnsprovejs#canonical-sort
+    "@ensdomains/dnsprovejs" "^0.3.9"
     "@ensdomains/ens-contracts" "0.0.7"
     dns-packet "^5.2.1"
     dotenv "^8.2.0"
