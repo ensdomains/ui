@@ -493,30 +493,23 @@ export default class Registrar {
   async isDNSRegistrar(parentOwner) {
     const provider = await getProvider()
     const registrar = await getDnsRegistrarContract({ parentOwner, provider })
-    let isDNSSECSupported = false, isOld = false, isNew = false
+    let isDNSSECSupported = false
     try {
-      isOld = await registrar['supportsInterface(bytes4)'](dnssecClaimOldId)
-      isNew = await registrar['supportsInterface(bytes4)'](dnssecClaimNewId)
+      isDNSSECSupported = await registrar['supportsInterface(bytes4)'](dnssecClaimNewId)
     } catch (e) {
       console.log({e})
     }
-    isDNSSECSupported = isOld || isNew
     return isDNSSECSupported
   }
 
   async selectDnsRegistrarContract({parentOwner, provider}){
     let registrarContract = await getOldDnsRegistrarContract({parentOwner, provider})
-    let isOld = false, isNew = false
     try {
-      isOld = await registrarContract['supportsInterface(bytes4)'](dnssecClaimOldId)
-      if(!isOld){
-        registrarContract = await getDnsRegistrarContract({parentOwner, provider})
-        isNew = await registrarContract['supportsInterface(bytes4)'](dnssecClaimNewId)
-      }
+      registrarContract = await getDnsRegistrarContract({parentOwner, provider})
     } catch (e) {
       console.log({e})
     }
-    return({registrarContract, isOld})
+    return({registrarContract })
   }
 
   async getDNSEntry(name, parentOwner, owner) {
@@ -524,9 +517,9 @@ export default class Registrar {
     const dnsRegistrar = {stateError:null}
     const web3Provider = getLegacyProvider()
     const provider = await getProvider()
-    const { isOld, registrarContract } = await this.selectDnsRegistrarContract({parentOwner, provider})
+    const { registrarContract } = await this.selectDnsRegistrarContract({parentOwner, provider})
     const oracleAddress = await registrarContract.oracle()
-    const registrarjs = new DNSRegistrarJS(web3Provider.givenProvider, oracleAddress, isOld)
+    const registrarjs = new DNSRegistrarJS(web3Provider.givenProvider, oracleAddress)
     try {
       const claim = await registrarjs.claim(name)
       const result = claim.getResult()
@@ -578,20 +571,19 @@ export default class Registrar {
     const provider = await getProvider()
     const { claim, result } = await this.getDNSEntry(name, parentOwner)
     const owner = claim.getOwner()
-    const { registrarContract:registrarWithoutSigner, isOld } = await this.selectDnsRegistrarContract({parentOwner, provider})
+    const { registrarContract:registrarWithoutSigner } = await this.selectDnsRegistrarContract({parentOwner, provider})
 
     const signer = await getSigner()
     const user = await signer.getAddress()
     const registrar = registrarWithoutSigner.connect(signer)
     const proofData = await claim.getProofData()
-    const data = isOld ? proofData.data : proofData.rrsets
+    const data = proofData.rrsets
     const proof = proofData.proof
     
     if(data.length === 0){
       return registrar.claim(claim.encodedName, proof)
     }else{
-      // Only available for the new DNSRegistrar
-      if(!isOld && (owner === user)){
+      if(owner === user){
         const resolverAddress = await this.getAddress('resolver.eth')
         return registrar.proveAndClaimWithResolver(claim.encodedName, data, proof, resolverAddress, owner);
       }else{

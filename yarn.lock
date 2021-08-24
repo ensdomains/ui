@@ -984,10 +984,19 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/contracts/-/contracts-0.0.1.tgz#edb841955adbd6f86bddaf9d05f6d239d25d5ab7"
   integrity sha512-MfcOfE3JqDetwbSHXLNSBtgJjpsdhzuHP70yAKrhmW2VwEFaEpJwKioB6GIGGRTy6e9QYnrj6e0FUhd2C9DdRQ==
 
-"@ensdomains/dnsprovejs@^0.3.3", "@ensdomains/dnsprovejs@^0.3.7":
+"@ensdomains/dnsprovejs@^0.3.7":
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.7.tgz#682a0d3efd2b0e380fd7b65dc20235250af75782"
   integrity sha512-5aLdt/4VHFW5NmsN0JI243v2kbgvbxM3n89Wj13F0QuQPk7u/X5dwAzdorqigVWvijNh6BX8J9yWbJuTRofk2A==
+  dependencies:
+    dns-packet "^5.2.1"
+    ethereumjs-util "^7.0.7"
+    typescript-logging "^1.0.0"
+
+"@ensdomains/dnsprovejs@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.8.tgz#1a40a76fad4531788e7a47b45e6dc1da640210e5"
+  integrity sha512-78Bha70U2OIPot/hIjL9MdUxIS0Yl9JfNtHORHtCqsxV47LFpf4B51GQDlEfg3ke6L4xbiKhUsyNHE3PrS653g==
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
@@ -999,25 +1008,6 @@
   integrity sha512-0I2TcOMwM83YpLkBaI/RLxu7kkic3/nUehIFsgIv5jc84FqrIzeYDYPCG0q6OnbooSmAsC36BJQcMLmUjON8Fg==
   dependencies:
     dns-packet "^5.2.1"
-
-"@ensdomains/dnssec-oracle@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssec-oracle/-/dnssec-oracle-0.2.0.tgz#eb3eac72230bbe76729a0bb0fc67c0af1ef62001"
-  integrity sha512-dYVCNhr3DIjE8uEGQ3PXElUxl4bkfltHz0LcL5DPgiaXehjLPvi4wtbtmV0jRXb3EhSaGDYBDiHrKfJ0wG7IoA==
-  dependencies:
-    dns-packet "^5.0.4"
-
-"@ensdomains/dnssecoraclejs-017@npm:@ensdomains/dnssecoraclejs@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.1.7.tgz#1ac4b9e18b97e7a1270faa8aa39efca504281cba"
-  integrity sha512-Y5WAWCN1etVkvaz3wt21kqiXl+9U0Xy0H8KwkLNJjP7w12uZXl/lbqjBM9kHsombBbV9R9AiiMOb5LNJXsy2Vw==
-  dependencies:
-    "@ensdomains/dnsprovejs" "^0.3.3"
-    "@ensdomains/dnssec-oracle" "^0.2.0"
-    dns-packet "^5.2.1"
-    dotenv "^8.2.0"
-    ethers "^5.0.30"
-    typescript-logging "^1.0.0"
 
 "@ensdomains/dnssecoraclejs@^0.2.3":
   version "0.2.3"
@@ -4663,7 +4653,7 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-dns-packet@^5.0.4, dns-packet@^5.2.1, dns-packet@^5.3.0:
+dns-packet@^5.2.1, dns-packet@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.3.0.tgz#9a0f66118d3be176b828b911a842b0b1a4bdfd4f"
   integrity sha512-Nce7YLu6YCgWRvOmDBsJMo9M5/jV3lEZ5vUWnWXYmwURvPylHvq7nkDWhNmk1ZQoZZOP7oQh/S0lSxbisKOfHg==
