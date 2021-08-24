@@ -984,18 +984,9 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/contracts/-/contracts-0.0.1.tgz#edb841955adbd6f86bddaf9d05f6d239d25d5ab7"
   integrity sha512-MfcOfE3JqDetwbSHXLNSBtgJjpsdhzuHP70yAKrhmW2VwEFaEpJwKioB6GIGGRTy6e9QYnrj6e0FUhd2C9DdRQ==
 
-"@ensdomains/dnsprovejs@^0.3.7":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.7.tgz#682a0d3efd2b0e380fd7b65dc20235250af75782"
-  integrity sha512-5aLdt/4VHFW5NmsN0JI243v2kbgvbxM3n89Wj13F0QuQPk7u/X5dwAzdorqigVWvijNh6BX8J9yWbJuTRofk2A==
-  dependencies:
-    dns-packet "^5.2.1"
-    ethereumjs-util "^7.0.7"
-    typescript-logging "^1.0.0"
-
 "@ensdomains/dnsprovejs@ensdomains/dnsprovejs#canonical-sort":
-  version "0.3.7"
-  resolved "https://codeload.github.com/ensdomains/dnsprovejs/tar.gz/2cf147a5ce8c06577d91cca8c1aed8c5f8920bad"
+  version "0.3.8"
+  resolved "https://codeload.github.com/ensdomains/dnsprovejs/tar.gz/a416283dce516f554e48351a74480721c0871aa4"
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
@@ -1008,12 +999,11 @@
   dependencies:
     dns-packet "^5.2.1"
 
-"@ensdomains/dnssecoraclejs@^0.2.3":
+"@ensdomains/dnssecoraclejs@ensdomains/dnssecoraclejs#canonical-sort":
   version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.3.tgz#ed8f936ffe5af044032c9fc22d80e972d594d7a7"
-  integrity sha512-OfCdf4BU6DaFE9cjgvjZy/gcjqxMMwbDqyWwN87H1oCk99Of/r1EzsbVPdsy+ujTAsuGkhUNTELcg2REtRMYIw==
+  resolved "https://codeload.github.com/ensdomains/dnssecoraclejs/tar.gz/abd8a5f69a2e2595bc0ee50e7b8db832e34b9fdf"
   dependencies:
-    "@ensdomains/dnsprovejs" "^0.3.7"
+    "@ensdomains/dnsprovejs" ensdomains/dnsprovejs#canonical-sort
     "@ensdomains/ens-contracts" "0.0.7"
     dns-packet "^5.2.1"
     dotenv "^8.2.0"
