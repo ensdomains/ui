@@ -993,10 +993,9 @@
     ethereumjs-util "^7.0.7"
     typescript-logging "^1.0.0"
 
-"@ensdomains/dnsprovejs@^0.3.8":
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.3.8.tgz#1a40a76fad4531788e7a47b45e6dc1da640210e5"
-  integrity sha512-78Bha70U2OIPot/hIjL9MdUxIS0Yl9JfNtHORHtCqsxV47LFpf4B51GQDlEfg3ke6L4xbiKhUsyNHE3PrS653g==
+"@ensdomains/dnsprovejs@ensdomains/dnsprovejs#canonical-sort":
+  version "0.3.7"
+  resolved "https://codeload.github.com/ensdomains/dnsprovejs/tar.gz/2cf147a5ce8c06577d91cca8c1aed8c5f8920bad"
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
