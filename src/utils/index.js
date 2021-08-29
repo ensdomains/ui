@@ -1,5 +1,5 @@
 import { getNetworkId } from '../web3'
-import { addressUtils } from '@0xproject/utils'
+import { addressUtils } from '@0xproject/utils/lib/src/address_utils'
 
 import {
   isEncodedLabelhash,
