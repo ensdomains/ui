@@ -1,10 +1,10 @@
 {
   "name": "@ensdomains/ui",
-  "version": "3.0.82",
+  "version": "3.2.3",
   "description": "UI components and reusable code",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "test": "node_modules/.bin/jest --verbose",
@@ -47,9 +47,8 @@
     "@ensdomains/address-encoder": "^0.2.5",
     "@ensdomains/content-hash": "^2.5.6",
     "@ensdomains/contracts": "^0.0.1",
-    "@ensdomains/dnsprovejs": "^0.3.3",
-    "@ensdomains/dnssecoraclejs": "^0.2.3",
-    "@ensdomains/dnssecoraclejs-017": "npm:@ensdomains/dnssecoraclejs@0.1.7",
+    "@ensdomains/dnsprovejs": "^0.4.0",
+    "@ensdomains/dnssecoraclejs": "^0.2.6",
     "@ensdomains/ens-contracts": "^0.0.7",
     "@ensdomains/mock": "^2.0.34",
     "@ethvault/iframe-provider": "0.1.9",
@@ -59,7 +58,7 @@
     "cross-fetch": "^3.0.2",
     "dns-packet": "^5.2.1",
     "eth-ens-namehash": "^2.0.8",
-    "ethers": "^5.0.30",
+    "ethers": "^5.4.4",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.11",
     "node-fetch": "^2.6.1",
