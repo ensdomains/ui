@@ -1,5 +1,6 @@
 import { DNSProver } from '@ensdomains/dnsprovejs'
-import { Oracle } from '@ensdomains/dnssecoraclejs'
+import { Oracle as OldOracle } from '@ensdomains/dnssecoraclejs-017'
+import { Oracle as NewOracle } from '@ensdomains/dnssecoraclejs'
 import packet from 'dns-packet'
 import { getProvider } from './web3'
 
@@ -45,10 +46,15 @@ class Claim {
 }
 
 class DNSRegistrar {
-  constructor(provider, oracleAddress) {
+  constructor(provider, oracleAddress, isOld=false) {
     this.provider = provider
     this.oracleAddress = oracleAddress
-    this.OracleClass = Oracle
+    this.isOld = isOld
+    if(isOld){
+      this.OracleClass = OldOracle
+    }else{
+      this.OracleClass = NewOracle
+    }
   }
   /**
    * returns a claim object which allows you to claim

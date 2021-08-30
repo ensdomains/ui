@@ -49,6 +49,7 @@
     "@ensdomains/contracts": "^0.0.1",
     "@ensdomains/dnsprovejs": "^0.4.0",
     "@ensdomains/dnssecoraclejs": "^0.2.6",
+    "@ensdomains/dnssecoraclejs-017": "npm:@ensdomains/dnssecoraclejs@0.1.7",
     "@ensdomains/ens-contracts": "^0.0.7",
     "@ensdomains/mock": "^2.0.34",
     "@ethvault/iframe-provider": "0.1.9",
