@@ -11,17 +11,17 @@ let address
 
 function getDefaultProvider() {
   legacyProvider = new Web3(getNetworkProviderUrl(1))
-  return new ethers.getDefaultProvider('homestead')
+  return new ethers.getDefaultProvider('homestead', 'any')
 }
 
 function getJsonRpcProvider(providerOrUrl) {
   legacyProvider = new Web3(providerOrUrl)
-  return new ethers.providers.JsonRpcProvider(providerOrUrl)
+  return new ethers.providers.JsonRpcProvider(providerOrUrl, 'any')
 }
 
 function getWeb3Provider(providerOrUrl) {
   legacyProvider = new Web3(providerOrUrl)
-  return new ethers.providers.Web3Provider(providerOrUrl)
+  return new ethers.providers.Web3Provider(providerOrUrl, 'any')
 }
 
 function getInfuraProvider(infura) {
