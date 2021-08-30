@@ -26,11 +26,10 @@ import {
 import { encodeLabelhash } from './utils/labelhash'
 
 import {
-  getTestRegistrarContract,
   getReverseRegistrarContract,
   getENSContract,
   getResolverContract,
-  getOldResolverContract
+  getNameWrapperContract
 } from './contracts'
 
 import {
@@ -38,6 +37,7 @@ import {
   encodeContenthash,
   decodeContenthash
 } from './utils/contents'
+import {NAME_WRAPPER_ADDRESS} from "./constants/interfaces";
 
 /* Utils */
 
@@ -84,6 +84,8 @@ export class ENS {
 
     const ENSContract = getENSContract({ address: registryAddress, provider })
     this.ENS = ENSContract
+
+    this.nameWrapperContract = getNameWrapperContract({ address: NAME_WRAPPER_ADDRESS, provider})
   }
 
   /* Get the raw Ethers contract object */
@@ -97,6 +99,18 @@ export class ENS {
     const namehash = getNamehash(name)
     const owner = await this.ENS.owner(namehash)
     return owner
+  }
+
+  async getNameWrapperOwner(name) {
+    const namehash = getNamehash(name)
+    const owner = await this.nameWrapperContract.ownerOf(namehash)
+    return owner
+  }
+
+  async getNameWrapperFuses(name) {
+    const namehash = getNamehash(name)
+    const fuses = await this.nameWrapperContract.getFuses(namehash)
+    return fuses?.fuses
   }
 
   async getResolver(name) {

@@ -8,3 +8,6 @@ export const interfaces = {
   dnssecClaimOld:'0x1aa2e641',
   dnssecClaimNew:'0x17d8f49b'
 }
+
+export const NAME_WRAPPER_ADDRESS = '0x9029c1574f91696026358d4edb0de773d0e04aed'
+
