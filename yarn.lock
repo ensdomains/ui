@@ -993,10 +993,10 @@
     ethereumjs-util "^7.0.7"
     typescript-logging "^1.0.0"
 
-"@ensdomains/dnsprovejs@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.4.0.tgz#7354a1adeacbe96132ce17ac2b0e8a77c7f95288"
-  integrity sha512-nayio7f3XjcVqAWx25SyR5IR3pq8SW+RfJSAZgSbhKB+tgdK8MuaciZwG7tcgiUF7TvzAJk/i7GOL48eXwtatg==
+"@ensdomains/dnsprovejs@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnsprovejs/-/dnsprovejs-0.4.1.tgz#bf32e9265cf5210e657474fdf93faa296d69f470"
+  integrity sha512-q1SiQeuV3dzYt4yS5/Ig1AIKEXqzLpI6RV/tvSdirKg0Y8VdsEag9gpKXu+SoTzmaXT8J+mB0ZPwrV5gb/SbaA==
   dependencies:
     dns-packet "^5.2.1"
     ethereumjs-util "^7.0.7"
@@ -1028,12 +1028,12 @@
     ethers "^5.0.30"
     typescript-logging "^1.0.0"
 
-"@ensdomains/dnssecoraclejs@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.6.tgz#9f7a9baa03fc5b67d4e062a800af1ac395e99cd0"
-  integrity sha512-h6xWNjPgNmQVcZ2fww8s0pK2jJp8KQcwnWvXRYcUP4lJULDC3Ha5Mg8CVDXUE6laY+frytKpzi/NgVj0rjzf6w==
+"@ensdomains/dnssecoraclejs@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@ensdomains/dnssecoraclejs/-/dnssecoraclejs-0.2.7.tgz#7aae0c53b7aa988f146c8fbed089970eac767dc2"
+  integrity sha512-k2DDXAwAI/gjEBTu4vsIvjeL+TcfJ6JkVgC0X7KHlccBCNT/vQMiwvExtFWwGtt3aHPXjLTVehzvM4VZcu1Xow==
   dependencies:
-    "@ensdomains/dnsprovejs" "^0.4.0"
+    "@ensdomains/dnsprovejs" "^0.4.1"
     "@ensdomains/ens-contracts" "0.0.7"
     dns-packet "^5.2.1"
     dotenv "^8.2.0"
