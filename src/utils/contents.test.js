@@ -61,6 +61,15 @@ describe('test contenthash utility functions for swarm', () => {
         '0x90b2c60508004007fd43b74149b31aacbbf2784e874d09b086bed15fd54cacff7120cce95372'
       )
     })
+    test('encodeContentHash returns encoded hash for arweave protocol', () => {
+      const { encoded:encodedContentHash }  = encodeContenthash(
+        'arweave://ys32Pt8uC7TrVxHdOLByOspfPEq2LO63wREHQIM9SJQ'
+      )
+
+      expect(encodedContentHash).toBe(
+        '0x90b2ca05cacdf63edf2e0bb4eb5711dd38b0723aca5f3c4ab62ceeb7c1110740833d4894'
+      )
+    })
   })
 
   describe('decodeContentHash', () => {
@@ -119,6 +128,17 @@ describe('test contenthash utility functions for swarm', () => {
         'CABAB_1Dt0FJsxqsu_J4TodNCbCGvtFf1Uys_3EgzOlTcg'
       )
       expect(decoded.protocolType).toBe('sia')
+      expect(decoded.error).toBe(undefined)
+    })
+    test('decodeContentHash returns decoded contenthash for arweave protocol', () => {
+      const decoded = decodeContenthash(
+        '0x90b2ca05cacdf63edf2e0bb4eb5711dd38b0723aca5f3c4ab62ceeb7c1110740833d4894'
+      )
+
+      expect(decoded.decoded).toBe(
+        'ys32Pt8uC7TrVxHdOLByOspfPEq2LO63wREHQIM9SJQ'
+      )
+      expect(decoded.protocolType).toBe('arweave')
       expect(decoded.error).toBe(undefined)
     })
   })

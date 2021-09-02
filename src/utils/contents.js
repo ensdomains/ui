@@ -1,9 +1,9 @@
 import contentHash from '@ensdomains/content-hash'
 import { utils } from 'ethers'
-const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3', 'skynet-ns']
+const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3', 'skynet-ns', 'arweave-ns']
 
 function matchProtocol(text){
-  return text.match(/^(ipfs|sia|ipns|bzz|onion|onion3):\/\/(.*)/)
+  return text.match(/^(ipfs|sia|ipns|bzz|onion|onion3|arweave):\/\/(.*)/)
     || text.match(/\/(ipfs)\/(.*)/)
     || text.match(/\/(ipns)\/(.*)/)
 }
@@ -34,6 +34,8 @@ export function decodeContenthash(encoded) {
         protocolType = 'onion3'
       } else if (codec === 'skynet-ns') {
         protocolType = 'sia'
+      } else if (codec === 'arweave-ns') {
+        protocolType = 'arweave'
       } else {
         decoded = encoded
       }
@@ -106,6 +108,10 @@ export function encodeContenthash(text) {
       } else if (contentType === 'sia'){
         if(content.length == 46) {
           encoded = '0x' + contentHash.encode('skynet-ns', content);
+        }
+      } else if (contentType === 'arweave'){
+        if(content.length == 43) {
+          encoded = '0x' + contentHash.encode('arweave-ns', content);
         }
       } else {
         console.warn('Unsupported protocol or invalid value', {
