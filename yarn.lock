@@ -969,9 +969,10 @@
   dependencies:
     "@nomiclabs/hardhat-truffle5" "^2.0.0"
 
-"@ensdomains/content-hash@https://github.com/abhimanyu121/content-hash":
+"@ensdomains/content-hash@^2.5.7":
   version "2.5.7"
-  resolved "https://github.com/abhimanyu121/content-hash#078c7bb94f2e13a60e9ef61cc0af3d48dc29c33d"
+  resolved "https://registry.yarnpkg.com/@ensdomains/content-hash/-/content-hash-2.5.7.tgz#180e4ceb6e585a05d69ba307619d4a0cf12948f1"
+  integrity sha512-WNdGKCeubMIAfyPYTMlKeX6cgXKIEo42OcWPOLBiclzJwMibkVqpaGgWKVH9dniJq7bLXLa2tQ0k/F1pt6gUxA==
   dependencies:
     cids "^1.1.5"
     js-base64 "^3.6.0"
