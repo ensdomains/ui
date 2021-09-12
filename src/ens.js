@@ -113,6 +113,25 @@ export class ENS {
     return fuses?.fuses
   }
 
+  async transferNameWrapperOwnership(name, currentOwnerAddress, newOwnerAddress) {
+    const namehash = getNamehash(name)
+    const signer = await getSigner()
+    const nameWrapperContractWithSigner = this.nameWrapperContract.connect(signer)
+
+    const encoded = utils.defaultAbiCoder.encode(
+        ['address', 'address', 'uint256', 'uint256'],
+        [currentOwnerAddress, newOwnerAddress, namehash, '0x000000000000000000000001']
+    )
+
+    return await nameWrapperContractWithSigner.safeTransferFrom(
+        name,
+        newOwnerAddress,
+        namehash,
+        1,
+        encoded
+    )
+  }
+
   async getResolver(name) {
     const namehash = getNamehash(name)
     return this.ENS.resolver(namehash)
