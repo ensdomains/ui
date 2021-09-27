@@ -483,7 +483,7 @@ export class ENS {
   }
 
   async setContenthashWithResolver(name, content, resolverAddr) {
-    let encodedContenthash = content
+    let encodedContenthash = {encoded: content, error: undefined}
     if (parseInt(content, 16) !== 0) {
       encodedContenthash = encodeContenthash(content)
     }
@@ -495,7 +495,10 @@ export class ENS {
     })
     const signer = await getSigner()
     const Resolver = ResolverWithoutSigner.connect(signer)
-    return Resolver.setContenthash(namehash, encodedContenthash)
+    if(encodedContenthash.error){
+      throw new Error("Encoding content hash failed");
+    }
+    return Resolver.setContenthash(namehash, encodedContenthash.encoded)
   }
 
   async setText(name, key, recordValue) {
