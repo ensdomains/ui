@@ -14,7 +14,7 @@ import {
   isValidContenthash,
   getProtocolType
 } from './contents'
-import { normalize } from 'eth-ens-namehash'
+import { normalize } from '@ensdomains/eth-ens-namehash'
 import { namehash } from './namehash'
 
 //import { checkLabelHash } from '../updaters/preImageDB'
