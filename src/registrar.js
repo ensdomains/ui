@@ -627,6 +627,23 @@ export default class Registrar {
       return new Date(result * 1000)
     }
   }
+
+  async getRegistrarEvent(event, { topics = [], fromBlock = 0 }) {
+    const provider = await getProvider()
+    const { permanentRegistrar: Registrar } = this
+    let Event = Registrar.filters[event]()
+
+    const filter = {
+      fromBlock,
+      toBlock: 'latest',
+      address: Event.address,
+      topics: [...Event.topics, ...topics]
+    }
+
+    const logs = await provider.getLogs(filter)
+
+    return logs
+  }
 }
 
 async function getEthResolver(ENS) {
