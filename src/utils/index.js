@@ -65,7 +65,7 @@ const mergeLabels = (labels1, labels2) =>
 
 function validateName(name) {
   const nameArray = name.split('.')
-  const hasEmptyLabels = nameArray.filter(e => e.length < 1).length > 0
+  const hasEmptyLabels = nameArray.some(label => label.length == 0); 
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
   const normalizedArray = nameArray.map(label => {
     if(label === '[root]'){
@@ -106,7 +106,7 @@ const parseSearchTerm = (term, validTld) => {
     const termArray = term.split('.')
     const tld = term.match(regex) ? term.match(regex)[0] : ''
     if (validTld) {
-      if (tld === 'eth' && termArray[termArray.length - 2].length < 3) {
+      if (tld === 'eth' && [...termArray[termArray.length - 2]].length < 3) { // code-point length
         return 'short'
       }
       return 'supported'
