@@ -139,7 +139,7 @@ export default class Registrar {
       legacyEntry = {
         deedOwner, // TODO: Display "Release" button if deedOwner is not 0x0
         state: parseInt(entry[0]),
-        registrationDate: parseInt(entry[2]) * 1000,
+        registrationDate: events.length > 0 ? parseInt(entry[2]) * 1000 : 0,
         revealDate: (parseInt(entry[2]) - 24 * 2 * 60 * 60) * 1000,
         value: parseInt(entry[3]),
         highestBid: parseInt(entry[4])
