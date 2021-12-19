@@ -628,14 +628,13 @@ export default class Registrar {
     }
   }
 
-  async getRegistrarEvent(event, { topics = [], fromBlock = 0 }) {
+  async getRegistrarEvent(event, registrar, { topics = [], fromBlock = 0, toBlock = 'latest' }) {
     const provider = await getProvider()
-    const { permanentRegistrar: Registrar } = this
-    let Event = Registrar.filters[event]()
+    let Event = registrar.filters[event]()
 
     const filter = {
       fromBlock,
-      toBlock: 'latest',
+      toBlock,
       address: Event.address,
       topics: [...Event.topics, ...topics]
     }
