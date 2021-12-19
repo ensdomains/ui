@@ -23,9 +23,10 @@ import {
   getLegacyProvider
 } from './web3'
 
+import { namehash } from './utils/namehash'
 
 import { interfaces } from './constants/interfaces'
-import { namehash, isEncodedLabelhash, labelhash, getEnsStartBlock } from './utils'
+import { isEncodedLabelhash, labelhash } from './utils/labelhash'
 import { utils } from 'ethers'
 
 const {
@@ -167,7 +168,6 @@ export default class Registrar {
     }
     try {
       const labelHash = labelhash(label)
-      const startBlock = await getEnsStartBlock()
 
       // Returns true if name is available
       if (isEncodedLabelhash(label)) {
@@ -176,26 +176,17 @@ export default class Registrar {
         getAvailable = RegistrarController.available(label)
       }
 
-      const [available, nameExpires, gracePeriod, block] = await Promise.all([
+      const [available, nameExpires, gracePeriod] = await Promise.all([
         getAvailable,
         Registrar.nameExpires(labelHash),
-        this.getGracePeriod(Registrar),
-        this.getRegistrarEvent('NameRegistered', {
-          topics: [labelHash],
-          fromBlock: startBlock
-        }).then(logs => {
-          if (logs.length > 0) {
-            return getBlock(logs[logs.length - 1].blockNumber)
-          }
-        })
+        this.getGracePeriod(Registrar)
       ])
 
       ret = {
         ...ret,
         available,
         gracePeriod,
-        nameExpires: nameExpires > 0 ? new Date(nameExpires * 1000) : null,
-        registrationDate: block && block.timestamp * 1000
+        nameExpires: nameExpires > 0 ? new Date(nameExpires * 1000) : null
       }
       // Returns registrar address if owned by new registrar.
       // Keep it as a separate call as this will throw exception for non existing domains
@@ -241,9 +232,6 @@ export default class Registrar {
           ret.isNewRegistrar = true
           ret.gracePeriodEndDate = gracePeriodEndDate
         }
-      }
-      if (legacyEntry.registrationDate && permEntry.registrationDate) {
-        ret.registrationDate = permEntry.registrationDate
       }
     }
 
