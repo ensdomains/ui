@@ -124,10 +124,14 @@ export default class Registrar {
 
   async getLegacyEntry(label) {
     let legacyEntry
+    const labelHash = labelhash(label)
     try {
       const Registrar = this.legacyAuctionRegistrar
       let deedOwner = '0x0'
-      const entry = await Registrar.entries(labelhash(label))
+      const [entry, events] = await Promise.all([
+        Registrar.entries(labelHash),
+        this.getRegistrarEvent('HashRegistered', Registrar, { topics: [labelHash]})
+      ]) 
       if (parseInt(entry[1], 16) !== 0) {
         const deed = await this.getDeed(entry[1])
         deedOwner = await deed.owner()
