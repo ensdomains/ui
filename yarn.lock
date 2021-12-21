@@ -942,10 +942,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@ensdomains/address-encoder@^0.2.14":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.14.tgz#3e0add07ca241d49443fb14e303e3a45ae164d97"
-  integrity sha512-FYdKvFY9cPrwYhoaaSkZRIOAzUQ0+lSfml+sC0mI88MvspgtDnVlMjiAYDRUqbt7F+5w1e2mm7iVDkLVXyPVKg==
+"@ensdomains/address-encoder@^0.2.15":
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.15.tgz#1115b546fe371646c003c385b472af72e4879a7b"
+  integrity sha512-cBCJaI/TbT7rpYXY+Uit3Nl8eHyWunKw7XPpEjodYNCPgx3IGiFX/JbsPX+KsQzc2duuS9ZALs5r/58P2arj/A==
   dependencies:
     bech32 "^2.0.0"
     blakejs "^1.1.0"
