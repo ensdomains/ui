@@ -180,12 +180,9 @@ const ethers2 = require('ethers')
 const CCIPReadProvider = require('@chainlink/ethers-ccip-read-provider').CCIPReadProvider
 window.ethers2
 window.CCIPReadProvider
-export async function getProvider() {  
-  console.log("**** AAA1")
+export async function getProvider() {
   const baseProvider = ethers2.getDefaultProvider('http://localhost:8545');
-  console.log("**** AAA2")
   const provider = new CCIPReadProvider(baseProvider);
-  console.log("**** AAA3")
   return provider
   // return getWeb3()
 }
