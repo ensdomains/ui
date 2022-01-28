@@ -20,7 +20,32 @@ function getReverseRegistrarContract({ address, provider }) {
 }
 
 function getResolverContract({ address, provider }) {
-  return new Contract(address, resolverContract, provider)
+  return new Contract(address, [...resolverContract, 
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "resolve",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }  
+  ], provider)
 }
 
 function getOldResolverContract({ address, provider }) {

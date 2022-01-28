@@ -33,12 +33,67 @@ import {
 } from './contracts'
 
 import {
+  Resolver as resolverContract
+} from '@ensdomains/ens-contracts'
+
+import {
   isValidContenthash,
   encodeContenthash,
   decodeContenthash
 } from './utils/contents'
 
+import { interfaces } from './constants/interfaces'
+import { CCIPReadProvider } from '@chainlink/ethers-ccip-read-provider';
+
+const ethers = require('ethers')
+const IExtendedResolver = new ethers.utils.Interface([
+  ...resolverContract,
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "name",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "resolve",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]);
 /* Utils */
+
+function dnsName(name) {
+  // strip leading and trailing .
+  const n = name.replace(/^\.|\.$/gm, '');
+
+  var bufLen = (n === '') ? 1 : n.length + 2;
+  var buf = Buffer.allocUnsafe(bufLen);
+
+  let offset = 0;
+  if (n.length) {
+      const list = n.split('.');
+      for (let i = 0; i < list.length; i++) {
+          const len = buf.write(list[i], offset + 1)
+          buf[offset] = len;
+          offset += len + 1;
+      }
+  }
+  buf[offset++] = 0;
+  return '0x' + buf.reduce((output, elem) => (output + ('0' + elem.toString(16)).slice(-2)), '');
+}
 
 export function getNamehash(name) {
   return namehash(name)
@@ -99,8 +154,24 @@ export class ENS {
   }
 
   async getResolver(name) {
-    const namehash = getNamehash(name)
-    return this.ENS.resolver(namehash)
+    console.log('***getResolver', name)
+    // const namehash = getNamehash(name)
+    const labels = name.split('.');
+    let resolverAddress = undefined;
+    for(let i = 0; i < labels.length; i++) {
+      const label = labels.slice(i).join('.')
+      const hashedname = namehash(label)
+      resolverAddress = await this.ENS.resolver(hashedname);
+      console.log({label, hashedname, resolverAddress})
+      if(resolverAddress !== "0x0000000000000000000000000000000000000000") {
+        break;
+      }
+    }
+    if(resolverAddress === undefined) {
+      console.log(`${name} could not be resolved`);
+    }
+    return resolverAddress
+    // return this.ENS.resolver(namehash)
   }
 
   async getTTL(name) {
@@ -123,28 +194,62 @@ export class ENS {
       return emptyAddress
     }
     const namehash = getNamehash(name)
-    try {
+    // try {
+      console.log('***provider1')
       const provider = await getProvider()
+      // const baseProvider = await getProvider()
+      // const baseProvider = ethers.getDefaultProvider('http://localhost:8545');
+      // console.log('***provider2', {baseProvider})
+      // window.CCIPReadProvider = CCIPReadProvider      
+      // const provider = new CCIPReadProvider(baseProvider);
+      console.log('***provider3')
       const Resolver = getResolverContract({
         address: resolverAddr,
         provider
       })
-      const addr = await Resolver['addr(bytes32)'](namehash)
-      return addr
-    } catch (e) {
-      console.warn(
-        'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
-      )
-      return emptyAddress
-    }
+      // const addr = await Resolver['addr(bytes32)'](namehash)
+      console.log('***000')
+      const resolver = new ethers.Contract(resolverAddr, IExtendedResolver, provider);
+      console.log('***0001', {Resolver, resolver})
+      // debugger
+      const data = IExtendedResolver.encodeFunctionData('addr(bytes32)', [namehash]);
+      console.log('***002', data, interfaces['resolve'])
+      let responseData
+      const interfaceSupported = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+      console.log('***003', interfaceSupported)
+      if(interfaceSupported){
+        console.log('***0031', name, dnsName(name), data);
+        responseData = await Resolver.resolve(dnsName(name), data);
+        console.log('***111', {responseData})  
+      }else{
+
+        responseData  = await provider.call({to:resolverAddr, data})
+      }
+      console.log('***004', {
+        name, namehash,
+        data,
+        responseData
+      })
+      const addr = IExtendedResolver.decodeFunctionResult('addr(bytes32)', responseData);
+      console.log('***005', addr[0])
+      return addr[0]
+    // } catch (e) {
+    //   console.log({e})
+    //   console.warn(
+    //     'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
+    //   )
+    //   return emptyAddress
+    // }
   }
 
   async getAddress(name) {
+    console.log('***getAddress', name)
     const resolverAddr = await this.getResolver(name)
     return this.getEthAddressWithResolver(name, resolverAddr)
   }
 
   async getAddr(name, key) {
+    console.log('***getAddr', name, key)
     const resolverAddr = await this.getResolver(name)
     if (parseInt(resolverAddr, 16) === 0) return emptyAddress
     return this.getAddrWithResolver(name, key, resolverAddr)
