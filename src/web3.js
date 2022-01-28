@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import Web3 from 'web3'
 import { IFrameEthereumProvider } from '@ethvault/iframe-provider'
+import { CCIPReadProvider } from '@chainlink/ethers-ccip-read-provider'
 
 let provider
 let legacyProvider
@@ -10,25 +11,21 @@ let requested = false
 let address
 
 function getDefaultProvider() {
-  console.log('****PROVIDER1')
   legacyProvider = new Web3(getNetworkProviderUrl(1))
   return new ethers.getDefaultProvider('homestead', 'any')
 }
 
 function getJsonRpcProvider(providerOrUrl) {
-  console.log('****PROVIDER2')
   legacyProvider = new Web3(providerOrUrl)
   return new ethers.providers.JsonRpcProvider(providerOrUrl, 'any')
 }
 
 function getWeb3Provider(providerOrUrl) {
-  console.log('****PROVIDER3', providerOrUrl)
   legacyProvider = new Web3(providerOrUrl)
   return new ethers.providers.Web3Provider(providerOrUrl, 'any')
 }
 
 function getInfuraProvider(infura) {
-  console.log('****PROVIDER4')
   legacyProvider = new Web3(`https://mainnet.infura.io/v3/${infura}`)
   return new ethers.providers.InfuraProvider('homestead', infura)
 }
@@ -67,7 +64,6 @@ export async function setupWeb3({
       signer = provider.getSigner()
     } else {
       // handle EIP 1193 provider
-      console.log('**PROVIDER 0.1')
       provider = getWeb3Provider(customProvider)
     }
     return { provider, signer }
@@ -96,7 +92,6 @@ export async function setupWeb3({
   }
 
   if (window && window.ethereum) {
-    console.log('**PROVIDER 0.2')
     provider = getWeb3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
@@ -110,7 +105,6 @@ export async function setupWeb3({
     }
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
-    console.log('**PROVIDER 0.3')
     provider = getWeb3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
@@ -176,12 +170,9 @@ export function getNetworkProviderUrl(id) {
       return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
   }
 }
-const ethers2 = require('ethers')
-const CCIPReadProvider = require('@chainlink/ethers-ccip-read-provider').CCIPReadProvider
-window.ethers2
-window.CCIPReadProvider
+
 export async function getProvider() {
-  const baseProvider = ethers2.getDefaultProvider('http://localhost:8545');
+  const baseProvider = ethers.getDefaultProvider('http://localhost:8545');
   const provider = new CCIPReadProvider(baseProvider);
   return provider
   // return getWeb3()
