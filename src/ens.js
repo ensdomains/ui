@@ -185,6 +185,22 @@ export class ENS {
     return this.ENS.owner(namehash)
   }
 
+  async resolveOrCall(name, provider, resolverAddr, functionName, ...args){
+    const Resolver = getResolverContract({
+      address: resolverAddr,
+      provider
+    })
+    const data = IExtendedResolver.encodeFunctionData(functionName, ...args)
+    let responseData      
+    const resolveSupported = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+    if(resolveSupported){
+      responseData = await Resolver.resolve(dnsName(name), data);
+    }else{
+      responseData = await provider.call({to:resolverAddr, data})
+    }
+    return IExtendedResolver.decodeFunctionResult(functionName, responseData);
+  }
+
   async getEthAddressWithResolver(name, resolverAddr) {
     if (parseInt(resolverAddr, 16) === 0) {
       return emptyAddress
@@ -192,19 +208,7 @@ export class ENS {
     const namehash = getNamehash(name)
     try {
       const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
-      const data = IExtendedResolver.encodeFunctionData('addr(bytes32)', [namehash]);
-      let responseData      
-      const resolveSupported = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
-      if(resolveSupported){
-        responseData = await Resolver.resolve(dnsName(name), data);
-      }else{
-        responseData  = await provider.call({to:resolverAddr, data})
-      }
-      const addr = IExtendedResolver.decodeFunctionResult('addr(bytes32)', responseData);
+      const addr = await this.resolveOrCall(name, provider, resolverAddr, 'addr(bytes32)', [namehash])
       return addr[0]
     } catch (e) {
       console.warn(
@@ -226,19 +230,12 @@ export class ENS {
   }
 
   async getAddrWithResolver(name, key, resolverAddr) {
-    if(key === 'ETH'){
-      return this.getEthAddressWithResolver(name, resolverAddr)
-    }
     const namehash = getNamehash(name)
     try {
       const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
       const { coinType, encoder } = formatsByName[key]
-      const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
-      if (addr === '0x') return emptyAddress
+      const addr = (await this.resolveOrCall(name, provider, resolverAddr, 'addr(bytes32,uint256)', [namehash, coinType]))[0]
+      if (addr === undefined || parseInt(addr) === 0) return emptyAddress
 
       return encoder(Buffer.from(addr.slice(2), 'hex'))
     } catch (e) {
@@ -314,11 +311,8 @@ export class ENS {
     const namehash = getNamehash(name)
     try {
       const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
-      const addr = await Resolver.text(namehash, key)
+      const addr = (await this.resolveOrCall(name, provider, resolverAddr, 'text(bytes32,string)', [namehash, key] ))[0]
+      if (parseInt(addr) === 0) return ''
       return addr
     } catch (e) {
       console.warn(

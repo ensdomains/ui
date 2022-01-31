@@ -172,10 +172,8 @@ export function getNetworkProviderUrl(id) {
 }
 
 export async function getProvider() {
-  const baseProvider = ethers.getDefaultProvider('http://localhost:8545');
-  const provider = new CCIPReadProvider(baseProvider);
-  return provider
-  // return getWeb3()
+  const baseProvider = await getWeb3()
+  return new CCIPReadProvider(baseProvider);
 }
 
 export async function getSigner() {
