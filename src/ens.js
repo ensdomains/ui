@@ -33,7 +33,8 @@ import {
 } from './contracts'
 
 import {
-  Resolver as resolverContract
+  Resolver as resolverContract,
+  OffchainResolver as OffchainResolverContract
 } from '@ensdomains/ens-contracts'
 
 import {
@@ -46,33 +47,7 @@ import { interfaces } from './constants/interfaces'
 import { CCIPReadProvider } from '@chainlink/ethers-ccip-read-provider';
 
 const ethers = require('ethers')
-const IExtendedResolver = new ethers.utils.Interface([
-  ...resolverContract,
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "name",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "resolve",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]);
+const IExtendedResolver = new ethers.utils.Interface([  ...resolverContract, ...OffchainResolverContract]);
 /* Utils */
 
 function dnsName(name) {

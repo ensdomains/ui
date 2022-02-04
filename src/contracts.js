@@ -7,7 +7,8 @@ import {
   DNSRegistrar as dnsRegistrarContract,
   Resolver as resolverContract,
   ReverseRegistrar as reverseRegistrarContract,
-  TestRegistrar as testRegistrarContract
+  TestRegistrar as testRegistrarContract,
+  OffchainResolver as OffchainResolverContract
 } from '@ensdomains/ens-contracts'
 
 import { abi as oldResolverContract } from '@ensdomains/contracts/abis/ens-022/PublicResolver.json'
@@ -20,32 +21,7 @@ function getReverseRegistrarContract({ address, provider }) {
 }
 
 function getResolverContract({ address, provider }) {
-  return new Contract(address, [...resolverContract, 
-    {
-      "inputs": [
-        {
-          "internalType": "bytes",
-          "name": "name",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "resolve",
-      "outputs": [
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }  
-  ], provider)
+  return new Contract(address, [...resolverContract, ...OffchainResolverContract], provider)
 }
 
 function getOldResolverContract({ address, provider }) {
