@@ -191,10 +191,14 @@ export class ENS {
       provider
     })
     const data = IExtendedResolver.encodeFunctionData(functionName, ...args)
-    let responseData      
+    let responseData
     const resolveSupported = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
     if(resolveSupported){
-      responseData = await Resolver.resolve(dnsName(name), data);
+      try{
+        responseData = await Resolver.resolve(dnsName(name), data);  
+      }catch(e){
+        console.warn('offchain resolver error', {args:JSON.stringify(args),functionName, name, data, e})
+      }
     }else{
       responseData = await provider.call({to:resolverAddr, data})
     }
