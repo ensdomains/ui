@@ -44,7 +44,6 @@ import {
 } from './utils/contents'
 
 import { interfaces } from './constants/interfaces'
-import { CCIPReadProvider } from '@chainlink/ethers-ccip-read-provider';
 
 const ethers = require('ethers')
 const IExtendedResolver = new ethers.utils.Interface([  ...resolverContract, ...OffchainResolverContract]);
