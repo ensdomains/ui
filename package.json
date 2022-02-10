@@ -54,6 +54,7 @@
     "@ensdomains/ens-contracts": "^0.0.7",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
     "@ensdomains/mock": "^2.0.34",
+    "@ensdomains/offchain-resolver-contracts": "^0.0.2",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
     "bech32": "^1.1.3",

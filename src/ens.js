@@ -33,9 +33,9 @@ import {
 } from './contracts'
 
 import {
-  Resolver as resolverContract,
-  OffchainResolver as OffchainResolverContract
+  Resolver as resolverContract
 } from '@ensdomains/ens-contracts'
+import { IExtendedResolver as OffchainResolverContract } from '@ensdomains/offchain-resolver-contracts'
 
 import {
   isValidContenthash,
@@ -46,7 +46,7 @@ import {
 import { interfaces } from './constants/interfaces'
 
 const ethers = require('ethers')
-const IExtendedResolver = new ethers.utils.Interface([  ...resolverContract, ...OffchainResolverContract]);
+const IExtendedResolver = new ethers.utils.Interface([  ...resolverContract, ...OffchainResolverContract.abi]);
 /* Utils */
 
 function dnsName(name) {

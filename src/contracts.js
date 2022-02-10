@@ -7,21 +7,21 @@ import {
   DNSRegistrar as dnsRegistrarContract,
   Resolver as resolverContract,
   ReverseRegistrar as reverseRegistrarContract,
-  TestRegistrar as testRegistrarContract,
-  OffchainResolver as OffchainResolverContract
+  TestRegistrar as testRegistrarContract
 } from '@ensdomains/ens-contracts'
 
 import { abi as oldResolverContract } from '@ensdomains/contracts/abis/ens-022/PublicResolver.json'
 import { abi as dnsRegistrarContractOld } from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/contracts/abis/ens/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/contracts/abis/ens/Deed'
+import { IExtendedResolver as OffchainResolverContract } from '@ensdomains/offchain-resolver-contracts'
 
 function getReverseRegistrarContract({ address, provider }) {
   return new Contract(address, reverseRegistrarContract, provider)
 }
 
 function getResolverContract({ address, provider }) {
-  return new Contract(address, [...resolverContract, ...OffchainResolverContract], provider)
+  return new Contract(address, [...resolverContract, ...OffchainResolverContract.abi], provider)
 }
 
 function getOldResolverContract({ address, provider }) {
