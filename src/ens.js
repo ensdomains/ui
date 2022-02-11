@@ -127,11 +127,12 @@ export class ENS {
     return owner
   }
 
-  async getResolver(name) {
+  async getResolverWithOrigin(name) {
     const labels = name.split('.');
     let resolverAddress = undefined;
+    let label
     for(let i = 0; i < labels.length; i++) {
-      const label = labels.slice(i).join('.')
+      label = labels.slice(i).join('.')
       const hashedname = namehash(label)
       resolverAddress = await this.ENS.resolver(hashedname);
       if(resolverAddress !== "0x0000000000000000000000000000000000000000") {
@@ -141,7 +142,11 @@ export class ENS {
     if(resolverAddress === undefined) {
       console.log(`${name} could not be resolved`);
     }
-    return resolverAddress
+    return {resolverAddress, origin:label}
+  }
+
+  async getResolver(name) {
+    return (await this.getResolverWithOrigin(name)).resolverAddress
   }
 
   async getTTL(name) {
@@ -335,6 +340,22 @@ export class ENS {
     return this.ENS.recordExists(namehash)
   }
 
+  async wildcardResolverDomain(name){
+    const provider = await getProvider()
+    const data = await this.getResolverWithOrigin(name)
+    const {resolverAddress, origin} = data
+    const Resolver = getResolverContract({
+      address: resolverAddress,
+      provider
+    })
+    const res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+    if(res){
+      return origin
+    }else{
+      return false
+    }
+  }
+  
   async getResolverDetails(node) {
     try {
       const addrPromise = this.getAddress(node.name)
