@@ -53,7 +53,7 @@
     "@ensdomains/dnssecoraclejs-017": "npm:@ensdomains/dnssecoraclejs@0.1.7",
     "@ensdomains/ens-contracts": "^0.0.7",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
-    "@ensdomains/mock": "^2.0.34",
+    "@ensdomains/mock": "^2.1.43",
     "@ensdomains/offchain-resolver-contracts": "^0.0.2",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
