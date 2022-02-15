@@ -96,6 +96,9 @@ function getNetworkProviderUrl(id) {
       return `https://rinkeby.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
     case '5':
       return `https://goerli.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
+    case '3117':
+    case '31337':
+      return `http://localhost:8545`
     default:
       return 'private'
   }
