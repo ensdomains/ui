@@ -10,7 +10,8 @@ import {
   getLegacyAuctionContract,
   getDeedContract,
   getTestRegistrarContract,
-  getBulkRenewalContract
+  getBulkRenewalContract,
+  getOracleContract
 } from './contracts'
 
 import {
@@ -120,6 +121,11 @@ export default class Registrar {
   async getDeed(address) {
     const provider = await getProvider()
     return getDeedContract({ address, provider })
+  }
+
+  async getOracle(address){
+    const provider = await getProvider()
+    return getOracleContract({ address, provider })
   }
 
   async getLegacyEntry(label) {
@@ -306,6 +312,12 @@ export default class Registrar {
     const permanentRegistrarController = this.permanentRegistrarController
     let price = await permanentRegistrarController.rentPrice(name, duration)
     return price
+  }
+
+  async getEthPrice(){
+    const contractAddress = await this.getAddress('eth-usd.data.eth')
+    const oracle = await this.getOracle(contractAddress)
+    return (await oracle.latestAnswer()).toNumber() / 100000000
   }
 
   async getRentPrices(labels, duration) {
