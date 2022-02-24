@@ -118,6 +118,15 @@ export default class Registrar {
     return Resolver['addr(bytes32)'](hash)
   }
 
+  async getText(name, key) {
+    const provider = await getProvider()
+    const hash = namehash(name)
+    const resolverAddr = await this.ENS.resolver(hash)
+    const Resolver = getResolverContract({ address: resolverAddr, provider })
+    return Resolver.text(hash, key)
+  }
+
+
   async getDeed(address) {
     const provider = await getProvider()
     return getDeedContract({ address, provider })
@@ -319,6 +328,15 @@ export default class Registrar {
     const oracle = await this.getOracle(contractAddress)
     return (await oracle.latestAnswer()).toNumber() / 100000000
   }
+
+  async getPriceCurve(){
+    try{
+      return this.getText('oracle.ens.eth', 'algorithm')
+    }catch(e){
+      // If the record is not set, fallback to linear.
+      return 'linear'
+    }
+  }  
 
   async getRentPrices(labels, duration) {
     const pricesArray = await Promise.all(
