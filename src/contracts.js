@@ -7,24 +7,15 @@ import {
   DNSRegistrar as dnsRegistrarContract,
   Resolver as resolverContract,
   ReverseRegistrar as reverseRegistrarContract,
-  TestRegistrar as testRegistrarContract
+  TestRegistrar as testRegistrarContract,
+  AggregatorInterface as oracleContract
 } from '@ensdomains/ens-contracts'
 
 import { abi as oldResolverContract } from '@ensdomains/contracts/abis/ens-022/PublicResolver.json'
 import { abi as dnsRegistrarContractOld } from '@ensdomains/contracts/abis/dnsregistrar/DNSRegistrar.json'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/contracts/abis/ens/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/contracts/abis/ens/Deed'
-const ChainLinkABI = [
-  {
-    constant: true,
-    inputs: [],
-    name: 'latestAnswer',
-    outputs: [{ name: '', type: 'int256' }],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  }
-]
+
 function getReverseRegistrarContract({ address, provider }) {
   return new Contract(address, reverseRegistrarContract, provider)
 }
@@ -74,7 +65,7 @@ function getBulkRenewalContract({ address, provider }) {
 }
 
 function getOracleContract({address, provider}){
-  return new Contract(address, ChainLinkABI, provider)
+  return new Contract(address, oracleContract, provider)
 }
 
 export {
