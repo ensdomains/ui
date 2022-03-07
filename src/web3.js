@@ -1,31 +1,25 @@
-import { ethers } from 'ethers'
-import Web3 from 'web3'
 import { IFrameEthereumProvider } from '@ethvault/iframe-provider'
+import { ethers } from 'ethers'
 
 let provider
-let legacyProvider
 let signer
 let readOnly = false
 let requested = false
 let address
 
 function getDefaultProvider() {
-  legacyProvider = new Web3(getNetworkProviderUrl(1))
   return new ethers.getDefaultProvider('homestead', 'any')
 }
 
 function getJsonRpcProvider(providerOrUrl) {
-  legacyProvider = new Web3(providerOrUrl)
   return new ethers.providers.JsonRpcProvider(providerOrUrl, 'any')
 }
 
 function getWeb3Provider(providerOrUrl) {
-  legacyProvider = new Web3(providerOrUrl)
   return new ethers.providers.Web3Provider(providerOrUrl, 'any')
 }
 
 function getInfuraProvider(infura) {
-  legacyProvider = new Web3(`https://mainnet.infura.io/v3/${infura}`)
   return new ethers.providers.InfuraProvider('homestead', infura)
 }
 
@@ -36,21 +30,21 @@ export async function setupWeb3({
   enforceReload = false,
   infura = false
 }) {
-  if(enforceReload){
+  if (enforceReload) {
     provider = null
     readOnly = false
     address = null
   }
 
-  if(enforceReadOnly){
+  if (enforceReadOnly) {
     readOnly = true
     address = null
-    if(infura){
+    if (infura) {
       provider = getInfuraProvider(infura)
-    }else{
+    } else {
       provider = getDefaultProvider()
     }
-    return { provider, signer:undefined }
+    return { provider, signer: undefined }
   }
 
   if (provider) {
@@ -257,9 +251,4 @@ export async function getBlock(number = 'latest') {
       timestamp: 0
     }
   }
-}
-
-// This provider is used to pass to dnsprovejs which only supports web3js provider
-export function getLegacyProvider(){
-  return legacyProvider
 }
