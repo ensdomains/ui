@@ -11,7 +11,7 @@
     "build:ts": "tsc",
     "build:babel": "babel src -d dist --ignore src/**/*.test.js,**/__tests__/**,src/testing-utils",
     "prepublishOnly": "yarn build",
-    "pub": "yarn publish --access public"
+    "pub": "yarn publish ./dist --access public"
   },
   "author": "",
   "license": "ISC",
