@@ -1,12 +1,9 @@
 {
   "name": "@ensdomains/ui",
-  "version": "3.3.16",
+  "version": "3.3.21",
   "description": "UI components and reusable code",
-  "main": "./dist/index.js",
-  "types": "./dist/types.js",
-  "files": [
-    "dist"
-  ],
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "test": "node_modules/.bin/jest --verbose",
     "test:dev": "node_modules/.bin/jest --watch --verbose",
@@ -66,8 +63,7 @@
     "js-sha3": "^0.8.0"
   },
   "peerDependencies": {
-    "ethers": "^",
-    "lodash": "^"
+    "ethers": "^"
   },
   "prettier": {
     "semi": false,

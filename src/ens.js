@@ -1,42 +1,30 @@
-import has from 'lodash/has'
-import { Contract, utils } from 'ethers'
-import {
-  getWeb3,
-  getNetworkId,
-  getProvider,
-  getAccount,
-  getSigner
-} from './web3'
 import { formatsByName } from '@ensdomains/address-encoder'
 import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
-
-import { decryptHashes } from './preimage'
-
+import { utils } from 'ethers'
 import {
-  uniq,
-  getEnsStartBlock,
-  checkLabels,
-  mergeLabels,
-  emptyAddress,
-  isDecrypted,
-  namehash,
-  labelhash
-} from './utils'
-import { encodeLabelhash } from './utils/labelhash'
-
-import {
-  getTestRegistrarContract,
-  getReverseRegistrarContract,
   getENSContract,
   getResolverContract,
-  getOldResolverContract
+  getReverseRegistrarContract
 } from './contracts'
-
+import { decryptHashes } from './preimage'
 import {
-  isValidContenthash,
-  encodeContenthash,
-  decodeContenthash
-} from './utils/contents'
+  checkLabels,
+  emptyAddress,
+  getEnsStartBlock,
+  labelhash,
+  mergeLabels,
+  namehash,
+  uniq
+} from './utils'
+import { decodeContenthash, encodeContenthash } from './utils/contents'
+import { encodeLabelhash } from './utils/labelhash'
+import {
+  getAccount,
+  getNetworkId,
+  getProvider,
+  getSigner,
+  getWeb3
+} from './web3'
 
 /* Utils */
 
@@ -71,7 +59,9 @@ const contracts = {
 export class ENS {
   constructor({ networkId, registryAddress, provider }) {
     this.contracts = contracts
-    const hasRegistry = has(this.contracts[networkId], 'registry')
+    const hasRegistry = Object.keys(this.contracts[networkId]).includes(
+      'registry'
+    )
 
     if (!hasRegistry && !registryAddress) {
       throw new Error(`Unsupported network ${networkId}`)
@@ -313,24 +303,27 @@ export class ENS {
       topics: [namehash],
       fromBlock: startBlock
     })
-    const flattenedLogs = rawLogs.map(log => log.values)
+    const flattenedLogs = rawLogs.map((log) => log.values)
     flattenedLogs.reverse()
     const logs = uniq(flattenedLogs, 'label')
-    const labelhashes = logs.map(log => log.label)
+    const labelhashes = logs.map((log) => log.label)
     const remoteLabels = await decryptHashes(...labelhashes)
     const localLabels = checkLabels(...labelhashes)
     const labels = mergeLabels(localLabels, remoteLabels)
-    const ownerPromises = labels.map(label => this.getOwner(`${label}.${name}`))
+    const ownerPromises = labels.map((label) =>
+      this.getOwner(`${label}.${name}`)
+    )
 
-    return Promise.all(ownerPromises).then(owners =>
+    return Promise.all(ownerPromises).then((owners) =>
       owners.map((owner, index) => {
         return {
           label: labels[index],
           labelhash: logs[index].label,
           decrypted: labels[index] !== null,
           node: name,
-          name: `${labels[index] ||
-            encodeLabelhash(logs[index].label)}.${name}`,
+          name: `${
+            labels[index] || encodeLabelhash(logs[index].label)
+          }.${name}`,
           owner
         }
       })
@@ -586,7 +579,7 @@ export class ENS {
 
     const logs = await provider.getLogs(filter)
 
-    const parsed = logs.map(log => {
+    const parsed = logs.map((log) => {
       const parsedLog = ensInterface.parseLog(log)
       return parsedLog
     })
