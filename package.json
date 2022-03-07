@@ -10,8 +10,8 @@
     "build": "rm -rf dist/* && yarn build:ts && yarn build:babel && cp package.json dist/ && cp README.md dist/ && cp LICENSE dist/ && cp yarn.lock dist/",
     "build:ts": "tsc",
     "build:babel": "babel src -d dist --ignore src/**/*.test.js,**/__tests__/**,src/testing-utils",
-    "prepublishOnly": "yarn build",
-    "pub": "yarn publish ./dist --access public"
+    "prepublishOnly": "yarn build && cd ./dist",
+    "pub": "yarn publish --access public"
   },
   "author": "",
   "license": "ISC",
