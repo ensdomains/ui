@@ -10,7 +10,8 @@ import {
   getPermanentRegistrarContract,
   getPermanentRegistrarControllerContract,
   getResolverContract,
-  getTestRegistrarContract
+  getTestRegistrarContract,
+  getOracleContract
 } from './contracts'
 import DNSRegistrarJS from './dnsregistrar'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
@@ -113,9 +114,22 @@ export default class Registrar {
     return Resolver['addr(bytes32)'](hash)
   }
 
+  async getText(name, key) {
+    const provider = await getProvider()
+    const hash = namehash(name)
+    const resolverAddr = await this.ENS.resolver(hash)
+    const Resolver = getResolverContract({ address: resolverAddr, provider })
+    return Resolver.text(hash, key)
+  }
+
   async getDeed(address) {
     const provider = await getProvider()
     return getDeedContract({ address, provider })
+  }
+
+  async getOracle(address) {
+    const provider = await getProvider()
+    return getOracleContract({ address, provider })
   }
 
   async getLegacyEntry(label) {
@@ -305,6 +319,21 @@ export default class Registrar {
     const permanentRegistrarController = this.permanentRegistrarController
     let price = await permanentRegistrarController.rentPrice(name, duration)
     return price
+  }
+
+  async getEthPrice() {
+    const contractAddress = await this.getAddress('eth-usd.data.eth')
+    const oracle = await this.getOracle(contractAddress)
+    return (await oracle.latestAnswer()).toNumber() / 100000000
+  }
+
+  async getPriceCurve() {
+    try {
+      return this.getText('oracle.ens.eth', 'algorithm')
+    } catch (e) {
+      // If the record is not set, fallback to linear.
+      return 'linear'
+    }
   }
 
   async getRentPrices(labels, duration) {

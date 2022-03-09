@@ -1055,7 +1055,7 @@
     "@ensdomains/buffer" "^0.0.10"
     "@openzeppelin/contracts" "^4.1.0"
 
-"@ensdomains/ens-contracts@0.0.7", "@ensdomains/ens-contracts@^0.0.7":
+"@ensdomains/ens-contracts@0.0.7":
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.7.tgz#a08dd7de3d927487c05a9c846b4834a124f053ce"
   integrity sha512-adlWSrtBh85CNM1hsrsNxWrSx6g37DOCkWP5vBT/HtXnpNtvL49Z1Ueum55lN8YifTWo2Kqb1mgPojjLY99f5w==
@@ -1065,6 +1065,16 @@
     "@openzeppelin/contracts" "^4.1.0"
     dns-packet "^5.3.0"
     name-wrapper "^1.0.0"
+
+"@ensdomains/ens-contracts@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens-contracts/-/ens-contracts-0.0.11.tgz#a1cd87af8c454b694acba5be1a44c1b20656a9be"
+  integrity sha512-b74OlFcds9eyHy26uE2fGcM+ZCSFtPeRGVbUYWq3NRlf+9t8TIgPwF3rCNwpAFQG0B/AHb4C4hYX2BBJYR1zPg==
+  dependencies:
+    "@ensdomains/buffer" "^0.0.13"
+    "@ensdomains/solsha1" "0.0.3"
+    "@openzeppelin/contracts" "^4.1.0"
+    dns-packet "^5.3.0"
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
@@ -1082,15 +1092,15 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/eth-ens-namehash/-/eth-ens-namehash-2.0.15.tgz#5e5f2f24ba802aff8bc19edd822c9a11200cdf4a"
   integrity sha512-JRDFP6+Hczb1E0/HhIg0PONgBYasfGfDheujmfxaZaAv/NAH4jE6Kf48WbqfRZdxt4IZI3jl3Ri7sZ1nP09lgw==
 
-"@ensdomains/mock@^2.0.34":
-  version "2.1.42"
-  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.1.42.tgz#3a2160092b20e0528f8c349c1da26315c854c3fa"
-  integrity sha512-zFXlOyb8DbH405YdhdgJ1Rz4Ooy8m+y+AFgYdfjVcPBS3huH6JTdxoFN+nyN+g2UWxmXbHjY1z/PZrRwgMeWzQ==
+"@ensdomains/mock@^2.0.47":
+  version "2.1.47"
+  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.1.47.tgz#daca39fc91129f06d19a19f9ee9de2053ddc1a2c"
+  integrity sha512-LApEend92qf92QQMJFciEoBvh3BTAdndeRc6CC59GbBi5XooVnaAyry9KM+n0cQ6UVuj792LotYwpsI3RnSDHQ==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@ensdomains/dnssec-oracle-anchors" "^0.0.1"
     "@ensdomains/ens-archived-contracts" "^0.0.1"
-    "@ensdomains/ens-contracts" "^0.0.7"
+    "@ensdomains/ens-contracts" "^0.0.11"
     chalk "^3.0.0"
     cross-fetch "^3.0.2"
     dns-packet "^5.2.1"
