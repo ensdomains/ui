@@ -59,9 +59,9 @@ const contracts = {
 export class ENS {
   constructor({ networkId, registryAddress, provider }) {
     this.contracts = contracts
-    const hasRegistry = Object.keys(this.contracts[networkId]).includes(
-      'registry'
-    )
+    const hasRegistry =
+      this.contracts[networkId] &&
+      Object.keys(this.contracts[networkId]).includes('registry')
 
     if (!hasRegistry && !registryAddress) {
       throw new Error(`Unsupported network ${networkId}`)
