@@ -10,7 +10,8 @@ import {
   getPermanentRegistrarContract,
   getPermanentRegistrarControllerContract,
   getResolverContract,
-  getTestRegistrarContract
+  getTestRegistrarContract,
+  getOracleContract
 } from './contracts'
 import DNSRegistrarJS from './dnsregistrar'
 import { isEncodedLabelhash, labelhash } from './utils/labelhash'
