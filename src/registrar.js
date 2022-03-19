@@ -628,7 +628,9 @@ export default class Registrar {
     const user = await signer.getAddress()
     const registrar = registrarWithoutSigner.connect(signer)
     const proofData = await claim.getProofData()
-    const data = isOld ? proofData.data : proofData.rrsets
+    const data = isOld
+      ? proofData.data
+      : proofData.rrsets.map((x) => Object.values(x))
     const proof = proofData.proof
 
     if (data.length === 0) {
