@@ -11,6 +11,7 @@ export async function setupENS({
   enforceReload,
   infura
 } = {}) {
+  console.log("****setupENS")
   const { provider } = await setupWeb3({
     customProvider,
     reloadOnAccountsChange,
@@ -31,3 +32,6 @@ export * from './web3'
 export * from './constants/interfaces'
 export * from './utils'
 export * from './contracts'
+export function foo(){
+  return 'bar'
+}

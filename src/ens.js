@@ -1,3 +1,4 @@
+// THIS IS LOCAL VERSION
 import { formatsByName } from '@ensdomains/address-encoder'
 import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
 import { utils } from 'ethers'
@@ -72,6 +73,7 @@ export class ENS {
     this.registryAddress = registryAddress
 
     const ENSContract = getENSContract({ address: registryAddress, provider })
+    this.provider = provider
     this.ENS = ENSContract
   }
 
@@ -89,20 +91,26 @@ export class ENS {
   }
 
   async getResolver(name) {
-    const namehash = getNamehash(name)
-    return this.ENS.resolver(namehash)
+    return this.provider.resolveName(name)
   }
 
+  async getResolverObject(name) {
+    return this.provider.getResolver(name)
+  }
+
+  // TODO
   async getTTL(name) {
     const namehash = getNamehash(name)
     return this.ENS.ttl(namehash)
   }
 
+  // TODO
   async getResolverWithLabelhash(labelhash, nodehash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
     return this.ENS.resolver(namehash)
   }
 
+  // TODO
   async getOwnerWithLabelHash(labelhash, nodeHash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
     return this.ENS.owner(namehash)
@@ -119,7 +127,12 @@ export class ENS {
         address: resolverAddr,
         provider
       })
-      const addr = await Resolver['addr(bytes32)'](namehash)
+      console.log('***getEthAddressWithResolver1', {name, resolverAddr})
+      const addr = await Resolver['addr(bytes32)'](namehash, {ccipReadEnabled:true})
+      console.log('***getEthAddressWithResolver2', {addr})
+      const resolver = await this.getResolverObject(name)
+      const addr2 = resolver.getAddress()
+      console.log('***getEthAddressWithResolver3', {addr2})
       return addr
     } catch (e) {
       console.warn(
@@ -149,7 +162,9 @@ export class ENS {
         provider
       })
       const { coinType, encoder } = formatsByName[key]
-      const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType)
+      console.log('***getAddrWithResolver', {name, key, resolverAddr})
+      const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType, {ccipReadEnabled:true})
+      console.log('***getAddrWithResolver', {addr})
       if (addr === '0x') return emptyAddress
 
       return encoder(Buffer.from(addr.slice(2), 'hex'))
@@ -172,12 +187,16 @@ export class ENS {
       return emptyAddress
     }
     try {
+      console.log('***getContentWithResolver1', name, resolverAddr)
       const namehash = getNamehash(name)
+      console.log('***getContentWithResolver2')
       const provider = await getProvider()
+      console.log('***getContentWithResolver3')
       const Resolver = getResolverContract({
         address: resolverAddr,
         provider
       })
+      console.log('***getContentWithResolver4')
       const contentHashSignature = utils
         .solidityKeccak256(['string'], ['contenthash(bytes32)'])
         .slice(0, 10)
@@ -185,9 +204,13 @@ export class ENS {
       const isContentHashSupported = await Resolver.supportsInterface(
         contentHashSignature
       )
-
+      console.log('***getContentWithResolver3', isContentHashSupported)
       if (isContentHashSupported) {
-        const encoded = await Resolver.contenthash(namehash)
+        const encoded = await Resolver.contenthash(namehash, {ccipReadEnabled:true})
+        console.log('***getContentWithResolver4', encoded)
+        const resolver = await this.provider.getResolverObject(name)
+        const encoded2 = resolver.getContentHash();
+        console.log('***getContentWithResolver5', encoded2)
         const { protocolType, decoded, error } = decodeContenthash(encoded)
         if (error) {
           return {
@@ -230,7 +253,10 @@ export class ENS {
         address: resolverAddr,
         provider
       })
-      const addr = await Resolver.text(namehash, key)
+      console.log('***getTextWithResolver1', name, key, resolverAddr)
+      const addr = await Resolver.text(namehash, key, {ccipReadEnabled:true})
+      const addr2 = await Resolver.text(namehash, key, {ccipReadEnabled:true})
+      console.log('***getTextWithResolver2', addr)
       return addr
     } catch (e) {
       console.warn(
@@ -561,7 +587,23 @@ export class ENS {
     let namehash = getNamehash(reverseNode)
     return Resolver.setName(namehash, name)
   }
-
+  async wildcardResolverDomain(name){
+    console.log('***wildcardResolverDomain', name)
+    const provider = await getProvider()
+    const data = await this.getResolver(name)
+    const {resolverAddress, origin} = data
+    const Resolver = getResolverContract({
+      address: resolverAddress,
+      provider
+    })
+    const res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+    console.log('***wildcardResolverDomain2', name)
+    if(res){
+      return origin
+    }else{
+      return false
+    }
+  }
   // Events
 
   async getENSEvent(event, { topics, fromBlock }) {
