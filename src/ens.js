@@ -26,7 +26,8 @@ import {
   getSigner,
   getWeb3
 } from './web3'
-
+import { interfaces } from './constants/interfaces'
+console.log({interfaces})
 /* Utils */
 
 export function getNamehash(name) {
@@ -91,7 +92,13 @@ export class ENS {
   }
 
   async getResolver(name) {
-    return this.provider.resolveName(name)
+    let resolver = await this.provider.getResolver(name)
+    console.log('***getResolver', {name, resolver})
+    window.provider = this.provider
+    if(resolver){
+      return resolver.address
+    }
+    // return this.provider.resolveName(name)
   }
 
   async getResolverObject(name) {
@@ -127,13 +134,13 @@ export class ENS {
         address: resolverAddr,
         provider
       })
-      console.log('***getEthAddressWithResolver1', {name, resolverAddr})
-      const addr = await Resolver['addr(bytes32)'](namehash, {ccipReadEnabled:true})
-      console.log('***getEthAddressWithResolver2', {addr})
+      // console.log('***getEthAddressWithResolver1', {name, resolverAddr})
+      // const addr = await Resolver['addr(bytes32)'](namehash, {ccipReadEnabled:true})
+      // console.log('***getEthAddressWithResolver21', {name, addr})
       const resolver = await this.getResolverObject(name)
-      const addr2 = resolver.getAddress()
-      console.log('***getEthAddressWithResolver3', {addr2})
-      return addr
+      const addr2 = await resolver.getAddress()
+      console.log('***getEthAddressWithResolver3', {name, addr2})
+      return addr2
     } catch (e) {
       console.warn(
         'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
@@ -154,17 +161,17 @@ export class ENS {
   }
 
   async getAddrWithResolver(name, key, resolverAddr) {
-    const namehash = getNamehash(name)
+    console.log('***getAddrWithResolver0')
     try {
-      const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
+      console.log('***getAddrWithResolver11a', {name, key, resolverAddr})
       const { coinType, encoder } = formatsByName[key]
-      console.log('***getAddrWithResolver', {name, key, resolverAddr})
-      const addr = await Resolver['addr(bytes32,uint256)'](namehash, coinType, {ccipReadEnabled:true})
-      console.log('***getAddrWithResolver', {addr})
+      console.log('***getAddrWithResolver12a', {name, key, coinType})
+      const resolver = await this.getResolverObject(name)
+      console.log('***getAddrWithResolver13a', resolver)
+      const addr = await resolver.getAddress()
+      window.resolver = resolver
+      // const addr = await resolver.getAddress()
+      console.log('***getAddrWithResolver14a', addr)
       if (addr === '0x') return emptyAddress
 
       return encoder(Buffer.from(addr.slice(2), 'hex'))
@@ -246,17 +253,9 @@ export class ENS {
     if (parseInt(resolverAddr, 16) === 0) {
       return ''
     }
-    const namehash = getNamehash(name)
     try {
-      const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
-      console.log('***getTextWithResolver1', name, key, resolverAddr)
-      const addr = await Resolver.text(namehash, key, {ccipReadEnabled:true})
-      const addr2 = await Resolver.text(namehash, key, {ccipReadEnabled:true})
-      console.log('***getTextWithResolver2', addr)
+      const resolver = await this.getResolverObject(name)
+      const addr = await resolver.getText(key)
       return addr
     } catch (e) {
       console.warn(
@@ -588,21 +587,18 @@ export class ENS {
     return Resolver.setName(namehash, name)
   }
   async wildcardResolverDomain(name){
-    console.log('***wildcardResolverDomain', name)
     const provider = await getProvider()
-    const data = await this.getResolver(name)
-    const {resolverAddress, origin} = data
+    const resolverAddress = await this.getResolver(name)
     const Resolver = getResolverContract({
       address: resolverAddress,
       provider
     })
-    const res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
-    console.log('***wildcardResolverDomain2', name)
-    if(res){
-      return origin
-    }else{
-      return false
-    }
+    let res, resNew
+    window.Resolver = Resolver
+    window.interfaces = interfaces
+    res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+    resNew = await Resolver['supportsInterface(bytes4)'](interfaces['resolveNew'])
+    return res || resNew
   }
   // Events
 
