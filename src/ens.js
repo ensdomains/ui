@@ -7,11 +7,9 @@ import {
   getReverseRegistrarContract
 } from './contracts'
 import {
-  checkLabels,
   emptyAddress,
   getEnsStartBlock,
   labelhash,
-  mergeLabels,
   namehash,
   uniq
 } from './utils'

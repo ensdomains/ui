@@ -41,7 +41,6 @@ describe('Blockchain tests', () => {
     }
 
     const accounts = await getAccounts()
-    console.log('===Accounts', accounts)
     expect(accounts.length).toBeGreaterThan(0)
 
     const {
@@ -192,20 +191,20 @@ describe('Blockchain tests', () => {
     test('deleteSubdomain deletes a subdomain', async () => {
       const accounts = await getAccounts()
       const ensContract = ens.getENSContractInstance()
-      const hash = getNamehash('new2.subdomain.eth')
+      const hash = getNamehash('new2.resolver.eth')
       const oldOwner = await ensContract.owner(hash)
       // expect the initial owner to be no one
       expect(oldOwner).toBe('0x0000000000000000000000000000000000000000')
       const tx = await ens.createSubdomain('new2.resolver.eth')
-      // await tx.wait()
-      // const newOwner = await ensContract.owner(hash)
-      // console.timeLog(newOwner)
-      // // Verify owner is the user and therefore the subdomain exists
-      // expect(newOwner).toBe(accounts[0])
-      // const tx2 = await ens.deleteSubdomain('b.subdomain.eth')
-      // await tx2.wait()
-      // const deletedOwner = await ensContract.owner(hash)
-      // Verify owner has been set to 0x00... to ensure deletion
+      await tx.wait()
+      const newOwner = await ensContract.owner(hash)
+      console.timeLog(newOwner)
+      // Verify owner is the user and therefore the subdomain exists
+      expect(newOwner).toBe(accounts[0])
+      const tx2 = await ens.deleteSubdomain('new2.resolver.eth')
+      await tx2.wait()
+      const deletedOwner = await ensContract.owner(hash)
+      //Verify owner has been set to 0x00... to ensure deletion
     })
   })
 
