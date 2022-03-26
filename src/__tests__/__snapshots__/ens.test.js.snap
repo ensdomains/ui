@@ -2,4 +2,6 @@
 
 exports[`Blockchain tests Helper functions getDomainDetails gets rootdomain and resolver details 1`] = `"bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162"`;
 
+exports[`Blockchain tests Helper functions getSubdomains gets all subdomains 1`] = `"0xd3f9d8afa22252fe9d51e89b7ff2864c8f2de91a5ca28d675054e0581ada9ce0"`;
+
 exports[`Blockchain tests Resolver getContent returns a 32 byte hash 1`] = `"0x736f6d65436f6e74656e74000000000000000000000000000000000000000000"`;

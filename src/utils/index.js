@@ -17,13 +17,7 @@ import {
 import { normalize } from '@ensdomains/eth-ens-namehash'
 import { namehash } from './namehash'
 
-//import { checkLabelHash } from '../updaters/preImageDB'
-
-const uniq = (a, param) =>
-  a.filter(
-    (item, pos) =>
-      a.map((mapItem) => mapItem[param]).indexOf(item[param]) === pos
-  )
+const uniq = (a) => a.filter((item, index) => a.indexOf(item) === index)
 
 const checkLabels = (...labelHashes) => labelHashes.map((hash) => null)
 
@@ -57,9 +51,6 @@ async function getEnsStartBlock() {
       return 0
   }
 }
-
-// export const checkLabels = (...labelHashes) =>
-//   labelHashes.map(labelHash => checkLabelHash(labelHash) || null)
 
 const mergeLabels = (labels1, labels2) =>
   labels1.map((label, index) => (label ? label : labels2[index]))

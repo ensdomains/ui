@@ -6,7 +6,6 @@ import {
   getResolverContract,
   getReverseRegistrarContract
 } from './contracts'
-import { decryptHashes } from './preimage'
 import {
   checkLabels,
   emptyAddress,
@@ -189,10 +188,8 @@ export class ENS {
       if (isContentHashSupported) {
         const encoded = await Resolver.contenthash(namehash)
 
-        console.log('encoded', encoded)
         const { protocolType, decoded, error } = decodeContenthash(encoded)
 
-        console.log(protocolType, decoded, error)
         if (error) {
           return {
             value: error,
@@ -310,27 +307,19 @@ export class ENS {
     })
     const flattenedLogs = rawLogs.map((log) => log.args.label)
     flattenedLogs.reverse()
-    console.log('rawLogs', rawLogs)
-    console.log('flattenedLogs', flattenedLogs)
-    const logs = uniq(flattenedLogs, 'label')
-    const labelhashes = logs.map((log) => log.label)
-    //const remoteLabels = await decryptHashes(...labelhashes)
-    const localLabels = checkLabels(...labelhashes)
-    //const labels = mergeLabels(localLabels)
+    const labelhashes = uniq(flattenedLogs)
     const ownerPromises = labelhashes.map((label) =>
-      this.getOwnerWithLabelHash(label)
+      this.getOwnerWithLabelHash(label, namehash)
     )
 
     return Promise.all(ownerPromises).then((owners) =>
       owners.map((owner, index) => {
         return {
           label: null,
-          labelhash: logs[index].label,
+          labelhash: labelhashes[index],
           decrypted: false,
           node: name,
-          name: `${
-            labels[index] || encodeLabelhash(logs[index].label)
-          }.${name}`,
+          name: `${encodeLabelhash(labelhashes[index])}.${name}`,
           owner
         }
       })

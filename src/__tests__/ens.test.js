@@ -337,7 +337,6 @@ describe('Blockchain tests', () => {
     test('getDomainDetails gets rootdomain and resolver details', async () => {
       try {
         const domain = await ens.getDomainDetails('abittooawesome.eth')
-        console.log(domain)
         expect(domain.owner).not.toBe(
           '0x0000000000000000000000000000000000000000'
         )
@@ -354,10 +353,10 @@ describe('Blockchain tests', () => {
       }
     })
 
-    // test.only('getSubdomains gets all subdomains', async () => {
-    //   const domains = await ens.getSubdomains('eth')
-    //   expect(domains.length).toBeGreaterThan(0)
-    //   expect(domains[0].label).toBe('subdomain')
-    // })
+    test('getSubdomains gets all subdomains', async () => {
+      const domains = await ens.getSubdomains('eth')
+      expect(domains.length).toBeGreaterThan(0)
+      expect(domains[0].labelhash).toMatchSnapshot()
+    })
   })
 })
