@@ -19,8 +19,6 @@ import { namehash } from './namehash'
 
 const uniq = (a) => a.filter((item, index) => a.indexOf(item) === index)
 
-const checkLabels = (...labelHashes) => labelHashes.map((hash) => null)
-
 async function getEtherScanAddr() {
   const networkId = await getNetworkId()
   switch (networkId) {
@@ -126,8 +124,6 @@ export {
   emptyAddress,
   getEtherScanAddr,
   getEnsStartBlock,
-  checkLabels,
-  mergeLabels,
   // name validation
   validateName,
   parseSearchTerm,
