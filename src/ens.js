@@ -129,18 +129,8 @@ export class ENS {
     }
     const namehash = getNamehash(name)
     try {
-      const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
-      // console.log('***getEthAddressWithResolver1', {name, resolverAddr})
-      // const addr = await Resolver['addr(bytes32)'](namehash, {ccipReadEnabled:true})
-      // console.log('***getEthAddressWithResolver21', {name, addr})
       const resolver = await this.getResolverObject(name)
-      const addr2 = await resolver.getAddress()
-      console.log('***getEthAddressWithResolver3', {name, addr2})
-      return addr2
+      return resolver.getAddress()
     } catch (e) {
       console.warn(
         'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
@@ -161,19 +151,11 @@ export class ENS {
   }
 
   async getAddrWithResolver(name, key, resolverAddr) {
-    console.log('***getAddrWithResolver0')
     try {
-      console.log('***getAddrWithResolver11a', {name, key, resolverAddr})
       const { coinType, encoder } = formatsByName[key]
-      console.log('***getAddrWithResolver12a', {name, key, coinType})
       const resolver = await this.getResolverObject(name)
-      console.log('***getAddrWithResolver13a', resolver)
-      const addr = await resolver.getAddress()
-      window.resolver = resolver
-      // const addr = await resolver.getAddress()
-      console.log('***getAddrWithResolver14a', addr)
+      const addr = await resolver.getAddress(coinType)
       if (addr === '0x') return emptyAddress
-
       return encoder(Buffer.from(addr.slice(2), 'hex'))
     } catch (e) {
       console.log(e)
