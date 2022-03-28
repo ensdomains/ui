@@ -1,4 +1,3 @@
-// THIS IS LOCAL VERSION
 import { formatsByName } from '@ensdomains/address-encoder'
 import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
 import { utils } from 'ethers'
@@ -508,8 +507,6 @@ export class ENS {
       provider
     })
     let res, resNew
-    window.Resolver = Resolver
-    window.interfaces = interfaces
     res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
     resNew = await Resolver['supportsInterface(bytes4)'](interfaces['resolveNew'])
     return res || resNew
