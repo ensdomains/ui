@@ -27,7 +27,6 @@ import {
   getWeb3
 } from './web3'
 import { interfaces } from './constants/interfaces'
-console.log({interfaces})
 /* Utils */
 
 export function getNamehash(name) {
@@ -85,6 +84,7 @@ export class ENS {
 
   /* Main methods */
 
+  // TODO: ethers.js does not support owner
   async getOwner(name) {
     const namehash = getNamehash(name)
     const owner = await this.ENS.owner(namehash)
@@ -93,67 +93,42 @@ export class ENS {
 
   async getResolver(name) {
     let resolver = await this.provider.getResolver(name)
-    console.log('***getResolver', {name, resolver})
-    window.provider = this.provider
     if(resolver){
       return resolver.address
     }
-    // return this.provider.resolveName(name)
   }
 
   async getResolverObject(name) {
     return this.provider.getResolver(name)
   }
 
-  // TODO
+  // TODO: ethers.js does not support ttl
   async getTTL(name) {
     const namehash = getNamehash(name)
     return this.ENS.ttl(namehash)
   }
 
-  // TODO
+  // TODO: ethers.js does not support lookup by namehash
   async getResolverWithLabelhash(labelhash, nodehash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
     return this.ENS.resolver(namehash)
   }
 
-  // TODO
+  // TODO: ethers.js does not support lookup by namehash
   async getOwnerWithLabelHash(labelhash, nodeHash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
     return this.ENS.owner(namehash)
   }
 
-  async getEthAddressWithResolver(name, resolverAddr) {
-    if (parseInt(resolverAddr, 16) === 0) {
-      return emptyAddress
-    }
-    const namehash = getNamehash(name)
-    try {
-      const resolver = await this.getResolverObject(name)
-      return resolver.getAddress()
-    } catch (e) {
-      console.warn(
-        'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
-      )
-      return emptyAddress
-    }
-  }
-
   async getAddress(name) {
-    const resolverAddr = await this.getResolver(name)
-    return this.getEthAddressWithResolver(name, resolverAddr)
+    return this.getAddr(name, 'ETH')
   }
 
   async getAddr(name, key) {
-    const resolverAddr = await this.getResolver(name)
-    if (parseInt(resolverAddr, 16) === 0) return emptyAddress
-    return this.getAddrWithResolver(name, key, resolverAddr)
-  }
-
-  async getAddrWithResolver(name, key, resolverAddr) {
+    const resolver = await this.getResolverObject(name)
+    if(!resolver) return emptyAddress
     try {
       const { coinType, encoder } = formatsByName[key]
-      const resolver = await this.getResolverObject(name)
       const addr = await resolver.getAddress(coinType)
       if (addr === '0x') return emptyAddress
       return encoder(Buffer.from(addr.slice(2), 'hex'))
@@ -167,25 +142,17 @@ export class ENS {
   }
 
   async getContent(name) {
-    const resolverAddr = await this.getResolver(name)
-    return this.getContentWithResolver(name, resolverAddr)
-  }
-
-  async getContentWithResolver(name, resolverAddr) {
-    if (parseInt(resolverAddr, 16) === 0) {
+    const resolver = await this.provider.getResolverObject(name)
+    if (!resolver) {
       return emptyAddress
     }
     try {
-      console.log('***getContentWithResolver1', name, resolverAddr)
       const namehash = getNamehash(name)
-      console.log('***getContentWithResolver2')
       const provider = await getProvider()
-      console.log('***getContentWithResolver3')
       const Resolver = getResolverContract({
-        address: resolverAddr,
+        address: resolver.address,
         provider
       })
-      console.log('***getContentWithResolver4')
       const contentHashSignature = utils
         .solidityKeccak256(['string'], ['contenthash(bytes32)'])
         .slice(0, 10)
@@ -193,13 +160,8 @@ export class ENS {
       const isContentHashSupported = await Resolver.supportsInterface(
         contentHashSignature
       )
-      console.log('***getContentWithResolver3', isContentHashSupported)
       if (isContentHashSupported) {
-        const encoded = await Resolver.contenthash(namehash, {ccipReadEnabled:true})
-        console.log('***getContentWithResolver4', encoded)
-        const resolver = await this.provider.getResolverObject(name)
-        const encoded2 = resolver.getContentHash();
-        console.log('***getContentWithResolver5', encoded2)
+        const encoded = resolver.getContentHash();
         const { protocolType, decoded, error } = decodeContenthash(encoded)
         if (error) {
           return {
@@ -227,16 +189,9 @@ export class ENS {
   }
 
   async getText(name, key) {
-    const resolverAddr = await this.getResolver(name)
-    return this.getTextWithResolver(name, key, resolverAddr)
-  }
-
-  async getTextWithResolver(name, key, resolverAddr) {
-    if (parseInt(resolverAddr, 16) === 0) {
-      return ''
-    }
+    const resolver = await this.getResolverObject(name)
+    if(!resolver) return ''
     try {
-      const resolver = await this.getResolverObject(name)
       const addr = await resolver.getText(key)
       return addr
     } catch (e) {
@@ -248,33 +203,7 @@ export class ENS {
   }
 
   async getName(address) {
-    const reverseNode = `${address.slice(2)}.addr.reverse`
-    const resolverAddr = await this.getResolver(reverseNode)
-    return this.getNameWithResolver(address, resolverAddr)
-  }
-
-  async getNameWithResolver(address, resolverAddr) {
-    const reverseNode = `${address.slice(2)}.addr.reverse`
-    const reverseNamehash = getNamehash(reverseNode)
-    if (parseInt(resolverAddr, 16) === 0) {
-      return {
-        name: null
-      }
-    }
-
-    try {
-      const provider = await getProvider()
-      const Resolver = getResolverContract({
-        address: resolverAddr,
-        provider
-      })
-      const name = await Resolver.name(reverseNamehash)
-      return {
-        name
-      }
-    } catch (e) {
-      console.log(`Error getting name for reverse record of ${address}`, e)
-    }
+    return provider.resolveName(address)
   }
 
   async isMigrated(name) {
