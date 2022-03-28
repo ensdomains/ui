@@ -84,7 +84,6 @@ export class ENS {
 
   /* Main methods */
 
-  // TODO: ethers.js does not support owner
   async getOwner(name) {
     const namehash = getNamehash(name)
     const owner = await this.ENS.owner(namehash)
@@ -102,19 +101,19 @@ export class ENS {
     return this.provider.getResolver(name)
   }
 
-  // TODO: ethers.js does not support ttl
+  // TODO
   async getTTL(name) {
     const namehash = getNamehash(name)
     return this.ENS.ttl(namehash)
   }
 
-  // TODO: ethers.js does not support lookup by namehash
+  // TODO
   async getResolverWithLabelhash(labelhash, nodehash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
     return this.ENS.resolver(namehash)
   }
 
-  // TODO: ethers.js does not support lookup by namehash
+  // TODO
   async getOwnerWithLabelHash(labelhash, nodeHash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
     return this.ENS.owner(namehash)
@@ -142,15 +141,19 @@ export class ENS {
   }
 
   async getContent(name) {
-    const resolver = await this.provider.getResolverObject(name)
-    if (!resolver) {
+    const resolverAddr = await this.getResolver(name)
+    return this.getContentWithResolver(name, resolverAddr)
+  }
+
+  async getContentWithResolver(name, resolverAddr) {
+    if (parseInt(resolverAddr, 16) === 0) {
       return emptyAddress
     }
     try {
       const namehash = getNamehash(name)
       const provider = await getProvider()
       const Resolver = getResolverContract({
-        address: resolver.address,
+        address: resolverAddr,
         provider
       })
       const contentHashSignature = utils
@@ -161,6 +164,7 @@ export class ENS {
         contentHashSignature
       )
       if (isContentHashSupported) {
+        const resolver = await this.provider.getResolverObject(name)
         const encoded = resolver.getContentHash();
         const { protocolType, decoded, error } = decodeContenthash(encoded)
         if (error) {
