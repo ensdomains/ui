@@ -84,6 +84,7 @@ export class ENS {
 
   /* Main methods */
 
+  // TODO: ethers.js does not support owner
   async getOwner(name) {
     const namehash = getNamehash(name)
     const owner = await this.ENS.owner(namehash)
@@ -101,19 +102,19 @@ export class ENS {
     return this.provider.getResolver(name)
   }
 
-  // TODO
+  // TODO: ethers.js does not support ttl
   async getTTL(name) {
     const namehash = getNamehash(name)
     return this.ENS.ttl(namehash)
   }
 
-  // TODO
+  // TODO: ethers.js does not support lookup by namehash
   async getResolverWithLabelhash(labelhash, nodehash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
     return this.ENS.resolver(namehash)
   }
 
-  // TODO
+  // TODO: ethers.js does not support lookup by namehash
   async getOwnerWithLabelHash(labelhash, nodeHash) {
     const namehash = await getNamehashWithLabelHash(labelhash, nodeHash)
     return this.ENS.owner(namehash)
