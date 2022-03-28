@@ -202,7 +202,6 @@ export default class Registrar {
       // Keep it as a separate call as this will throw exception for non existing domains
       ret.ownerOf = await Registrar.ownerOf(labelHash)
     } catch (e) {
-      console.log('Error getting permanent registrar entry', e)
       return false
     } finally {
       return ret
@@ -322,9 +321,14 @@ export default class Registrar {
   }
 
   async getEthPrice() {
-    const contractAddress = await this.getAddress('eth-usd.data.eth')
-    const oracle = await this.getOracle(contractAddress)
-    return (await oracle.latestAnswer()).toNumber() / 100000000
+    const oracleens = 'eth-usd.data.eth'
+    try{
+      const contractAddress = await this.getAddress(oracleens)
+      const oracle = await this.getOracle(contractAddress)
+      return (await oracle.latestAnswer()).toNumber() / 100000000
+    }catch(e){
+      console.warn(`Either ${oracleens} does not exist or Oracle is not throwing an error`, e)
+    }
   }
 
   async getPriceCurve() {
