@@ -17,14 +17,7 @@ import {
 import { normalize } from '@ensdomains/eth-ens-namehash'
 import { namehash } from './namehash'
 
-//import { checkLabelHash } from '../updaters/preImageDB'
-
-const uniq = (a, param) =>
-  a.filter(
-    (item, pos) => a.map(mapItem => mapItem[param]).indexOf(item[param]) === pos
-  )
-
-const checkLabels = (...labelHashes) => labelHashes.map(hash => null)
+const uniq = (a) => a.filter((item, index) => a.indexOf(item) === index)
 
 async function getEtherScanAddr() {
   const networkId = await getNetworkId()
@@ -57,20 +50,17 @@ async function getEnsStartBlock() {
   }
 }
 
-// export const checkLabels = (...labelHashes) =>
-//   labelHashes.map(labelHash => checkLabelHash(labelHash) || null)
-
 const mergeLabels = (labels1, labels2) =>
   labels1.map((label, index) => (label ? label : labels2[index]))
 
 function validateName(name) {
   const nameArray = name.split('.')
-  const hasEmptyLabels = nameArray.some(label => label.length == 0); 
+  const hasEmptyLabels = nameArray.some((label) => label.length == 0)
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
-  const normalizedArray = nameArray.map(label => {
-    if(label === '[root]'){
+  const normalizedArray = nameArray.map((label) => {
+    if (label === '[root]') {
       return label
-    }else{
+    } else {
       return isEncodedLabelhash(label) ? label : normalize(label)
     }
   })
@@ -94,6 +84,7 @@ function isLabelValid(name) {
 }
 
 const parseSearchTerm = (term, validTld) => {
+  console.log(term, validTld)
   let regex = /[^.]+$/
 
   try {
@@ -106,7 +97,8 @@ const parseSearchTerm = (term, validTld) => {
     const termArray = term.split('.')
     const tld = term.match(regex) ? term.match(regex)[0] : ''
     if (validTld) {
-      if (tld === 'eth' && [...termArray[termArray.length - 2]].length < 3) { // code-point length
+      if (tld === 'eth' && [...termArray[termArray.length - 2]].length < 3) {
+        // code-point length
         return 'short'
       }
       return 'supported'
@@ -132,8 +124,6 @@ export {
   emptyAddress,
   getEtherScanAddr,
   getEnsStartBlock,
-  checkLabels,
-  mergeLabels,
   // name validation
   validateName,
   parseSearchTerm,
