@@ -73,7 +73,6 @@ export class ENS {
     this.registryAddress = registryAddress
 
     const ENSContract = getENSContract({ address: registryAddress, provider })
-    this.provider = provider
     this.ENS = ENSContract
   }
 
@@ -92,14 +91,16 @@ export class ENS {
   }
 
   async getResolver(name) {
-    let resolver = await this.provider.getResolver(name)
+    const provider = await getProvider()
+    let resolver = await provider.getResolver(name)
     if(resolver){
       return resolver.address
     }
   }
 
   async getResolverObject(name) {
-    return this.provider.getResolver(name)
+    const provider = await getProvider()
+    return provider.getResolver(name)
   }
 
   // TODO: ethers.js does not support ttl
@@ -129,6 +130,7 @@ export class ENS {
     if(!resolver) return emptyAddress
     try {
       const { coinType, encoder } = formatsByName[key]
+      // TODO: ethers.js currently only supports handful of coin types https://github.com/ethers-io/ethers.js/issues/2769
       const addr = await resolver.getAddress(coinType)
       if (addr === '0x') return emptyAddress
       return encoder(Buffer.from(addr.slice(2), 'hex'))
@@ -142,19 +144,15 @@ export class ENS {
   }
 
   async getContent(name) {
-    const resolverAddr = await this.getResolver(name)
-    return this.getContentWithResolver(name, resolverAddr)
-  }
-
-  async getContentWithResolver(name, resolverAddr) {
-    if (parseInt(resolverAddr, 16) === 0) {
+    const resolver = await this.getResolverObject(name)
+    if (!resolver) {
       return emptyAddress
     }
     try {
       const namehash = getNamehash(name)
       const provider = await getProvider()
       const Resolver = getResolverContract({
-        address: resolverAddr,
+        address: resolver.address,
         provider
       })
       const contentHashSignature = utils
@@ -165,7 +163,6 @@ export class ENS {
         contentHashSignature
       )
       if (isContentHashSupported) {
-        const resolver = await this.provider.getResolverObject(name)
         const encoded = resolver.getContentHash();
         const { protocolType, decoded, error } = decodeContenthash(encoded)
         if (error) {
@@ -208,6 +205,7 @@ export class ENS {
   }
 
   async getName(address) {
+    const provider = await getProvider()
     return provider.resolveName(address)
   }
 
