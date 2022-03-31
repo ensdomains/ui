@@ -1155,10 +1155,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@ensdomains/address-encoder@^0.2.14":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.14.tgz#3e0add07ca241d49443fb14e303e3a45ae164d97"
-  integrity sha512-FYdKvFY9cPrwYhoaaSkZRIOAzUQ0+lSfml+sC0mI88MvspgtDnVlMjiAYDRUqbt7F+5w1e2mm7iVDkLVXyPVKg==
+"@ensdomains/address-encoder@^0.2.17":
+  version "0.2.17"
+  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.17.tgz#a93348faa015277abbc086451fc1e783b9266153"
+  integrity sha512-VsCcItOrZjTu7VB/+8g49DvyCR0f4ENfF8NjU5LHbbaJ44KKp4VoTI0b3cc7srf7Kq0spSao4Zfdn04n+6WWGA==
   dependencies:
     bech32 "^2.0.0"
     blakejs "^1.1.0"
