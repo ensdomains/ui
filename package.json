@@ -56,7 +56,7 @@
     "@ensdomains/dnssecoraclejs-017": "npm:@ensdomains/dnssecoraclejs@0.1.7",
     "@ensdomains/ens-contracts": "^0.0.11",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
-    "@ensdomains/mock": "^2.0.47",
+    "@ensdomains/mock": "npm:ensdomains-mock@^2.1.50",
     "@ethvault/iframe-provider": "0.1.9",
     "base58check": "^2.0.0",
     "bech32": "^1.1.3",
