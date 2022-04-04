@@ -131,6 +131,7 @@ export class ENS {
       const { coinType, encoder } = formatsByName[key]
       const encodedCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
       const data = await resolver._fetchBytes('0xf1cb7e06', encodedCoinType)
+      if(data === emptyAddress) return data
       let buffer = Buffer.from(data.slice(2), "hex")
       return encoder(buffer);
     } catch (e) {
