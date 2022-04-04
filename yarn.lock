@@ -1315,10 +1315,10 @@
   resolved "https://registry.yarnpkg.com/@ensdomains/eth-ens-namehash/-/eth-ens-namehash-2.0.15.tgz#5e5f2f24ba802aff8bc19edd822c9a11200cdf4a"
   integrity sha512-JRDFP6+Hczb1E0/HhIg0PONgBYasfGfDheujmfxaZaAv/NAH4jE6Kf48WbqfRZdxt4IZI3jl3Ri7sZ1nP09lgw==
 
-"@ensdomains/mock@^2.0.48":
-  version "2.1.48"
-  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.1.48.tgz#c122e9b4ea8a130a93adda3a29aeca7bb0cde465"
-  integrity sha512-4KAtWH7Xbk//DN1PROfLbRy+Yk2Oore4V1ALzjfg+ejS3ipntZQrqR/4n+5E85sIZTqWGE1xs20V7P1NtjvMNw==
+"@ensdomains/mock@^2.0.49":
+  version "2.1.49"
+  resolved "https://registry.yarnpkg.com/@ensdomains/mock/-/mock-2.1.49.tgz#763dd7e25e01c04fb57e9fe7daf2892704ace3a5"
+  integrity sha512-jWaiamF+5PIhzRWxOsfqgYR9quCR+L3BveFDkrnVlZI97nuZHWnbHShB639Dkyl9ozV36sHjXFRJ+JDYdHmv5w==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@ensdomains/dnssec-oracle-anchors" "^0.0.1"
