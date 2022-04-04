@@ -1,6 +1,6 @@
 {
   "name": "ensdomainsui",
-  "version": "3.3.28",
+  "version": "3.3.29",
   "description": "UI components and reusable code",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
