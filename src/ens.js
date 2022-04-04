@@ -163,16 +163,9 @@ export class ENS {
         contentHashSignature
       )
       if (isContentHashSupported) {
-        const encoded = resolver.getContentHash();
-        const { protocolType, decoded, error } = decodeContenthash(encoded)
-        if (error) {
-          return {
-            value: error,
-            contentType: 'error'
-          }
-        }
+        const value = await resolver.getContentHash();
         return {
-          value: `${protocolType}://${decoded}`,
+          value,
           contentType: 'contenthash'
         }
       } else {
