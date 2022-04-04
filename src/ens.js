@@ -1,6 +1,6 @@
-import { formatsByName } from '@ensdomains/address-encoder'
+import { formatsByName, formatsByCoinType } from '@ensdomains/address-encoder'
 import { abi as ensContract } from '@ensdomains/contracts/abis/ens/ENS.json'
-import { utils } from 'ethers'
+import { utils, BigNumber } from 'ethers'
 import {
   getENSContract,
   getResolverContract,
@@ -129,10 +129,10 @@ export class ENS {
     if(!resolver) return emptyAddress
     try {
       const { coinType, encoder } = formatsByName[key]
-      // TODO: ethers.js currently only supports handful of coin types https://github.com/ethers-io/ethers.js/issues/2769
-      const addr = await resolver.getAddress(coinType)
-      if (addr === '0x') return emptyAddress
-      return encoder(Buffer.from(addr.slice(2), 'hex'))
+      const encodedCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
+      const data = await resolver._fetchBytes('0xf1cb7e06', encodedCoinType)
+      let buffer = Buffer.from(data.slice(2), "hex")
+      return encoder(buffer);
     } catch (e) {
       console.log(e)
       console.warn(
