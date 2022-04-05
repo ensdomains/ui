@@ -163,9 +163,17 @@ export class ENS {
         contentHashSignature
       )
       if (isContentHashSupported) {
-        const value = await resolver.getContentHash();
+        // use _fetchBytes as ethers.js currently only supports ipfs
+        const encoded = await resolver._fetchBytes('0xbc1c58d1')
+        const { protocolType, decoded, error } = decodeContenthash(encoded)
+        if (error) {
+          return {
+            value: error,
+            contentType: 'error'
+          }
+        }
         return {
-          value,
+          value: `${protocolType}://${decoded}`,
           contentType: 'contenthash'
         }
       } else {
