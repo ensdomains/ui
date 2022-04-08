@@ -125,13 +125,14 @@ export class ENS {
   }
 
   async getAddr(name, key) {
+    if(!name) return emptyAddress
     const resolver = await this.getResolverObject(name)
     if(!resolver) return emptyAddress
     try {
       const { coinType, encoder } = formatsByName[key]
       const encodedCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
       const data = await resolver._fetchBytes('0xf1cb7e06', encodedCoinType)
-      if(data === emptyAddress) return data
+      if([emptyAddress, '0x'].includes(data) ) return emptyAddress
       let buffer = Buffer.from(data.slice(2), "hex")
       return encoder(buffer);
     } catch (e) {
@@ -207,7 +208,10 @@ export class ENS {
 
   async getName(address) {
     const provider = await getProvider()
-    return provider.resolveName(address)
+    const name = await provider.lookupAddress(address)
+    return {
+      name
+    }
   }
 
   async isMigrated(name) {
@@ -467,7 +471,7 @@ export class ENS {
 
   async claimAndSetReverseRecordName(name, overrides = {}) {
     const reverseRegistrarAddr = await this.getOwner('addr.reverse')
-    const provider = await getProvider(0)
+    const provider = await getProvider()
     const reverseRegistrarWithoutSigner = getReverseRegistrarContract({
       address: reverseRegistrarAddr,
       provider
