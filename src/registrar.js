@@ -333,7 +333,7 @@ export default class Registrar {
 
   async getPriceCurve() {
     try {
-      return this.getText('oracle.ens.eth', 'algorithm')
+      return this.getText('ens.eth', 'oracle')
     } catch (e) {
       // If the record is not set, fallback to linear.
       return 'linear'
