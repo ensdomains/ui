@@ -41,14 +41,14 @@
     "eslint-plugin-standard": "^3.0.1",
     "esm": "^3.2.22",
     "ganache-core": "^2.10.1",
-    "jest": "^24.8.0",
+    "jest": "^27.5.1",
     "web3": "^1.3.0"
   },
   "dependencies": {
     "@0xproject/utils": "^2.0.2",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/runtime": "^7.4.4",
-    "@ensdomains/address-encoder": "^0.2.14",
+    "@ensdomains/address-encoder": "^0.2.17",
     "@ensdomains/content-hash": "^2.5.7",
     "@ensdomains/contracts": "^0.0.1",
     "@ensdomains/dnsprovejs": "^0.4.1",
