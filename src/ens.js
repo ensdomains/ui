@@ -6,13 +6,10 @@ import {
   getResolverContract,
   getReverseRegistrarContract
 } from './contracts'
-import { decryptHashes } from './preimage'
 import {
-  checkLabels,
   emptyAddress,
   getEnsStartBlock,
   labelhash,
-  mergeLabels,
   namehash,
   uniq
 } from './utils'
@@ -256,7 +253,9 @@ export class ENS {
 
       if (isContentHashSupported) {
         const encoded = await Resolver.contenthash(namehash)
+
         const { protocolType, decoded, error } = decodeContenthash(encoded)
+
         if (error) {
           return {
             value: error,
@@ -361,6 +360,7 @@ export class ENS {
       const addrPromise = this.getAddress(node.name)
       const contentPromise = this.getContent(node.name)
       const [addr, content] = await Promise.all([addrPromise, contentPromise])
+
       return {
         ...node,
         addr,
@@ -384,27 +384,21 @@ export class ENS {
       topics: [namehash],
       fromBlock: startBlock
     })
-    const flattenedLogs = rawLogs.map((log) => log.values)
+    const flattenedLogs = rawLogs.map((log) => log.args.label)
     flattenedLogs.reverse()
-    const logs = uniq(flattenedLogs, 'label')
-    const labelhashes = logs.map((log) => log.label)
-    const remoteLabels = await decryptHashes(...labelhashes)
-    const localLabels = checkLabels(...labelhashes)
-    const labels = mergeLabels(localLabels, remoteLabels)
-    const ownerPromises = labels.map((label) =>
-      this.getOwner(`${label}.${name}`)
+    const labelhashes = uniq(flattenedLogs)
+    const ownerPromises = labelhashes.map((label) =>
+      this.getOwnerWithLabelHash(label, namehash)
     )
 
     return Promise.all(ownerPromises).then((owners) =>
       owners.map((owner, index) => {
         return {
-          label: labels[index],
-          labelhash: logs[index].label,
-          decrypted: labels[index] !== null,
+          label: null,
+          labelhash: labelhashes[index],
+          decrypted: false,
           node: name,
-          name: `${
-            labels[index] || encodeLabelhash(logs[index].label)
-          }.${name}`,
+          name: `${encodeLabelhash(labelhashes[index])}.${name}`,
           owner
         }
       })
@@ -566,9 +560,10 @@ export class ENS {
       address: resolverAddr,
       provider
     })
+
     const signer = await getSigner()
     const Resolver = ResolverWithoutSigner.connect(signer)
-    return Resolver.setContenthash(namehash, encodedContenthash)
+    return Resolver.setContenthash(namehash, encodedContenthash.encoded)
   }
 
   async setText(name, key, recordValue) {
