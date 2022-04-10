@@ -1,5 +1,4 @@
 import { IFrameEthereumProvider } from '@ethvault/iframe-provider'
-import { CCIPReadProvider } from '@chainlink/ethers-ccip-read-provider'
 import { ethers } from 'ethers'
 
 let provider
@@ -170,7 +169,6 @@ export function getNetworkProviderUrl(id) {
 
 export async function getProvider() {
   const baseProvider = await getWeb3()
-  return new CCIPReadProvider(baseProvider);
 }
 
 export async function getSigner() {

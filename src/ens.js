@@ -6,6 +6,7 @@ import {
   getResolverContract,
   getReverseRegistrarContract
 } from './contracts'
+
 import {
   emptyAddress,
   getEnsStartBlock,
@@ -13,13 +14,8 @@ import {
   namehash,
   uniq
 } from './utils'
-import { decodeContenthash, encodeContenthash } from './utils/contents'
 import { encodeLabelhash } from './utils/labelhash'
-import {
-  getReverseRegistrarContract,
-  getENSContract,
-  getResolverContract
-} from './contracts'
+
 import {
   Resolver as resolverContract
 } from '@ensdomains/ens-contracts'
