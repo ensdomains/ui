@@ -60,7 +60,6 @@ export async function setupWeb3({
           name: 'unknown',
           ensAddress
         })
-        window.provider = provider
       }else{
         provider = getJsonRpcProvider(customProvider)
       }
@@ -95,13 +94,10 @@ export async function setupWeb3({
   }
 
   if (window && window.ethereum) {
-    console.log('***setupWeb3 8')
     provider = getWeb3Provider(window.ethereum)
     signer = provider.getSigner()
     if (window.ethereum.on && reloadOnAccountsChange) {
-      console.log('***setupWeb3 9')
       address = await signer.getAddress()
-      console.log('***setupWeb3 10')
       window.ethereum.on('accountsChanged', async function (accounts) {
         address = await signer.getAddress()
         if (accounts[0] !== address) {
@@ -111,14 +107,12 @@ export async function setupWeb3({
     }
     return { provider, signer }
   } else if (window.web3 && window.web3.currentProvider) {
-    console.log('***setupWeb3 11')
     provider = getWeb3Provider(window.web3.currentProvider)
     const id = (await provider.getNetwork()).chainId
     signer = provider.getSigner()
     return { provider, signer }
   } else {
     try {
-      console.log('***setupWeb3 12')
       const url = 'http://localhost:8545'
       await fetch(url)
       console.log('local node active')
