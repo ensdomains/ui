@@ -22,7 +22,6 @@ import {
   getSigner,
   getWeb3
 } from './web3'
-import { interfaces } from './constants/interfaces'
 /* Utils */
 
 export function getNamehash(name) {
@@ -502,14 +501,8 @@ export class ENS {
   async wildcardResolverDomain(name){
     const provider = await getProvider()
     const resolverAddress = await this.getResolver(name)
-    const Resolver = getResolverContract({
-      address: resolverAddress,
-      provider
-    })
-    let res, resNew
-    res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
-    resNew = await Resolver['supportsInterface(bytes4)'](interfaces['resolveNew'])
-    return res || resNew
+    const _resolverAddress = await provider._getResolver(name)
+    return !!resolverAddress && !_resolverAddress
   }
   // Events
 
