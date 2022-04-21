@@ -22,6 +22,8 @@ import {
   getSigner,
   getWeb3
 } from './web3'
+import { interfaces } from './constants/interfaces'
+
 /* Utils */
 
 export function getNamehash(name) {
@@ -128,7 +130,7 @@ export class ENS {
       const { coinType, encoder } = formatsByName[key]
       const encodedCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
       const data = await resolver._fetchBytes('0xf1cb7e06', encodedCoinType)
-      if([emptyAddress, '0x'].includes(data) ) return emptyAddress
+      if([emptyAddress, '0x', null].includes(data) ) return emptyAddress
       let buffer = Buffer.from(data.slice(2), "hex")
       return encoder(buffer);
     } catch (e) {
@@ -499,10 +501,19 @@ export class ENS {
     return Resolver.setName(namehash, name)
   }
   async wildcardResolverDomain(name){
+    let res, resNew
     const provider = await getProvider()
     const resolverAddress = await this.getResolver(name)
     const _resolverAddress = await provider._getResolver(name)
-    return !!resolverAddress && !_resolverAddress
+    const isWildcardSubdomain = !!resolverAddress && !_resolverAddress
+    const Resolver = getResolverContract({
+      address: resolverAddress,
+      provider
+    })
+    res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
+    resNew = await Resolver['supportsInterface(bytes4)'](interfaces['resolveNew'])
+    const isWildCardParent = res || resNew
+    return isWildcardSubdomain || isWildCardParent
   }
   // Events
 
