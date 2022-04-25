@@ -95,7 +95,7 @@ export class ENS {
     }
   }
 
-  async getResolverObject(name) {
+  async _getResolverObject(name) {
     const provider = await getProvider()
     return provider.getResolver(name)
   }
