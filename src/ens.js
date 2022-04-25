@@ -124,7 +124,7 @@ export class ENS {
 
   async getAddr(name, key) {
     if(!name) return emptyAddress
-    const resolver = await this.getResolverObject(name)
+    const resolver = await this._getResolverObject(name)
     if(!resolver) return emptyAddress
     try {
       const { coinType, encoder } = formatsByName[key]
@@ -143,7 +143,7 @@ export class ENS {
   }
 
   async getContent(name) {
-    const resolver = await this.getResolverObject(name)
+    const resolver = await this._getResolverObject(name)
     if (!resolver) {
       return emptyAddress
     }
@@ -192,7 +192,7 @@ export class ENS {
   }
 
   async getText(name, key) {
-    const resolver = await this.getResolverObject(name)
+    const resolver = await this._getResolverObject(name)
     if(!resolver) return ''
     try {
       const addr = await resolver.getText(key)
@@ -500,20 +500,13 @@ export class ENS {
     let namehash = getNamehash(reverseNode)
     return Resolver.setName(namehash, name)
   }
-  async wildcardResolverDomain(name){
-    let res, resNew
-    const provider = await getProvider()
+  async supportWildcard(name){
     const resolverAddress = await this.getResolver(name)
-    const _resolverAddress = await provider._getResolver(name)
-    const isWildcardSubdomain = !!resolverAddress && !_resolverAddress
     const Resolver = getResolverContract({
       address: resolverAddress,
       provider
     })
-    res = await Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
-    resNew = await Resolver['supportsInterface(bytes4)'](interfaces['resolveNew'])
-    const isWildCardParent = res || resNew
-    return isWildcardSubdomain || isWildCardParent
+    return Resolver['supportsInterface(bytes4)'](interfaces['resolve'])
   }
   // Events
 
