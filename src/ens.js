@@ -500,7 +500,7 @@ export class ENS {
     let namehash = getNamehash(reverseNode)
     return Resolver.setName(namehash, name)
   }
-  async supportWildcard(name){
+  async supportsWildcard(name){
     const resolverAddress = await this.getResolver(name)
     const Resolver = getResolverContract({
       address: resolverAddress,
