@@ -501,6 +501,7 @@ export class ENS {
     return Resolver.setName(namehash, name)
   }
   async supportsWildcard(name){
+    const provider = await getProvider()
     const resolverAddress = await this.getResolver(name)
     const Resolver = getResolverContract({
       address: resolverAddress,
