@@ -92,7 +92,12 @@ export function encodeContenthash(text) {
           encoded = '0x' + contentHash.encode('ipfs-ns', content);
         }
       } else if (contentType === 'ipns') {
-        encoded = '0x' + contentHash.encode('ipns-ns', content);
+        try {
+          encoded = '0x' + contentHash.encode('ipns-ns', content);
+        } catch (err) {
+          // if its a domain the above will error out
+          encoded = '0x' + contentHash.encode('ipns-dns', content);
+        }
       } else if (contentType === 'bzz') {
         if(content.length >= 4) {
           encoded = '0x' + contentHash.fromSwarm(content)
