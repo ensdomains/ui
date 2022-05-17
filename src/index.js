@@ -16,7 +16,8 @@ export async function setupENS({
     reloadOnAccountsChange,
     enforceReadOnly,
     enforceReload,
-    infura
+    infura,
+    ensAddress
   })
   const networkId = await getNetworkId()
   const ens = new ENS({ provider, networkId, registryAddress: ensAddress })
