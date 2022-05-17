@@ -6,5 +6,7 @@ export const interfaces = {
   dnsRegistrar: '0x1aa2e641',
   bulkRenewal: '0x3150bfba',
   dnssecClaimOld:'0x1aa2e641',
-  dnssecClaimNew:'0x17d8f49b'
+  dnssecClaimNew:'0x17d8f49b',
+  // new interface id https://docs.ens.domains/ens-improvement-proposals/ensip-10-wildcard-resolution#specification
+  resolve:'0x9061b923'
 }
