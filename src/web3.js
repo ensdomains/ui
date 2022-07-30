@@ -56,6 +56,9 @@ export async function setupWeb3({
         provider = getJsonRpcProvider(customProvider)
       }
       signer = provider.getSigner()
+    } else if (customProvider instanceof ethers.providers.BaseProvider) {
+      provider = customProvider
+      signer = provider.getSigner()
     } else {
       // handle EIP 1193 provider
       provider = getWeb3Provider(customProvider)
