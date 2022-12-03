@@ -3,7 +3,7 @@ import { utils } from 'ethers'
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3', 'skynet-ns', 'arweave-ns']
 
 function matchProtocol(text){
-  return text.match(/^(ipfs|sia|ipns|bzz|onion|onion3|arweave):\/\/(.*)/)
+  return text.match(/^(ipfs|sia|ipns|bzz|onion|onion3|arweave|ar):\/\/(.*)/)
     || text.match(/\/(ipfs)\/(.*)/)
     || text.match(/\/(ipns)\/(.*)/)
 }
@@ -35,7 +35,7 @@ export function decodeContenthash(encoded) {
       } else if (codec === 'skynet-ns') {
         protocolType = 'sia'
       } else if (codec === 'arweave-ns') {
-        protocolType = 'arweave'
+        protocolType = 'ar'
       } else {
         decoded = encoded
       }
@@ -109,7 +109,7 @@ export function encodeContenthash(text) {
         if(content.length == 46) {
           encoded = '0x' + contentHash.encode('skynet-ns', content);
         }
-      } else if (contentType === 'arweave'){
+      } else if (contentType === 'arweave' || contentType === 'ar'){
         if(content.length == 43) {
           encoded = '0x' + contentHash.encode('arweave-ns', content);
         }
