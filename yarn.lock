@@ -1155,10 +1155,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@ensdomains/address-encoder@^0.2.20":
-  version "0.2.20"
-  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.20.tgz#b032fdd0142a3c559af4a7d4158682e75633e880"
-  integrity sha512-itaFxXavhdEnDcB2MuESzF9DDFb4xTNm5GyJu+MqzyplOKr6KtQBnj2LtH95qXpFxFhXQHoArOlGb/dfhkwfAg==
+"@ensdomains/address-encoder@^0.2.21":
+  version "0.2.21"
+  resolved "https://registry.yarnpkg.com/@ensdomains/address-encoder/-/address-encoder-0.2.21.tgz#3e193315552da10da393e9719bf2c0f82cab0cb8"
+  integrity sha512-U+/bKRgN04kIRiLX4qLO6hega8Qw8rv16/6hAKd5EnQdEf1+1sFAndTesu2ePJlieiiiSNucW2xmNuj7l8HxwQ==
   dependencies:
     bech32 "^2.0.0"
     blakejs "^1.1.0"
@@ -5526,9 +5526,9 @@ diffie-hellman@^5.0.0:
     randombytes "^2.0.0"
 
 dns-packet@^5.0.4, dns-packet@^5.2.1, dns-packet@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.3.0.tgz#9a0f66118d3be176b828b911a842b0b1a4bdfd4f"
-  integrity sha512-Nce7YLu6YCgWRvOmDBsJMo9M5/jV3lEZ5vUWnWXYmwURvPylHvq7nkDWhNmk1ZQoZZOP7oQh/S0lSxbisKOfHg==
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.4.0.tgz#1f88477cf9f27e78a213fb6d118ae38e759a879b"
+  integrity sha512-EgqGeaBB8hLiHLZtp/IbaDQTL8pZ0+IvwzSHA6d7VyMDM+B9hgddEMa9xjK5oYnw0ci0JQ6g2XCD7/f6cafU6g==
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
