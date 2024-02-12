@@ -134,10 +134,14 @@ export default class Registrar {
 
   async getLegacyEntry(label) {
     let legacyEntry
+    const labelHash = labelhash(label)
     try {
       const Registrar = this.legacyAuctionRegistrar
       let deedOwner = '0x0'
-      const entry = await Registrar.entries(labelhash(label))
+      const [entry, events] = await Promise.all([
+        Registrar.entries(labelHash),
+        this.getRegistrarEvent('HashRegistered', Registrar, { topics: [labelHash]})
+      ]) 
       if (parseInt(entry[1], 16) !== 0) {
         const deed = await this.getDeed(entry[1])
         deedOwner = await deed.owner()
@@ -145,7 +149,7 @@ export default class Registrar {
       legacyEntry = {
         deedOwner, // TODO: Display "Release" button if deedOwner is not 0x0
         state: parseInt(entry[0]),
-        registrationDate: parseInt(entry[2]) * 1000,
+        registrationDate: events.length > 0 ? parseInt(entry[2]) * 1000 : 0,
         revealDate: (parseInt(entry[2]) - 24 * 2 * 60 * 60) * 1000,
         value: parseInt(entry[3]),
         highestBid: parseInt(entry[4])
@@ -691,6 +695,22 @@ export default class Registrar {
     if (result > 0) {
       return new Date(result * 1000)
     }
+  }
+
+  async getRegistrarEvent(event, registrar, { topics = [], fromBlock = 0, toBlock = 'latest' }) {
+    const provider = await getProvider()
+    let Event = registrar.filters[event]()
+
+    const filter = {
+      fromBlock,
+      toBlock,
+      address: Event.address,
+      topics: [...Event.topics, ...topics]
+    }
+
+    const logs = await provider.getLogs(filter)
+
+    return logs
   }
 }
 
